@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "262526988494",
+    "firebase_url": "https://brandfever-aqua.firebaseio.com",
+    "project_id": "brandfever---aqua",
+    "storage_bucket": "brandfever---aqua.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262526988494:android:969719a94202b9ce",
+        "android_client_info": {
+          "package_name": "co.thnki.brandfever"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262526988494-3gf85khihrr2tu1gvijf3sgdki0t16ev.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.thnki.brandfever",
+            "certificate_hash": "D7380EE4605FAB2D6AE6672A26DE8D89BAC5684A"
+          }
+        },
+        {
+          "client_id": "262526988494-c3i8m8el45e76ujks1ga79hr7rousnkn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9uxBUJrOiDKwlN50WAp-L5athpLWsbtg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262526988494-c3i8m8el45e76ujks1ga79hr7rousnkn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="firstLevel">
+        <item>Men\'s Wear</item>
+        <item>Women\'s Wear</item>
+        <item>Boy\'s Wear</item>
+        <item>Girl\'s Wear</item>
+        <item>Fashion Accessories</item>
+        <item>Home Furnishing</item>
+    </string-array>
+    <string-array name="firstLevelId">
+        <item>mensWear</item>
+        <item>womensWear</item>
+        <item>boysWear</item>
+        <item>girlsWear</item>
+        <item>fashionAccessories</item>
+        <item>homeFurnishing</item>
+    </string-array>
+
+    <string-array name="mensWear">
+        <item>Formal Shirts</item>
+        <item>Casual Shirts</item>
+        <item>Formal Trousers</item>
+        <item>Casual Trousers</item>
+        <item>Jeans</item>
+        <item>T-Shirts</item>
+        <item>Coats &amp; Jackets</item>
+        <item>Sweat Shirts</item>
+        <item>Sweaters</item>
+        <item>Sports Wear</item>
+        <item>Sleep Wear</item>
+    </string-array>
+    <string-array name="mensWearId">
+        <item>formalShirts</item>
+        <item>casualShirts</item>
+        <item>formalTrousers</item>
+        <item>casualTrousers</item>
+        <item>jeans</item>
+        <item>tShirts</item>
+        <item>coatsJackets</item>
+        <item>sweatShirts</item>
+        <item>sweaters</item>
+        <item>sportsWear</item>
+        <item>sleepWear</item>
+    </string-array>
+
+
+    <string-array name="womensWear">
+        <item>Sarees</item>
+        <item>Dress Materials</item>
+        <item>Kurtas &amp; Suits</item>
+        <item>Churidars &amp; Lehengas</item>
+        <item>Formal Shirts</item>
+        <item>Casual Shirts</item>
+        <item>Trousers</item>
+        <item>Jeans</item>
+        <item>T-Shirts &amp; Tops</item>
+        <item>Coats &amp; Jackets</item>
+        <item>Sweat Shirts</item>
+        <item>Sweaters</item>
+        <item>Sports Wear</item>
+        <item>Sleep Wear</item>
+    </string-array>
+    <string-array name="womensWearId">
+        <item>sarees</item>
+        <item>dressMaterials</item>
+        <item>kurtasSuits</item>
+        <item>churidarsLehengas</item>
+        <item>formalShirts</item>
+        <item>casualShirts</item>
+        <item>trousers</item>
+        <item>jeans</item>
+        <item>tShirtsTops</item>
+        <item>coatsJackets</item>
+        <item>sweatShirts</item>
+        <item>sweaters</item>
+        <item>sportsWear</item>
+        <item>sleepWear</item>
+    </string-array>
+
+
+    <string-array name="boysWear">
+        <item>Shirts</item>
+        <item>Trousers</item>
+        <item>Jeans</item>
+        <item>T-Shirts</item>
+        <item>Coats &amp; Jackets</item>
+        <item>Sweat Shirts</item>
+        <item>Sweaters</item>
+        <item>Sports Wear</item>
+        <item>Sleep Wear</item>
+    </string-array>
+    <string-array name="boysWearId">
+        <item>shirts</item>
+        <item>trousers</item>
+        <item>jeans</item>
+        <item>tShirts</item>
+        <item>coatsJackets</item>
+        <item>sweatShirts</item>
+        <item>sweaters</item>
+        <item>sportsWear</item>
+        <item>sleepWear</item>
+    </string-array>
+
+    <string-array name="girlsWear">
+        <item>Dresses</item>
+        <item>Kurtas &amp; Suits</item>
+        <item>Churidars &amp; Lehengas</item>
+        <item>Shirts</item>
+        <item>Jeans</item>
+        <item>T-Shirts &amp; Tops</item>
+        <item>Coats &amp; Jackets</item>
+        <item>Sweat Shirts</item>
+        <item>Sweaters</item>
+        <item>Sports Wear</item>
+        <item>Sleep Wear</item>
+    </string-array>
+    <string-array name="girlsWearId">
+        <item>dresses</item>
+        <item>kurtasSuits</item>
+        <item>churidarsLehengas</item>
+        <item>shirts</item>
+        <item>jeans</item>
+        <item>tShirtsTops</item>
+        <item>coatsJackets</item>
+        <item>sweatShirts</item>
+        <item>sweaters</item>
+        <item>sportsWear</item>
+        <item>sleepWear</item>
+    </string-array>
+
+    <string-array name="fashionAccessories">
+        <item>Belts</item>
+        <item>Watches</item>
+        <item>Perfumes &amp; Deo</item>
+        <item>Caps &amp; Hats</item>
+        <item>Socks</item>
+        <item>Scarves &amp; Stoles</item>
+        <item>Bags</item>
+        <item>Hand Bags</item>
+    </string-array>
+    <string-array name="fashionAccessoriesId">
+        <item>belts</item>
+        <item>watches</item>
+        <item>perfumesDeo</item>
+        <item>capsHats</item>
+        <item>socks</item>
+        <item>scarvesStoles</item>
+        <item>bags</item>
+        <item>handBags</item>
+    </string-array>
+
+
+    <string-array name="homeFurnishing">
+        <item>Bedsheets</item>
+        <item>Blankets</item>
+        <item>Curtains</item>
+        <item>Towels</item>
+        <item>Cushions &amp; Covers</item>
+        <item>Carpets</item>
+        <item>Mattress</item>
+    </string-array>
+    <string-array name="homeFurnishingId">
+        <item>bedsheets</item>
+        <item>blankets</item>
+        <item>curtains</item>
+        <item>towels</item>
+        <item>cushionsCovers</item>
+        <item>carpets</item>
+        <item>mattress</item>
+    </string-array>
+
+</resources>
