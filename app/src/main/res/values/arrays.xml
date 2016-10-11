@@ -4,16 +4,14 @@
     <string-array name="firstLevel">
         <item>Men\'s Wear</item>
         <item>Women\'s Wear</item>
-        <item>Boy\'s Wear</item>
-        <item>Girl\'s Wear</item>
+        <item>Kids\'s Wear</item>
         <item>Fashion Accessories</item>
         <item>Home Furnishing</item>
     </string-array>
     <string-array name="firstLevelId">
         <item>mensWear</item>
         <item>womensWear</item>
-        <item>boysWear</item>
-        <item>girlsWear</item>
+        <item>kidsWear</item>
         <item>fashionAccessories</item>
         <item>homeFurnishing</item>
     </string-array>
@@ -79,35 +77,12 @@
         <item>sleepWear</item>
     </string-array>
 
-
-    <string-array name="boysWear">
-        <item>Shirts</item>
-        <item>Trousers</item>
-        <item>Jeans</item>
-        <item>T-Shirts</item>
-        <item>Coats &amp; Jackets</item>
-        <item>Sweat Shirts</item>
-        <item>Sweaters</item>
-        <item>Sports Wear</item>
-        <item>Sleep Wear</item>
-    </string-array>
-    <string-array name="boysWearId">
-        <item>shirts</item>
-        <item>trousers</item>
-        <item>jeans</item>
-        <item>tShirts</item>
-        <item>coatsJackets</item>
-        <item>sweatShirts</item>
-        <item>sweaters</item>
-        <item>sportsWear</item>
-        <item>sleepWear</item>
-    </string-array>
-
-    <string-array name="girlsWear">
+    <string-array name="kidsWear">
         <item>Dresses</item>
         <item>Kurtas &amp; Suits</item>
         <item>Churidars &amp; Lehengas</item>
         <item>Shirts</item>
+        <item>Trousers</item>
         <item>Jeans</item>
         <item>T-Shirts &amp; Tops</item>
         <item>Coats &amp; Jackets</item>
@@ -116,11 +91,12 @@
         <item>Sports Wear</item>
         <item>Sleep Wear</item>
     </string-array>
-    <string-array name="girlsWearId">
+    <string-array name="kidsWearId">
         <item>dresses</item>
         <item>kurtasSuits</item>
         <item>churidarsLehengas</item>
         <item>shirts</item>
+        <item>trousers</item>
         <item>jeans</item>
         <item>tShirtsTops</item>
         <item>coatsJackets</item>

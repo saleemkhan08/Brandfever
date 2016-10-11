@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#192331</color>
-    <color name="colorPrimaryLight">#2a3b52</color>
-    <color name="colorPrimaryDark">#101720</color>
-    <color name="colorAccent">#0ca8a4</color>
-    <color name="colorAccentDisabled">#38A09E</color>
+    <color name="colorPrimary">#aaaaaa</color>
+    <color name="colorPrimaryLight">#cccccc</color>
+    <color name="colorPrimaryDark">#888888</color>
+    <color name="colorAccent">#d75a4a</color>
 
-    <color name="colorAccentPressed">#9EDEDD</color>
+    <color name="colorAccentPressed">#d7877c</color>
     <color name="divider">#aaaaaa</color>
     <color name="travel_mode">#F57C00</color>
     <color name="travel_mode_pressed">#FF9f40</color>
@@ -37,4 +36,7 @@
     <color name="colorAccentBgDark">#0a1f1f</color>
     <color name="windowBackground">#eee</color>
     <color name="colorAccentTransparent">#5538A09E</color>
+    <color name="drawerBackground">#ddd</color>
+    <color name="transparent_grey">#55AAAAAA</color>
+    <color name="colorSecondaryAccent">#d75a4a</color>
 </resources>

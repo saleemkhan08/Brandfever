@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="?attr/actionBarSize">
+
+    <co.thnki.brandfever.view.SquareImageView
+        android:layout_width="?attr/actionBarSize"
+        android:src="@mipmap/menu"
+        android:id="@+id/drawer"
+        android:clickable="true"
+        android:layout_alignParentStart="true"
+        android:padding="20dp"
+        android:background="@drawable/bg_accent_drawable"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_toEndOf="@+id/drawer"
+        android:text="@string/app_name"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/colorSecondaryAccent"
+        android:layout_toStartOf="@+id/cart"
+        android:layout_height="match_parent"/>
+
+    <co.thnki.brandfever.view.SquareImageView
+        android:clickable="true"
+        android:layout_width="?attr/actionBarSize"
+        android:src="@mipmap/shopping_cart"
+        android:padding="@dimen/toolbar_img_padding"
+        android:id="@+id/cart"
+        android:layout_toStartOf="@+id/favorite"
+        android:background="@drawable/bg_accent_drawable"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <co.thnki.brandfever.view.SquareImageView
+        android:clickable="true"
+        android:layout_width="?attr/actionBarSize"
+        android:src="@mipmap/favorite_fill"
+        android:padding="@dimen/toolbar_img_padding"
+        android:id="@+id/favorite"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:layout_height="?attr/actionBarSize"/>
+</RelativeLayout>

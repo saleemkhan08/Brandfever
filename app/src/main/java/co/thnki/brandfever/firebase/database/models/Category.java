@@ -11,6 +11,7 @@ public class Category
     private int categoryId;
     private String categoryImage;
     private boolean categorySelected;
+    private String categorySquareImage;
 
     public void setCategoryName(String categoryName)
     {
@@ -42,6 +43,10 @@ public class Category
         return categoryId;
     }
 
+    public Category()
+    {
+
+    }
     public Category(String category, int i, String name)
     {
         timeStamp = new Date().getTime();
@@ -50,9 +55,13 @@ public class Category
         this.categoryName = name;
     }
 
-    public Category()
+    public Category(String category, int i, String childId, String categoriesImageUrl)
     {
-
+        timeStamp = new Date().getTime();
+        this.category = category;
+        this.categoryId = i;
+        this.categoryName = childId;
+        this.categorySquareImage = categoriesImageUrl;
     }
 
     public String getCategory()
@@ -83,5 +92,14 @@ public class Category
     public void setCategoryImage(String categoryImage)
     {
         this.categoryImage = categoryImage;
+    }
+
+    public String getCategorySquareImage()
+    {
+        return categorySquareImage;
+    }
+    public void setCategorySquareImage(String squareImage)
+    {
+        categorySquareImage = squareImage;
     }
 }

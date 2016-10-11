@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    android:id="@+id/nestedScrollView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/drawerBackground"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ProductActivity"
+    tools:showIn="@layout/activity_product"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/priceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/edit"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/priceTextAfter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginStart="10dp"
+                                android:text="1000"
+                                android:textSize="@dimen/price_text_size"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/priceTextBefore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
+                                android:text="2000"
+                                android:textSize="@dimen/discount_text_size"
+                                android:textStyle="italic"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/brandText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
+                            android:text="Brand : "/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/edit"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_toStartOf="@+id/favorite"
+                        android:background="@drawable/bg_accent_drawable"
+                        android:clickable="true"
+                        android:padding="10dp"
+                        android:src="@mipmap/edit_icon"/>
+
+                    <ImageView
+                        android:id="@+id/favorite"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bg_accent_drawable"
+                        android:clickable="true"
+                        android:padding="10dp"
+                        android:src="@mipmap/favorite"/>
+
+
+                </RelativeLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/priceContainer"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="15dp"
+                    android:scrollbarSize="2dp">
+
+                    <include layout="@layout/sizes"/>
+                </HorizontalScrollView>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/addToCart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:clickable="true"
+
+                >
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/add_to_bag_bg"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/add_to_bag_bg"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="@string/addToCart"
+                    android:textColor="@color/colorAccent"/>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/buyNow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                app:cardBackgroundColor="@android:color/transparent">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/add_to_bag_bg_inverse"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/add_to_bag_bg_inverse"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="@string/buyNow"
+                    android:textColor="@color/white"/>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

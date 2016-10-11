@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/xsWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/xs"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:gravity="center"
+            android:text="XS"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/s"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="S"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/m"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="M"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/l"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="L"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/xlWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/xl"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="XL"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/xxlWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/xxl"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="XXL"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</LinearLayout>

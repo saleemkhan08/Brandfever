@@ -1,96 +1,89 @@
 package co.thnki.brandfever;
 
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.thnki.brandfever.fragments.CategoriesDialogFragment;
-import co.thnki.brandfever.fragments.DrawerFragment;
-import co.thnki.brandfever.fragments.MainCategoryFragment;
+import butterknife.OnClick;
+import co.thnki.brandfever.fragments.MainPageFragment;
+import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.utils.NavigationDrawerUtil;
 
-import static co.thnki.brandfever.interfaces.Const.ALL_CATEGORIES;
-import static co.thnki.brandfever.interfaces.Const.AVAILABLE_CATEGORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
-import static co.thnki.brandfever.interfaces.Const.CATEGORIES;
-import static co.thnki.brandfever.interfaces.Const.FIRST_LEVEL_CATEGORIES;
+import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
 
 public class StoreActivity extends AppCompatActivity
 {
-    private static final String MAIN_CATEGORY_FRAGMENT_TAG = "mainCategoryFragment";
+    private static final String TAG = "storeActivity";
+
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
-
-    MainCategoryFragment mMainCategoryFragment;
+    private FragmentManager mFragmentManager;
+    private NavigationDrawerUtil mNavigationDrawerUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        setContentView(R.layout.activity_store);
         ButterKnife.bind(this);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        DrawerFragment drawerFragment = new DrawerFragment();
-        drawerFragment.setUp(drawer, toolbar);
+        Otto.register(this);
+        mFragmentManager = getSupportFragmentManager();
+        mNavigationDrawerUtil = new NavigationDrawerUtil(mFragmentManager, this);
+        mNavigationDrawerUtil.onFirstLevelItemClick(AVAILABLE_FIRST_LEVEL_CATEGORIES, ENTER);
+        addMainPageFragment();
     }
 
-    @Override
-    protected void onStart()
+    private void addMainPageFragment()
     {
-        super.onStart();
-        if (mMainCategoryFragment == null)
-        {
-            mMainCategoryFragment = new MainCategoryFragment();
-        }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_main, mMainCategoryFragment, MAIN_CATEGORY_FRAGMENT_TAG)
+        Fragment fragment = MainPageFragment.getInstance(null);
+        mFragmentManager.beginTransaction()
+                .replace(R.id.content_main, fragment)
                 .commit();
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START))
-        {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else
+        if (mNavigationDrawerUtil.onBackPressed())
         {
             super.onBackPressed();
         }
     }
 
     @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        Otto.unregister(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.store_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        int id = item.getItemId();
-        switch (id)
-        {
-            case R.id.addCategory:
-                Bundle bundle = new Bundle();
-                bundle.putString(ALL_CATEGORIES, FIRST_LEVEL_CATEGORIES);
-                bundle.putString(AVAILABLE_CATEGORIES, AVAILABLE_FIRST_LEVEL_CATEGORIES);
-                CategoriesDialogFragment mCategoriesDialogFragment = new CategoriesDialogFragment();
-                mCategoriesDialogFragment.setArguments(bundle);
-                mCategoriesDialogFragment.show(getSupportFragmentManager(), CATEGORIES);
-                return true;
-        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.drawer)
+    public void openDrawer()
+    {
+        mNavigationDrawerUtil.openDrawer();
     }
 }

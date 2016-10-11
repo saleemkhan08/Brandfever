@@ -1,22 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="#eee"
-              android:minWidth="300dp"
-              android:orientation="vertical">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#eee"
+                android:minWidth="300dp"
+                android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/dialogHeader"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:id="@+id/dialogHeader"
-        android:background="@drawable/dialog_header_bg">
+        android:background="@color/colorPrimaryDark">
 
         <TextView
             android:id="@+id/dialogTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/categories"
+            android:text="@string/editProductDetails"
             android:textColor="@color/white"
             android:textSize="@dimen/dialog_title"
             android:textStyle="bold"
@@ -32,22 +32,199 @@
             android:src="@mipmap/ic_clear_white_24dp"/>
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/dialogHeader"
+    <ScrollView
         android:layout_width="match_parent"
-        android:background="#fff"
-        android:id="@+id/categoriesRecyclerView"
-        android:layout_height="wrap_content">
-    </android.support.v7.widget.RecyclerView>
-    <RelativeLayout
+        android:id="@+id/scrollView"
+        android:layout_height="wrap_content"
         android:layout_below="@id/dialogHeader"
-        android:id="@+id/recyclerProgress"
-        android:layout_width="match_parent"
+        android:paddingBottom="35dp"
+        android:background="@color/white">
 
-        android:layout_height="60dp">
-        <ProgressBar
+        <LinearLayout
+            android:id="@+id/scrollViewChild"
             android:layout_width="match_parent"
-            android:padding="20dp"
-            android:layout_height="match_parent"/>
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/priceInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/priceInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/priceAfterDiscount"
+                    android:inputType="number"
+                    android:text="1000"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/discountInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/discountInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/priceBeforeDiscount"
+                    android:inputType="number"
+                    android:text="1500"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/brandInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/brandInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/productBrand"
+                    android:text="@string/app_name"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="@string/noOfProductsAvailable"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/xsInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/xsInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableXs"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/sInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/sInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableS"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/mInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/mInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableM"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/lInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/lInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableL"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/xlInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/xlInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableXL"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/xxlInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/xxlInputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/noOfProductsAvailableXxl"
+                    android:inputType="number"
+                    android:text="0"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#ddd"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/saveProduct"
+            android:clickable="true"
+            android:padding="5dp"
+            android:text="@string/save"
+            android:background="@drawable/bg_drawable"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </LinearLayout>
 </RelativeLayout>

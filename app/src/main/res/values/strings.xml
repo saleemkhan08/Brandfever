@@ -126,4 +126,56 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_tab">TabActivity</string>
     <string name="SubCategories">Sub Categories</string>
+    <string name="edit">Edit</string>
+    <string name="back">Back</string>
+    <string name="pressAgainToExit">Press Again To Exit</string>
+    <string name="noProductsFound">No Products Found!!!</string>
+    <string name="individual">Upload as individual products</string>
+    <string name="group">Group into single product</string>
+    <string name="youHaventSelectedAnyImages">You Haven\'t Selected Any Images</string>
+    <string name="title_activity_product">ProductActivity</string>
+    <string name="invalid_product">Invalid Product</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="large_text">
+        "Material is the metaphor.\n\n"
+
+        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
+        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
+        "technologically advanced and open to imagination and magic.\n"
+        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
+        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
+        "flexibility of the material creates new affordances that supercede those in the physical "
+        "world, without breaking the rules of physics.\n"
+        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
+        "interact, and exist in space and in relation to each other. Realistic lighting shows "
+        "seams, divides space, and indicates moving parts.\n\n"
+    </string>
+    <string name="availableSizes">Available Sizes :</string>
+    <string name="moreInfo">More Info :</string>
+    <string name="addToBag">Add to Bag</string>
+    <string name="buyNow">Buy Now</string>
+    <string name="addToCart">Add To Cart</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="favorite">Favorite</string>
+    <string name="editProductDetails">Edit Product Details</string>
+    <string name="priceAfterDiscount">Price After Discount</string>
+    <string name="priceBeforeDiscount">Price Before Discount</string>
+    <string name="productBrand">Product Brand</string>
+    <string name="noOfProductsAvailableXs">XS size : </string>
+    <string name="noOfProductsAvailableS">S size : </string>
+    <string name="noOfProductsAvailableM">M size : </string>
+    <string name="noOfProductsAvailableL">L size : </string>
+    <string name="noOfProductsAvailableXL">XL size : </string>
+    <string name="noOfProductsAvailableXxl">XXL size : </string>
+    <string name="noOfProductsAvailable">No. of Products Available</string>
+    <string name="xs">XS</string>
+    <string name="s">S</string>
+    <string name="m">M</string>
+    <string name="l">L</string>
+    <string name="xl">XL</string>
+    <string name="xxl">XXL</string>
+    <string name="pleaseEnterAWholeNumber">Please Enter A Whole Number</string>
+    <string name="pleaseEnterAVaildPrice">Please Enter A Vaild Price</string>
+    <string name="pleaseEnterValidName">Please Enter Valid Brand Name</string>
+    <string name="pleaseEnterAValidNumber">Please Enter A Valid Number</string>
 </resources>

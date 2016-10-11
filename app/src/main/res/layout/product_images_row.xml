@@ -2,32 +2,65 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="0.5dp"
+    android:layout_marginEnd="0.5dp"
+    android:layout_marginStart="1dp"
+    android:layout_marginTop="1dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    >
 
-    <android.support.v7.widget.CardView
+    <co.thnki.brandfever.view.SquareImageView
+        android:id="@+id/productImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/mens_wear"/>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
+        android:layout_below="@+id/productImage"
+        android:orientation="horizontal">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/productDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
-            <co.thnki.brandfever.view.SquareImageView
-                android:id="@+id/productImage"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/mens_wear"/>
-            <co.thnki.brandfever.view.SquareImageView
-                android:visibility="gone"
-                android:id="@+id/productImageSelected"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="@color/colorAccentTransparent"/>
+                android:layout_height="wrap_content">
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/productPriceAfter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$104"
+                    android:textSize="@dimen/price_text_size"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/productPriceBefore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="$104"
+                    android:textStyle="italic"
+                    android:textSize="@dimen/discount_text_size"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/productBrand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Puma"
+                android:textSize="12sp"/>
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

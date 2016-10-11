@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -32,6 +33,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import butterknife.BindColor;
+import butterknife.ButterKnife;
 import co.thnki.brandfever.interfaces.ConnectivityListener;
 import co.thnki.brandfever.pojos.Accounts;
 import co.thnki.brandfever.utils.ConnectivityUtil;
@@ -53,12 +56,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private boolean mIsLogOut;
     // [END declare_auth]
 
+    @BindColor(R.color.colorPrimaryDark)
+    int COLOR_PRIMARY_DARK;
+
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         //getSupportActionBar().hide();
+        ButterKnife.bind(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            getWindow().setStatusBarColor(COLOR_PRIMARY_DARK);
+        }
         mPreference = Brandfever.getPreferences();
         setContentView(R.layout.activity_login);
         TextView title = (TextView) findViewById(R.id.title);
@@ -120,6 +131,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 {
                     GoogleSignInAccount account = result.getSignInAccount();
                     firebaseAuthWithGoogle(account);
+                    if (account != null)
+                    {
+                        Uri photo_url = account.getPhotoUrl();
+                        mPreference.edit()
+                                .putString(Accounts.NAME, account.getDisplayName())
+                                .putBoolean(LoginActivity.LOGIN_STATUS, true)
+                                .putString(Accounts.EMAIL, account.getEmail())
+                                .putString(Accounts.PHOTO_URL, photo_url != null ? photo_url.toString() : "")
+                                .putString(Accounts.GOOGLE_ID, account.getId())
+                                .apply();
+                    }
                 }
                 else
                 {
@@ -208,7 +230,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Log.d(TAG, "hideProgressDialog");
         if (mProgressDialog != null && mProgressDialog.isShowing())
         {
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
         }
     }
 

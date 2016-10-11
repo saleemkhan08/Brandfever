@@ -19,8 +19,8 @@ import co.thnki.brandfever.ViewHolders.SimpleImageViewHolder;
 public class ProductImagesAdapter extends RecyclerView.Adapter<SimpleImageViewHolder>
 {
 
-    ArrayList<String> mImageUriList;
-    Map<String,Boolean> mSelectImageMap;
+    private ArrayList<String> mImageUriList;
+    public Map<String,Boolean> mSelectImageMap;
 
     public ProductImagesAdapter(ArrayList<String> imageUriList)
     {
@@ -30,6 +30,24 @@ public class ProductImagesAdapter extends RecyclerView.Adapter<SimpleImageViewHo
         {
             mSelectImageMap.put(key, false);
         }
+    }
+
+    public void removeSelectedElements()
+    {
+        for (String key : mSelectImageMap.keySet())
+        {
+            if(mSelectImageMap.get(key))
+            {
+                mImageUriList.remove(key);
+            }
+        }
+
+        for(String key : mImageUriList)
+        {
+            mSelectImageMap.put(key, false);
+        }
+
+        notifyDataSetChanged();
     }
 
     @Override
@@ -45,6 +63,9 @@ public class ProductImagesAdapter extends RecyclerView.Adapter<SimpleImageViewHo
     {
         Glide.with(Brandfever.getAppContext()).load(Uri.parse(mImageUriList.get(position)))
         .into(holder.mImageView);
+        holder.mSelectedImageView.setVisibility(View.GONE);
+        mSelectImageMap.put(mImageUriList.get(position), false);
+
         holder.mImageView.setOnClickListener(new View.OnClickListener()
         {
             @Override

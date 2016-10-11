@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="@drawable/bg_drawable"
     android:orientation="vertical">
 
     <LinearLayout
@@ -11,26 +13,27 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-
-        <co.thnki.brandfever.view.CircularImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="10dp"
-            android:src="@mipmap/mens_wear"/>
+        <ImageView
+            android:layout_width="@dimen/drawer_list_item_size"
+            android:layout_height="@dimen/drawer_list_item_size"
+            android:id="@+id/imageView"
+            android:src="@mipmap/mens_wear_square"/>
 
         <TextView
             android:id="@+id/category"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/drawer_list_item_size"
             android:gravity="center_vertical"
             android:minHeight="50dp"
-            android:padding="20dp"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
             android:text="@string/app_name"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimaryDark"/>
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.25dp"
-        android:background="#ccc"/>
+        android:background="@color/colorPrimaryDark"/>
 </LinearLayout>

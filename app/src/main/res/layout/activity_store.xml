@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:openDrawer="start">
+
+    <include layout="@layout/content_store"/>
+
+    <RelativeLayout
+        android:layout_width="@dimen/navigation_drawer_size"
+        android:layout_gravity="start"
+        android:background="@color/drawerBackground"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:id="@+id/statusBarSize"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimaryDark"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_below="@+id/statusBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/fragmentContainer"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+        </LinearLayout>
+    </RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

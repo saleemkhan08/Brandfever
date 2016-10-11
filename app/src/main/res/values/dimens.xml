@@ -4,8 +4,8 @@
     <dimen name="nav_header_height">160dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
 
-    <dimen name="app_bar_height">440dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="app_bar_height">360dp</dimen>
+    <dimen name="fab_margin">7dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="rippleStrokeWidth">2dp</dimen>
     <dimen name="rippleRadius">64dp</dimen>
@@ -32,7 +32,7 @@
     <dimen name="multi_row_height">160dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="crop__bar_height">56dp</dimen>
-    <dimen name="dialog_title">30sp</dimen>
+    <dimen name="dialog_title">25sp</dimen>
     <dimen name="dialog_sub_title">25sp</dimen>
     <dimen name="loginTitle">40sp</dimen>
     <dimen name="loginDesc">25sp</dimen>
@@ -41,6 +41,11 @@
     <dimen name="loading">35dp</dimen>
     <dimen name="issue_add_options_pad">8dp</dimen>
     <dimen name="navigation_drawer_size">250dp</dimen>
+    <dimen name="drawer_list_item_size">40dp</dimen>
+    <dimen name="price_text_size">16sp</dimen>
+    <dimen name="discount_text_size">14sp</dimen>
+    <dimen name="sizes_button_width">40dp</dimen>
+    <dimen name="toolbar_img_padding">18dp</dimen>
 
     <item name="totalWeight" format="float" type="dimen">11</item>
     <item name="imageWeight" format="float" type="dimen">8.5</item>

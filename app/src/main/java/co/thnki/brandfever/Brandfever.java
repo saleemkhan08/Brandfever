@@ -17,6 +17,7 @@ import co.thnki.brandfever.receivers.InternetConnectivityListener;
 
 public class Brandfever extends MultiDexApplication
 {
+    public static String APP_NAME = "";
     private static Context context;
     private InternetConnectivityListener mReceiver;
     @Override
@@ -33,6 +34,7 @@ public class Brandfever extends MultiDexApplication
         {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         }
+        APP_NAME = context.getString(R.string.app_name);
     }
 
     @Override
@@ -64,6 +66,11 @@ public class Brandfever extends MultiDexApplication
     {
         Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
     }
+
+    public static void toast(int str)
+    {
+        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+    }
     public static Typeface getTypeFace()
     {
         return Typeface.createFromAsset(context.getAssets(), "Gabriola.ttf");
@@ -74,4 +81,8 @@ public class Brandfever extends MultiDexApplication
     }
 
 
+    public static String getResString(int resId)
+    {
+        return context.getResources().getString(resId);
+    }
 }
