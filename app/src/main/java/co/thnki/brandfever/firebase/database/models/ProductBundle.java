@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ProductBundle implements Parcelable
@@ -15,7 +16,8 @@ public class ProductBundle implements Parcelable
     private Bundle sizesMap;
     private String material;
     private String priceBefore;
-    private Bundle photoUrlMap;
+    private ArrayList<String> photoUrlList;
+    private ArrayList<String> photoNameList;
 
     public ProductBundle()
     {
@@ -24,7 +26,8 @@ public class ProductBundle implements Parcelable
 
     public ProductBundle(Products products)
     {
-        photoUrlMap = convertStringMapToBundle(products.getPhotoUrlMap());
+        photoUrlList = products.getPhotoUrlList();
+        photoNameList = products.getPhotoNameList();
         this.categoryId = products.getCategoryId();
         brand = products.getBrand();
         priceAfter = products.getPriceAfter();
@@ -124,14 +127,24 @@ public class ProductBundle implements Parcelable
         this.priceBefore = priceBefore;
     }
 
-    public Bundle getPhotoUrlMap()
+    public ArrayList<String> getPhotoUrlList()
     {
-        return photoUrlMap;
+        return photoUrlList;
     }
 
-    public void setPhotoUrlMap(Bundle  photoUrlMap)
+    public void setPhotoUrlList(ArrayList<String> photoUrlList)
     {
-        this.photoUrlMap = photoUrlMap;
+        this.photoUrlList = photoUrlList;
+    }
+
+    public ArrayList<String> getPhotoNameList()
+    {
+        return photoNameList;
+    }
+
+    public void setPhotoNameList(ArrayList<String> photoNameList)
+    {
+        this.photoNameList = photoNameList;
     }
 
     @Override
@@ -150,7 +163,8 @@ public class ProductBundle implements Parcelable
         dest.writeString(this.material);
         dest.writeString(this.priceBefore);
         dest.writeString(this.productId);
-        dest.writeBundle(this.photoUrlMap);
+        dest.writeStringList(this.photoUrlList);
+        dest.writeStringList(this.photoNameList);
     }
 
     protected ProductBundle(Parcel in)
@@ -162,7 +176,8 @@ public class ProductBundle implements Parcelable
         this.material = in.readString();
         this.priceBefore = in.readString();
         this.productId = in.readString();
-        this.photoUrlMap = in.readBundle();
+        this.photoUrlList = in.createStringArrayList();
+        this.photoNameList = in.createStringArrayList();
     }
 
     public static final Parcelable.Creator<ProductBundle> CREATOR = new Parcelable.Creator<ProductBundle>()

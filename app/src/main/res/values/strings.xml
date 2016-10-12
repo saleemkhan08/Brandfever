@@ -178,4 +178,8 @@
     <string name="pleaseEnterAVaildPrice">Please Enter A Vaild Price</string>
     <string name="pleaseEnterValidName">Please Enter Valid Brand Name</string>
     <string name="pleaseEnterAValidNumber">Please Enter A Valid Number</string>
+    <string name="areYouSureYouWantToDeleteThisImage">Are You Sure You Want To Delete This Image ?</string>
+    <string name="youCannotDeleteAllTheImages">You Cannot Delete All The Images!!</string>
+    <string name="aProductMustHaveAtLeastOneImage">A Product Must Have At Least One Image!!</string>
+    <string name="areYouSureYouWantToDeleteThisProduct">Are You Sure You Want To Delete This Product ?</string>
 </resources>

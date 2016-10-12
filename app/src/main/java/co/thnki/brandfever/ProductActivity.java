@@ -1,7 +1,9 @@
 package co.thnki.brandfever;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -42,8 +44,8 @@ import co.thnki.brandfever.singletons.Otto;
 
 import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.R.layout.indicator;
+import static co.thnki.brandfever.firebase.database.models.Products.PHOTO_NAME;
 import static co.thnki.brandfever.firebase.database.models.Products.PHOTO_URL;
-import static co.thnki.brandfever.firebase.database.models.Products.convertBundleToStringMap;
 import static co.thnki.brandfever.fragments.UploadCategoriesFragment.PICK_IMAGE_MULTIPLE;
 
 public class ProductActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
@@ -76,14 +78,19 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     private ProductBundle mProductBundle;
     private ProgressDialog mProgressDialog;
 
-    //private DatabaseReference mProductRef;
-    //private StorageReference mProductStorageRef;
-    private Bundle mPhotoUrlMap;
+    private ArrayList<String> mPhotoUrlList;
+    private ArrayList<String> mPhotoNameList;
+
     private DatabaseReference mProductDbRef;
     private StorageReference mProductStorageRef;
     private SectionsPagerAdapter mAdapter;
 
-    private String mCurrentPhotoKey;
+    private String mCurrentPhotoUrl = "";
+    private String mCurrentPhotoName = "";
+
+    @Bind(R.id.favorite)
+    ImageView mFavoriteImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -203,15 +210,20 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @OnClick(R.id.favorite)
     public void saveToFavorite(ImageView favorite)
     {
-        if (!mIsFavorite)//if it was not favorite
+        mIsFavorite = ! mIsFavorite;
+        updateFavoriteUi();
+    }
+
+    private void updateFavoriteUi()
+    {
+
+        if (mIsFavorite)//if it was not favorite
         {
-            favorite.setImageResource(R.mipmap.favorite_fill);
-            mIsFavorite = true;
+            mFavoriteImageView.setImageResource(R.mipmap.favorite_fill);
         }
         else
         {
-            favorite.setImageResource(R.mipmap.favorite);
-            mIsFavorite = false;
+            mFavoriteImageView.setImageResource(R.mipmap.favorite);
         }
     }
 
@@ -226,9 +238,10 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     {
         if (productBundle != null)
         {
-            mPhotoUrlMap = productBundle.getPhotoUrlMap();
-            //mCurrentCategory = productBundle.getCategoryId();
-            mAdapter.updateDataSet(mPhotoUrlMap);
+            mPhotoUrlList = mProductBundle.getPhotoUrlList();
+            mPhotoNameList = mProductBundle.getPhotoNameList();
+
+            mAdapter.updateDataSet(mPhotoUrlList);
 
             mBrandText.setText(productBundle.getBrand());
             mPriceTextAfter.setText(productBundle.getPriceAfter());
@@ -238,7 +251,8 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
                 mPriceTextBefore.setText(discountText);
                 mPriceTextBefore.setPaintFlags(mPriceTextBefore.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
-            updatePageIndicator(mProductBundle.getPhotoUrlMap().size());
+            updatePageIndicator(mPhotoUrlList.size());
+            mProductImagePager.setCurrentItem(0, true);
         }
         else
         {
@@ -250,11 +264,14 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     private void updatePageIndicator(int size)
     {
         mPageIndicatorContainer.removeAllViews();
-        for (int i = 0; i < size; i++)
+        if (size > 1)
         {
-            addIndicator();
+            for (int i = 0; i < size; i++)
+            {
+                addIndicator();
+            }
+            highLightPageIndicator(0);
         }
-        highLightPageIndicator(0);
     }
 
     @OnClick(R.id.edit)
@@ -319,18 +336,14 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         catch (Exception e)
         {
             Brandfever.toast("Something went wrong");
+            e.printStackTrace();
+            mProgressDialog.dismiss();
         }
     }
 
 
     private void uploadMorePhotos(ArrayList<String> mImagesEncodedList)
     {
-        //upload(mAdapter.mSelectImageMap);
-        /**
-         * 1. push and create a database entry
-         * 2. upload the image with the obtained key name
-         * 3. save the url in the database.
-         */
         if (mProgressDialog == null)
         {
             mProgressDialog = new ProgressDialog(this);
@@ -338,7 +351,8 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
 
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
-        final int currentSize = mPhotoUrlMap.size();
+
+        final int currentSize = mPhotoUrlList.size();
         final int noOfUploadingPhoto = mImagesEncodedList.size();
         mProgressDialog.setMessage("Uploading " + 1 + " of " + noOfUploadingPhoto);
         Log.d("mImagesEncodedList", "mImagesEncodedList : " + mImagesEncodedList.size());
@@ -350,36 +364,47 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
             String uri = mImagesEncodedList.get(productIndex);
             int uploadIndex = productIndex + currentSize;
             Log.d("mImagesEncodedList", "uploadIndex : " + uploadIndex);
-            StorageReference reference = mProductStorageRef.child(uploadIndex + "");
 
+            /**
+             * Put the photo using random key name does not matter as it will be directly accessed using the download URL
+             */
+            final String photoName = Products.generateRandomKey();
+
+            StorageReference reference = mProductStorageRef.child(photoName);
             reference.putFile(Uri.parse(uri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
             {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
                     Uri downloadUri = taskSnapshot.getDownloadUrl();
-                    int mapSize = mPhotoUrlMap.keySet().size();
-                    int size = mapSize - currentSize + 1;
+                    int listSize = mPhotoUrlList.size();
+                    int size = listSize - currentSize + 1;
 
                     if (downloadUri != null)
                     {
-                        String key = "0" + mapSize + "_photo";
                         String url = downloadUri.toString();
-                        if(!url.trim().isEmpty())
+                        if (!url.trim().isEmpty())
                         {
-                            mPhotoUrlMap.putString(key, url);
-                            mProductDbRef.child(Products.PHOTO_URL).setValue(convertBundleToStringMap(mPhotoUrlMap));
-                            mProductBundle.setPhotoUrlMap(mPhotoUrlMap);
+                            mPhotoUrlList.add(url);
+                            mPhotoNameList.add(photoName);
+
+                            mProductDbRef.child(Products.PHOTO_URL).setValue(mPhotoUrlList);
+                            mProductDbRef.child(Products.PHOTO_NAME).setValue(mPhotoNameList);
+
+                            mProductBundle.setPhotoUrlList(mPhotoUrlList);
+                            mProductBundle.setPhotoNameList(mPhotoNameList);
+
                             updateUi(mProductBundle);
                         }
                     }
-                    Log.d("SizesIssue", "mapSize before : " + mapSize + ", after : " + mPhotoUrlMap.keySet().size());
+                    Log.d("SizesIssue", "listSize before : " + listSize + ", after : " + mPhotoUrlList.size());
                     Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
 
                     if (size >= noOfUploadingPhoto)
                     {
                         mProgressDialog.dismiss();
-                        mProductImagePager.setCurrentItem(0, true);
+                        mProductImagePager.setCurrentItem(0, false);
+                        mProductImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
                     }
                     mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
                 }
@@ -411,7 +436,8 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     public void onPageSelected(int position)
     {
         highLightPageIndicator(position);
-        mCurrentPhotoKey = mAdapter.getItemKey(position);
+        mCurrentPhotoUrl = mAdapter.getItemUrl(position);
+        mCurrentPhotoName = mPhotoNameList.get(position);
     }
 
     private void highLightPageIndicator(int position)
@@ -431,12 +457,79 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
 
     }
 
+    @OnClick(R.id.deleteProduct)
+    public void deleteProduct()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.areYouSureYouWantToDeleteThisProduct);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                mProductDbRef.removeValue();
+                for(String name : mPhotoNameList)
+                {
+                    mProductStorageRef.child(name).delete();
+                }
+                mProductStorageRef.delete();
+                finish();
+            }
+        }).show();
+    }
+
     @OnClick(R.id.deletePhoto)
     public void deleteImage()
     {
-        mProductStorageRef.child(mCurrentPhotoKey).delete();
-        mProductDbRef.child(PHOTO_URL).child(mCurrentPhotoKey).setValue("");
-        mPhotoUrlMap.remove(mCurrentPhotoKey);
-        mAdapter.updateDataSet(mPhotoUrlMap);
+        if (mPhotoUrlList.size() > 1)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.areYouSureYouWantToDeleteThisImage);
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+
+                }
+            }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    if (mCurrentPhotoUrl == null || mCurrentPhotoUrl.isEmpty())
+                    {
+                        mCurrentPhotoUrl = mAdapter.getItemUrl(0);
+                        mCurrentPhotoName = mPhotoNameList.get(0);
+                    }
+
+                    mProductStorageRef.child(mCurrentPhotoName).delete();
+
+                    mPhotoNameList.remove(mCurrentPhotoName);
+                    mPhotoUrlList.remove(mCurrentPhotoUrl);
+
+                    mProductBundle.setPhotoUrlList(mPhotoUrlList);
+                    mProductBundle.setPhotoNameList(mPhotoNameList);
+
+                    mProductDbRef.child(PHOTO_URL).setValue(mPhotoUrlList);
+                    mProductDbRef.child(PHOTO_NAME).setValue(mPhotoNameList);
+
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            }).show();
+        }
+        else
+        {
+            toast(R.string.youCannotDeleteAllTheImages);
+        }
     }
 }

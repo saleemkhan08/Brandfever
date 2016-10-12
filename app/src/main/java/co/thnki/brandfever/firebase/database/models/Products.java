@@ -2,7 +2,9 @@ package co.thnki.brandfever.firebase.database.models;
 
 import android.os.Bundle;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,10 +15,9 @@ import co.thnki.brandfever.R;
 
 public class Products
 {
-    private static final Random random = new SecureRandom();
-    public static final String PHOTO_URL = "photoUrlMap";
+    public static final String PHOTO_URL = "photoUrlList";
+    public static final String PHOTO_NAME = "photoNameList";
     public static final String PRODUCT_MODEL = "productModel";
-    private static final String PRODUCT_IMAGE_KEY = "productImageKey";
 
     private String categoryId;
     private String productId;
@@ -26,17 +27,20 @@ public class Products
     private Map<String, Integer> sizesMap;
     private String material;
     private String priceBefore;
-    private Map<String, String> photoUrlMap;
+    private ArrayList<String> photoUrlList;
+    private ArrayList<String> photoNameList;
     private static final String NOT_SPECIFIED = "Not Specified";
 
     public Products()
     {
     }
 
-    public Products(String photoUrl, String categoryId, String key)
+    public Products(String photoUrl, String photoName, String categoryId, String key)
     {
-        photoUrlMap = new LinkedHashMap<>();
-        photoUrlMap.put("00_photo", photoUrl);
+        photoUrlList = new ArrayList<>();
+        photoNameList = new ArrayList<>();
+        photoNameList.add(photoName);
+        photoUrlList.add(photoUrl);
         this.categoryId = categoryId;
         brand = Brandfever.APP_NAME;
         priceAfter = "1000";
@@ -55,7 +59,8 @@ public class Products
 
     public Products(ProductBundle bundle)
     {
-        photoUrlMap = convertBundleToStringMap(bundle.getPhotoUrlMap());
+        photoUrlList = bundle.getPhotoUrlList();
+        photoNameList = bundle.getPhotoUrlList();
         this.categoryId = bundle.getCategoryId();
         brand = bundle.getBrand();
         priceAfter = bundle.getPriceAfter();
@@ -64,6 +69,14 @@ public class Products
         priceBefore = bundle.getPriceBefore();
         productId = bundle.getProductId();
     }
+
+    public static String generateRandomKey() {
+        int length = 6;
+        Random random = new SecureRandom();
+        return String.format("%"+length+"s", new BigInteger(length*5, random)
+                .toString(32)).replace('\u0020', '0');
+    }
+
     private Map<String, Integer> convertBundleToIntMap(Bundle bundle)
     {
         Map<String, Integer> map = new HashMap<>();
@@ -156,13 +169,23 @@ public class Products
         this.priceBefore = priceBefore;
     }
 
-    public Map<String, String> getPhotoUrlMap()
+    public ArrayList<String> getPhotoUrlList()
     {
-        return photoUrlMap;
+        return photoUrlList;
     }
 
-    public void setPhotoUrlMap(Map<String, String> photoUrlMap)
+    public void setPhotoUrlList(ArrayList<String> photoUrlList)
     {
-        this.photoUrlMap = photoUrlMap;
+        this.photoUrlList = photoUrlList;
+    }
+
+    public ArrayList<String> getPhotoNameList()
+    {
+        return photoNameList;
+    }
+
+    public void setPhotoNameList(ArrayList<String> photoNameList)
+    {
+        this.photoNameList = photoNameList;
     }
 }

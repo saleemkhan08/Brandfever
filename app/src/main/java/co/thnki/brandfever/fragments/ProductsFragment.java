@@ -31,7 +31,6 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TreeSet;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -208,8 +207,8 @@ public class ProductsFragment extends Fragment
     {
         //upload(mAdapter.mSelectImageMap);
         /**
-         * 1. push and create a database entry
-         * 2. upload the image with the obtained key name
+
+         * 2. using the key create a folder in storage
          * 3. save the url in the database.
          */
         final int currentSize = mAdapter.getItemCount();
@@ -219,24 +218,45 @@ public class ProductsFragment extends Fragment
         mProgressDialog.show();
         for (String uri : mImagesEncodedList)
         {
+            /**
+             * 1. push an empty product to create a key
+             */
+
             final DatabaseReference product = mCategoryRef.push();
             final String key = product.getKey();
-            StorageReference reference = mCategoryStorageRef.child(key).child("0");
+
+            /**
+             * 2. create a folder in Storage using the key and
+             * create a file reference using generateRandomKey Generator defined in Products Model
+             */
+
+            final String photoName = Products.generateRandomKey();
+            StorageReference reference = mCategoryStorageRef.child(key).child(photoName);
             reference.putFile(Uri.parse(uri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
             {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
+
+                    /**
+                     * 3. put a file and get the download Url
+                     */
+
                     Uri downloadUri = taskSnapshot.getDownloadUrl();
                     if (downloadUri != null)
                     {
-                        Products products = new Products(downloadUri.toString(), mCurrentCategory, key);
+                        /**
+                         * 4. Create a product using download Url, Current Category and the key generated previously
+                         */
+
+                        Products products = new Products(downloadUri.toString(), photoName, mCurrentCategory, key);
                         product.setValue(products);
                     }
                     else
                     {
                         product.removeValue();
                     }
+
                     int size = mAdapter.getItemCount() - currentSize + 1;
                     Log.d("SizesIssue", "Size : "+size+",currentSize : "+currentSize+", noOfUploadingPhoto : "+noOfUploadingPhoto);
                     if (size >= noOfUploadingPhoto)
@@ -244,6 +264,7 @@ public class ProductsFragment extends Fragment
                         mProgressDialog.dismiss();
                     }
                     mProgressDialog.setMessage("Uploading " + (size+1) + " of " + noOfUploadingPhoto);
+
                 }
             }).addOnFailureListener(new OnFailureListener()
             {
@@ -324,8 +345,10 @@ public class ProductsFragment extends Fragment
             protected void populateViewHolder(final ProductViewHolder viewHolder, final Products model, int position)
             {
                 updateUi();
-                TreeSet<String> set = new TreeSet<>(model.getPhotoUrlMap().keySet());
-                String imageUrl = model.getPhotoUrlMap().get(set.first());
+                /**
+                 * get the zeroth item to display in the list.
+                 */
+                String imageUrl = model.getPhotoUrlList().get(0);
                 Glide.with(getActivity()).load(imageUrl)
                         .asBitmap().placeholder(R.mipmap.price_tag)
                         .centerCrop().into(viewHolder.mImageView);

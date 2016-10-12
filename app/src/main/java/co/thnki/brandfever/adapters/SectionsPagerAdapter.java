@@ -1,59 +1,45 @@
 package co.thnki.brandfever.adapters;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 import co.thnki.brandfever.fragments.ImagePagerFragment;
 
 public class SectionsPagerAdapter extends FragmentStatePagerAdapter
 {
-    private Bundle mPhotoUrls;
-    private ArrayList<String> mPhotoUrlKeys;
+    private ArrayList<String> mPhotoUrls;
 
     public SectionsPagerAdapter(FragmentManager fragmentManager)
     {
         super(fragmentManager);
     }
 
-    public void updateDataSet(Bundle mPhotoUrlMap)
+    public void updateDataSet(ArrayList<String> photoUrls)
     {
-        mPhotoUrls = mPhotoUrlMap;
-        mPhotoUrlKeys = new ArrayList<>();
-        TreeSet<String> set = new TreeSet<>(mPhotoUrls.keySet());
-        for (String url : set)
-        {
-            if (url != null && !url.trim().isEmpty())
-            {
-                mPhotoUrlKeys.add(url);
-            }
-        }
+        mPhotoUrls = photoUrls;
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position)
     {
-        String key = mPhotoUrlKeys.get(position);
-        String url = mPhotoUrls.getString(key);
-        Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrlKeys.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
-        Log.d("SectionsPho", "key : " + key + ", url : " + url + ", position : " + position);
+        String url = mPhotoUrls.get(position);
+        Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
         return ImagePagerFragment.getInstance(url);
     }
 
     @Override
     public int getCount()
     {
-        return mPhotoUrlKeys.size();
+        return mPhotoUrls.size();
     }
 
-    public String getItemKey(int position)
+    public String getItemUrl(int position)
     {
-        return mPhotoUrlKeys.get(position);
+        return mPhotoUrls.get(position);
     }
 }
