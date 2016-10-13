@@ -1,5 +1,6 @@
 package co.thnki.brandfever.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.R;
+import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.ViewHolders.MainCategoryViewHolder;
 import co.thnki.brandfever.firebase.database.models.Category;
 
@@ -82,7 +84,10 @@ public class MainPageFragment extends Fragment implements ValueEventListener
     {
         View parentView = inflater.inflate(R.layout.fragment_main_category, container, false);
         ButterKnife.bind(this, parentView);
-        mRootRef.addValueEventListener(this);
+        if(mRootRef != null)
+        {
+            mRootRef.addValueEventListener(this);
+        }
         return parentView;
     }
 
@@ -90,7 +95,11 @@ public class MainPageFragment extends Fragment implements ValueEventListener
     public void onResume()
     {
         super.onResume();
-        //mToolbar.setTitle(R.string.app_name);
+        Activity activity = getActivity();
+        if(activity instanceof StoreActivity)
+        {
+            ((StoreActivity)activity).setToolBarTitle(getString(R.string.app_name));
+        }
     }
 
     private void initializeRecyclerView()

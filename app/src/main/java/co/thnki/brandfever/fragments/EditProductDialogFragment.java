@@ -237,8 +237,4 @@ public class EditProductDialogFragment extends DialogFragment implements Const
         return fragment;
     }
 
-    public void uploadMorePhotos()
-    {
-
-    }
 }

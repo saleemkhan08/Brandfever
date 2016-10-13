@@ -46,6 +46,8 @@
     <dimen name="discount_text_size">14sp</dimen>
     <dimen name="sizes_button_width">40dp</dimen>
     <dimen name="toolbar_img_padding">18dp</dimen>
+    <dimen name="drawer_icon_padding">14dp</dimen>
+    <dimen name="drawer_icon_top_padding">6dp</dimen>
 
     <item name="totalWeight" format="float" type="dimen">11</item>
     <item name="imageWeight" format="float" type="dimen">8.5</item>

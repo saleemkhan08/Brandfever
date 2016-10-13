@@ -69,7 +69,7 @@ public class CategoryDrawerFragment extends Fragment
     TextView mCategory;
 
     private List<String> mFirstLevelArray;
-    public String mCurrentCategory;
+    public String mCurrentCategory = "";
     private DatabaseReference mAvailableCategoriesRef;
     private DrawerItemClickListener mItemClickListener;
 

@@ -1,5 +1,6 @@
 package co.thnki.brandfever;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,6 +31,9 @@ public class StoreActivity extends AppCompatActivity
     RelativeLayout mContainer;
     private FragmentManager mFragmentManager;
     private NavigationDrawerUtil mNavigationDrawerUtil;
+
+    @Bind(R.id.title)
+    TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -85,5 +92,22 @@ public class StoreActivity extends AppCompatActivity
     public void openDrawer()
     {
         mNavigationDrawerUtil.openDrawer();
+    }
+
+    public void logout(View view)
+    {
+        Brandfever.getPreferences().edit()
+                .putBoolean(LoginActivity.LOGIN_STATUS, false).apply();
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    public void setToolBarTitle(String title)
+    {
+        if(mTitle != null)
+        {
+            mTitle.setText(title);
+        }
     }
 }

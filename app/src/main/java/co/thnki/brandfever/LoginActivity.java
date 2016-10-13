@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,16 +49,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private SharedPreferences mPreference;
     private static final int REQUEST_CODE_GOOGLE_PLAY_SERVICES = 198;
     private static final int REQUEST_CODE_GET_TOKEN = 199;
-    private static final String LOGIN_STATUS = "login_status";
+    public static final String LOGIN_STATUS = "login_status";
     private ProgressDialog mProgressDialog;
     private boolean mIsFetched;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
-    private boolean mIsLogOut;
     // [END declare_auth]
 
-    @BindColor(R.color.colorPrimaryDark)
+    @BindColor(R.color.colorSecondaryDark)
     int COLOR_PRIMARY_DARK;
 
     @SuppressWarnings("ConstantConditions")
@@ -64,13 +65,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //getSupportActionBar().hide();
         ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             getWindow().setStatusBarColor(COLOR_PRIMARY_DARK);
+            getWindow().setNavigationBarColor(COLOR_PRIMARY_DARK);
         }
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mPreference = Brandfever.getPreferences();
+
         setContentView(R.layout.activity_login);
         TextView title = (TextView) findViewById(R.id.title);
         title.setTypeface(Brandfever.getTypeFace());
@@ -83,7 +88,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
-        mIsLogOut = getIntent().hasExtra(LOG_OUT);
     }
 
     private void checkGooglePlayServices()
@@ -172,9 +176,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onConnected(@Nullable Bundle bundle)
             {
-                if(mIsLogOut)
+                if(!mPreference.getBoolean(LOGIN_STATUS, false))
                 {
-
                     revokeAccess();
                     signOut();
                 }
@@ -237,7 +240,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void loginFailed()
     {
         hideProgressDialog();
-        Brandfever.toast(getString(R.string.something_went_wrong));
         Brandfever.toast(getString(R.string.please_try_again));
         signOut();
         revokeAccess();

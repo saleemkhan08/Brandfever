@@ -39,4 +39,7 @@
     <color name="drawerBackground">#ddd</color>
     <color name="transparent_grey">#55AAAAAA</color>
     <color name="colorSecondaryAccent">#d75a4a</color>
+    <color name="colorSecondaryDark">#101720</color>
+    <color name="colorSecondaryLight">#2a3b52</color>
+    <color name="colorSecondary">#192331</color>
 </resources>

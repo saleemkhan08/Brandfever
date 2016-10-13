@@ -1,86 +1,106 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/drawerHeader"
+        android:background="@color/colorSecondaryDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/drawerHeader"
         android:orientation="vertical">
-    <RelativeLayout
-        android:layout_marginTop="24dp"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:id="@+id/backIcon"
-        android:clickable="true"
-        android:background="@color/colorPrimary"
-        android:layout_height="?attr/actionBarSize">
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:id="@+id/backChevron"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/ic_chevron_left_white_24dp"
-            android:contentDescription="@string/edit"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/backChevron"
-            android:id="@+id/categoryName"
-            android:textColor="@color/white"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_height="wrap_content"
-            android:text="@string/back"/>
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_marginTop="24dp"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:id="@+id/profile"
-        android:clickable="true"
-        android:background="@drawable/dialog_header_accent_bg"
-        android:layout_height="100dp">
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/profilePic"
-            android:contentDescription="@string/edit"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_toEndOf="@+id/profilePic"
-            android:layout_centerVertical="true"
-            android:id="@+id/profileName"
-            android:textColor="@color/white"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_height="wrap_content"/>
-    </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/backIcon"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="24dp"
+            android:background="@color/colorSecondary"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/backChevron"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/ic_chevron_left_white_24dp"/>
+
+            <TextView
+                android:id="@+id/categoryName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/backChevron"
+                android:text="@string/back"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/white"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@color/colorSecondary"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/userDetails"
+                android:layout_margin ="20dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/profilePic"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@mipmap/user_icon_accent"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:contentDescription="@string/edit"/>
+
+                <TextView
+                    android:id="@+id/profileName"
+                    android:text="Username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/profilePic"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:textColor="@color/white"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_below="@+id/userDetails"
+                android:layout_height="wrap_content">
+                <include layout="@layout/accounts_options"/>
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/categoryRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/drawerHeader"
-        android:background="@color/drawerBackground">
-
-    </android.support.v7.widget.RecyclerView>
+        />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
         android:id="@+id/editCategories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         app:fab_icon="@mipmap/ic_mode_edit_white_24dp"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        fab:fab_size="mini"
-        android:layout_height="wrap_content"/>
+        fab:fab_size="mini"/>
 </RelativeLayout>

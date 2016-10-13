@@ -96,7 +96,7 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
     public void onSecondLevelItemClick(String category)
     {
         Log.d(TAG, "onSecondLevelItemClick : " + category);
-        Fragment fragment = ProductsFragment.getInstance(category, null);
+        Fragment fragment = ProductsFragment.getInstance(category);
         mFragmentManager.beginTransaction()
                 .replace(R.id.content_main, fragment)
                 .addToBackStack(category)

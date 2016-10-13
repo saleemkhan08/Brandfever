@@ -182,4 +182,6 @@
     <string name="youCannotDeleteAllTheImages">You Cannot Delete All The Images!!</string>
     <string name="aProductMustHaveAtLeastOneImage">A Product Must Have At Least One Image!!</string>
     <string name="areYouSureYouWantToDeleteThisProduct">Are You Sure You Want To Delete This Product ?</string>
+    <string name="accountOptions">Account Options</string>
+    <string name="myOrders">My Orders</string>
 </resources>

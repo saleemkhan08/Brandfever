@@ -1,5 +1,6 @@
 package co.thnki.brandfever.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +38,7 @@ import butterknife.OnClick;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
+import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.ViewHolders.ProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
@@ -75,11 +76,10 @@ public class ProductsFragment extends Fragment
     {
     }
 
-    public static ProductsFragment getInstance(String category, Toolbar toolbar)
+    public static ProductsFragment getInstance(String category)
     {
         ProductsFragment fragment = new ProductsFragment();
         fragment.mCurrentCategory = category;
-        //fragment.mToolbar = toolbar;
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         fragment.mCategoryRef = rootRef.child(category);
         fragment.mCategoryStorageRef = FirebaseStorage.getInstance().getReference().child(category);
@@ -92,7 +92,10 @@ public class ProductsFragment extends Fragment
     {
         View parentView = inflater.inflate(R.layout.fragment_products, container, false);
         mResources = getResources();
-        mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
+        if(mCurrentCategory != null && !mCurrentCategory.isEmpty())
+        {
+            mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
+        }
         ButterKnife.bind(this, parentView);
         mProgressDialog = new ProgressDialog(getActivity());
         mAdapter = getAdapter();
@@ -140,6 +143,11 @@ public class ProductsFragment extends Fragment
                 updateUi();
             }
         }, 1000);
+        Activity activity = getActivity();
+        if(activity instanceof StoreActivity)
+        {
+            ((StoreActivity)activity).setToolBarTitle(getCategoryName());
+        }
     }
 
     @OnClick(R.id.uploadProducts)

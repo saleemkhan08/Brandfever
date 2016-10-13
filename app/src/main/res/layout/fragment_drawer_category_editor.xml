@@ -4,38 +4,46 @@
     android:layout_height="match_parent"
     >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="24dp"
         android:id="@+id/backIcon"
         android:clickable="true"
-        android:background="@color/colorPrimary"
-        android:layout_height="?android:attr/actionBarSize">
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/backChevron"
-            android:src="@drawable/ic_chevron_left_white_24dp"
-            android:contentDescription="@string/back"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/backChevron"
-            android:id="@+id/saveText"
-            android:textColor="@color/white"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_height="wrap_content"
-            android:text="@string/back"/>
-    </RelativeLayout>
+        android:background="@color/colorSecondaryDark"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_marginTop="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorSecondary"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/backChevron"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/back"
+                android:src="@drawable/ic_chevron_left_white_24dp"/>
+
+            <TextView
+                android:id="@+id/saveText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/backChevron"
+                android:text="@string/back"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/white"/>
+        </RelativeLayout>
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/categoryRecyclerView"
-        android:layout_below="@+id/backIcon"
-        android:background="@color/drawerBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/backIcon"
+        android:background="@color/drawerBackground">
 
     </android.support.v7.widget.RecyclerView>
 </RelativeLayout>
