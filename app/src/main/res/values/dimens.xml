@@ -48,6 +48,10 @@
     <dimen name="toolbar_img_padding">18dp</dimen>
     <dimen name="drawer_icon_padding">14dp</dimen>
     <dimen name="drawer_icon_top_padding">6dp</dimen>
+    <dimen name="favIconSize">28dp</dimen>
+    <dimen name="priceTagPadding">100dp</dimen>
+    <dimen name="dialogItemPadding">8dp</dimen>
+    <dimen name="cartTextPadding">5dp</dimen>
 
     <item name="totalWeight" format="float" type="dimen">11</item>
     <item name="imageWeight" format="float" type="dimen">8.5</item>

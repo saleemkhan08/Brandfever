@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <co.thnki.brandfever.view.SquareImageView
+            android:id="@+id/productImage"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/mens_wear"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/productDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toStartOf="@+id/wishListActions"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/cartTextPadding">
+
+                    <TextView
+                        android:id="@+id/productPriceAfter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$104"
+                        android:textSize="@dimen/price_text_size"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/productPriceBefore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="$104"
+                        android:textSize="@dimen/discount_text_size"
+                        android:textStyle="italic"
+                        />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/productBrand"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/cartTextPadding"
+                    android:text="Puma"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/productSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/cartTextPadding"
+                    android:text="Size : XL"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/noOfPieces"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="@dimen/cartTextPadding"
+                    android:text="No. of Pieces : 2"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/wishListActions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/toggleCart"
+                    android:layout_width="@dimen/favIconSize"
+                    android:layout_height="@dimen/favIconSize"
+                    android:background="@drawable/bg_accent_drawable"
+                    android:clickable="true"
+                    android:paddingBottom="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@mipmap/delete_bin"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/colorAccent"
+                    android:text="@string/delete"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

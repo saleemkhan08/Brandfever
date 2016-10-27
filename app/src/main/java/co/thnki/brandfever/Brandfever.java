@@ -1,7 +1,6 @@
 package co.thnki.brandfever;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -13,22 +12,15 @@ import android.widget.Toast;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 
-import co.thnki.brandfever.receivers.InternetConnectivityListener;
-
 public class Brandfever extends MultiDexApplication
 {
     public static String APP_NAME = "";
     private static Context context;
-    private InternetConnectivityListener mReceiver;
     @Override
     public void onCreate()
     {
         super.onCreate();
         context = this.getApplicationContext();
-        if(Build.VERSION.SDK_INT > 23)
-        {
-            registerInternetConnectionReceiver();
-        }
 
         if(!FirebaseApp.getApps(this).isEmpty())
         {
@@ -43,18 +35,8 @@ public class Brandfever extends MultiDexApplication
         super.onTerminate();
         if(Build.VERSION.SDK_INT > 23)
         {
-            unregisterReceiver(mReceiver);
             Log.d("ConnectivityListener", "un - Registered" );
         }
-    }
-
-    private void registerInternetConnectionReceiver()
-    {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        mReceiver = new InternetConnectivityListener();
-        registerReceiver(mReceiver, filter);
-        Log.d("ConnectivityListener", "Registered");
     }
 
     public static SharedPreferences getPreferences()

@@ -26,6 +26,7 @@ import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.utils.ConnectivityUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
 
@@ -65,7 +66,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
 
     @Bind(R.id.scrollViewChild)
     LinearLayout mScrollViewChild;
-    private Map<String , Integer> mSizesMap;
+    private Map<String, Integer> mSizesMap;
 
     public EditProductDialogFragment()
     {
@@ -77,7 +78,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                              Bundle savedInstanceState)
     {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        View parentView = inflater.inflate(R.layout.fragment_categories, container, false);
+        View parentView = inflater.inflate(R.layout.fragment_edit_product, container, false);
         ButterKnife.bind(this, parentView);
         Otto.register(this);
 
@@ -87,12 +88,12 @@ public class EditProductDialogFragment extends DialogFragment implements Const
 
         mSizesMap = mProduct.getSizesMap();
 
-        mXsCount.setText(mSizesMap.get(getString(R.string.xs))+"");
-        mSCount.setText(mSizesMap.get(getString(R.string.s))+"");
-        mMCount.setText(mSizesMap.get(getString(R.string.m))+"");
-        mLCount.setText(mSizesMap.get(getString(R.string.l))+"");
-        mXlCount.setText(mSizesMap.get(getString(R.string.xl))+"");
-        mXxlCount.setText(mSizesMap.get(getString(R.string.xxl))+"");
+        mXsCount.setText(mSizesMap.get(getString(R.string.xs)) + "");
+        mSCount.setText(mSizesMap.get(getString(R.string.s)) + "");
+        mMCount.setText(mSizesMap.get(getString(R.string.m)) + "");
+        mLCount.setText(mSizesMap.get(getString(R.string.l)) + "");
+        mXlCount.setText(mSizesMap.get(getString(R.string.xl)) + "");
+        mXxlCount.setText(mSizesMap.get(getString(R.string.xxl)) + "");
         return parentView;
     }
 
@@ -111,54 +112,57 @@ public class EditProductDialogFragment extends DialogFragment implements Const
          * put the values in mProduct
          * setValue for given key to server
          */
-        int value = getValidatedNum(mPriceAfter, false);
-        if (value > 0)
+        if (ConnectivityUtil.isConnected())
         {
-            mProduct.setPriceAfter(value + "");
-            value = getValidatedNum(mPriceBefore, false);
+            int value = getValidatedNum(mPriceAfter, false);
             if (value > 0)
             {
-                mProduct.setPriceBefore(value + "");
-                String text = mBrandName.getText().toString().trim();
-                if(text.isEmpty())
+                mProduct.setPriceAfter(value + "");
+                value = getValidatedNum(mPriceBefore, false);
+                if (value > 0)
                 {
-                    toast(R.string.pleaseEnterValidName);
-                    scrollToRow(mBrandName);
-                }
-                else
-                {
-                    mProduct.setBrand(text);
-                    value = getValidatedNum(mXsCount, true);
-                    if (value >= 0)
+                    mProduct.setPriceBefore(value + "");
+                    String text = mBrandName.getText().toString().trim();
+                    if (text.isEmpty())
                     {
-                        mSizesMap.put(getString(R.string.xs), value);
-                        value = getValidatedNum(mSCount, true);
+                        toast(R.string.pleaseEnterValidBrandName);
+                        scrollToRow(mBrandName);
+                    }
+                    else
+                    {
+                        mProduct.setBrand(text);
+                        value = getValidatedNum(mXsCount, true);
                         if (value >= 0)
                         {
-                            mSizesMap.put(getString(R.string.s), value);
-                            value = getValidatedNum(mMCount, true);
+                            mSizesMap.put(getString(R.string.xs), value);
+                            value = getValidatedNum(mSCount, true);
                             if (value >= 0)
                             {
-                                mSizesMap.put(getString(R.string.m), value);
-                                value = getValidatedNum(mLCount, true);
+                                mSizesMap.put(getString(R.string.s), value);
+                                value = getValidatedNum(mMCount, true);
                                 if (value >= 0)
                                 {
-                                    mSizesMap.put(getString(R.string.l), value);
-                                    value = getValidatedNum(mXlCount, true);
+                                    mSizesMap.put(getString(R.string.m), value);
+                                    value = getValidatedNum(mLCount, true);
                                     if (value >= 0)
                                     {
-                                        mSizesMap.put(getString(R.string.xl), value);
-                                        value = getValidatedNum(mXxlCount, true);
+                                        mSizesMap.put(getString(R.string.l), value);
+                                        value = getValidatedNum(mXlCount, true);
                                         if (value >= 0)
                                         {
-                                            mSizesMap.put(getString(R.string.xxl), value);
-                                            mProduct.setSizesMap(mSizesMap);
-                                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
-                                                    .child(mProduct.getCategoryId())
-                                                    .child(mProduct.getProductId());
-                                            reference.setValue(mProduct);
-                                            mProduct.getProductId();
-                                            dismiss();
+                                            mSizesMap.put(getString(R.string.xl), value);
+                                            value = getValidatedNum(mXxlCount, true);
+                                            if (value >= 0)
+                                            {
+                                                mSizesMap.put(getString(R.string.xxl), value);
+                                                mProduct.setSizesMap(mSizesMap);
+                                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                                                        .child(mProduct.getCategoryId())
+                                                        .child(mProduct.getProductId());
+                                                reference.setValue(mProduct);
+                                                mProduct.getProductId();
+                                                dismiss();
+                                            }
                                         }
                                     }
                                 }
@@ -167,6 +171,10 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                     }
                 }
             }
+        }
+        else
+        {
+            toast(R.string.noInternet);
         }
     }
 
@@ -180,7 +188,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
             {
                 try
                 {
-                    temp = temp.replace('\u20B9'+"", "");
+                    temp = temp.replace('\u20B9' + "", "");
                     return Integer.parseInt(temp);
                 }
                 catch (NumberFormatException e)
@@ -190,13 +198,13 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                     return -3;
                 }
             }
-            if(isSize)
+            if (isSize)
             {
                 toast(R.string.pleaseEnterAValidNumber);
             }
             else
             {
-                toast(R.string.pleaseEnterAVaildPrice);
+                toast(R.string.pleaseEnterAValidPrice);
             }
             scrollToRow(editText);
             return -2;

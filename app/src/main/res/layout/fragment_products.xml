@@ -15,25 +15,28 @@
         android:layout_height="match_parent"/>
     <RelativeLayout
         android:id="@+id/noProductFoundContainer"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="60dp">
+        android:visibility="gone"
+        android:gravity="center"
+        >
+        <ImageView
+            android:layout_width="200dp"
+            android:id="@+id/emptyImage"
+            android:layout_centerHorizontal="true"
+            android:layout_height="200dp"
+            android:src="@mipmap/empty_search_list_display"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
             android:text="@string/noProductsFound"
             android:textSize="25sp"
+            android:layout_below="@+id/emptyImage"
             android:textStyle="bold"/>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@mipmap/price_tag"/>
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

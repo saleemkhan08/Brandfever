@@ -8,28 +8,39 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.BindColor;
@@ -37,20 +48,32 @@ import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.adapters.SectionsPagerAdapter;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.fragments.EditProductDialogFragment;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.utils.CartUtil;
+import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.FavoritesUtil;
+import co.thnki.brandfever.utils.SizesUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.R.layout.indicator;
 import static co.thnki.brandfever.firebase.database.models.Products.PHOTO_NAME;
 import static co.thnki.brandfever.firebase.database.models.Products.PHOTO_URL;
-import static co.thnki.brandfever.fragments.UploadCategoriesFragment.PICK_IMAGE_MULTIPLE;
+import static co.thnki.brandfever.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
+import static co.thnki.brandfever.utils.CartUtil.CART_LIST;
 
 public class ProductActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
 {
     private static final String EDITOR = "productEditor";
+    private static final String XS = "XS";
+    private static final String S = "S";
+    private static final String M = "M";
+    private static final String L = "L";
+    private static final String XL = "XL";
+    private static final String XXL = "XXL";
 
     @Bind(R.id.pageIndicatorContainer)
     LinearLayout mPageIndicatorContainer;
@@ -70,6 +93,15 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
+    @Bind(R.id.addToCartText)
+    TextView mAddToCartText;
+
+    @Bind(R.id.addToCartImg)
+    ImageView mAddToCartImg;
+
+    @Bind(R.id.transitionImage)
+    ImageView mTransitionImage;
+
     //private String mCurrentCategory;
     private boolean mIsFavorite;
 
@@ -81,6 +113,7 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     private ArrayList<String> mPhotoUrlList;
     private ArrayList<String> mPhotoNameList;
 
+    private Map<String, Boolean> mSelectedSizes;
     private DatabaseReference mProductDbRef;
     private StorageReference mProductStorageRef;
     private SectionsPagerAdapter mAdapter;
@@ -90,29 +123,124 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
 
     @Bind(R.id.favorite)
     ImageView mFavoriteImageView;
-
+    private FavoritesUtil mFavoritesUtil;
+    private CartUtil mCartUtil;
+    private boolean mIsAddedToCart;
+    private SizesUtil mSizesUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= 21)
+        {
+            getWindow().setSharedElementExitTransition(TransitionInflater.from(this)
+                    .inflateTransition(R.transition.shared_product_transition));
+            getWindow().setSharedElementEnterTransition(TransitionInflater.from(this)
+                    .inflateTransition(R.transition.shared_product_transition));
+        }
         setContentView(R.layout.activity_product);
         Otto.register(this);
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+        {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
         mProductBundle = getIntent().getParcelableExtra(Products.PRODUCT_MODEL);
         mAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         updateUi(mProductBundle);
-        mProductImagePager.setAdapter(mAdapter);
-        mProductImagePager.addOnPageChangeListener(this);
-        mProductDbRef = FirebaseDatabase.getInstance().getReference()
-                .child(mProductBundle.getCategoryId()).child(mProductBundle.getProductId());
+        DatabaseReference root = FirebaseDatabase.getInstance().getReference();
+        mProductDbRef = root.child(mProductBundle.getCategoryId()).child(mProductBundle.getProductId());
+
+        mSizesUtil = new SizesUtil(this);
+        //mOrdersProductDbRef = userRef.child(ORDER_LIST);
+
         mProductStorageRef = FirebaseStorage.getInstance().getReference()
                 .child(mProductBundle.getCategoryId())
                 .child(mProductBundle.getProductId());
+
+        mFavoritesUtil = FavoritesUtil.getsInstance();
+        mCartUtil = CartUtil.getsInstance();
+
+        mIsFavorite = mFavoritesUtil.isFavorite(mProductBundle);
+        mIsAddedToCart = mCartUtil.isAddedToCart(mProductBundle);
+        mSelectedSizes = initializeSizes();
+        updateFavoriteUi();
+        if (mIsAddedToCart)
+        {
+            FirebaseDatabase.getInstance()
+                    .getReference().child(Brandfever.getPreferences().getString(Accounts.GOOGLE_ID, ""))
+                    .child(CART_LIST)
+                    .child(CartUtil.getsInstance().getKey(mProductBundle))
+                    .addValueEventListener(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
+                        {
+                            Products product = dataSnapshot.getValue(Products.class);
+                            if (product != null)
+                            {
+                                mProductBundle = new ProductBundle(product);
+                                updateAddToCartUi();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError)
+                        {
+
+                        }
+                    });
+        }
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mProductImagePager.setVisibility(View.VISIBLE);
+                mProductImagePager.setAdapter(mAdapter);
+                mProductImagePager.addOnPageChangeListener(ProductActivity.this);
+            }
+        }, 1000);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        mProductImagePager.setVisibility(View.INVISIBLE);
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        if(isFinishing())
+        {
+            mProductImagePager.setVisibility(View.INVISIBLE);
+        }
+        super.onPause();
+    }
+
+    private Map<String, Boolean> initializeSizes()
+    {
+        Map<String, Boolean> map = new HashMap<>();
+        map.put(XS, false);
+        map.put(S, false);
+        map.put(M, false);
+        map.put(L, false);
+        map.put(XL, false);
+        map.put(XXL, false);
+        return map;
     }
 
     @BindDrawable(R.drawable.sizes_button_bg_inverse)
@@ -145,47 +273,67 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @Bind(R.id.xxl)
     TextView xxl;
 
+    @Bind(R.id.xsSpinner)
+    Spinner xsSpinner;
+
+    @Bind(R.id.sSpinner)
+    Spinner sSpinner;
+
+    @Bind(R.id.mSpinner)
+    Spinner mSpinner;
+
+    @Bind(R.id.lSpinner)
+    Spinner lSpinner;
+
+    @Bind(R.id.xlSpinner)
+    Spinner xlSpinner;
+
+    @Bind(R.id.xxlSpinner)
+    Spinner xxlSpinner;
 
     @OnClick({R.id.xs, R.id.s, R.id.m, R.id.l, R.id.xl, R.id.xxl,
             R.id.xsWrapper, R.id.sWrapper, R.id.mWrapper, R.id.lWrapper, R.id.xlWrapper, R.id.xxlWrapper})
     public void selectSize(View view)
     {
-        updateSizesUi();
-        switch (view.getId())
+        resetSizesUi();
+        String selectedSize = view.getTag().toString();
+        switch (selectedSize)
         {
-            case R.id.xs:
-            case R.id.xsWrapper:
+            case XS:
                 highlight(xs);
+                xsSpinner.performClick();
                 break;
-
-            case R.id.s:
+            case S:
                 highlight(s);
-            case R.id.sWrapper:
+                sSpinner.performClick();
                 break;
-
-            case R.id.m:
-            case R.id.mWrapper:
+            case M:
                 highlight(m);
+                mSpinner.performClick();
                 break;
-
-            case R.id.l:
-            case R.id.lWrapper:
+            case L:
                 highlight(l);
+                lSpinner.performClick();
                 break;
-
-            case R.id.xl:
-            case R.id.xlWrapper:
+            case XL:
                 highlight(xl);
+                xlSpinner.performClick();
                 break;
-
-            case R.id.xxl:
-            case R.id.xxlWrapper:
+            case XXL:
                 highlight(xxl);
+                xxlSpinner.performClick();
                 break;
         }
+        showCountSelectionDialog(selectedSize);
     }
 
-    private void updateSizesUi()
+    private void showCountSelectionDialog(String selectedSize)
+    {
+        mSelectedSizes.put(selectedSize, true);
+        // mSizesUtil.showSizesDialog(10);
+    }
+
+    private void resetSizesUi()
     {
         unHighlight(xs);
         unHighlight(s);
@@ -193,6 +341,10 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         unHighlight(l);
         unHighlight(xl);
         unHighlight(xxl);
+        for (String key : mSelectedSizes.keySet())
+        {
+            mSelectedSizes.put(key, false);
+        }
     }
 
     private void unHighlight(TextView textView)
@@ -205,19 +357,125 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     {
         view.setBackground(mInverseSizeButtonDrawable);
         view.setTextColor(colorWhite);
+
     }
 
     @OnClick(R.id.favorite)
-    public void saveToFavorite(ImageView favorite)
+    public void addToFavorite(ImageView favorite)
     {
-        mIsFavorite = ! mIsFavorite;
-        updateFavoriteUi();
+        if (ConnectivityUtil.isConnected())
+        {
+            mIsFavorite = !mIsFavorite;
+            updateFavoriteUi();
+            if (mIsFavorite)
+            {
+                mFavoritesUtil.addToFavorites(mProductBundle);
+            }
+            else
+            {
+                mFavoritesUtil.removeFromFavorites(mProductBundle);
+            }
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
+    }
+
+    @OnClick(R.id.addToCart)
+    public void addToCart(View favorite)
+    {
+        if (ConnectivityUtil.isConnected())
+        {
+            if (!mIsAddedToCart)
+            {
+                String selectedSize = getSelectedSize(true);
+                if (selectedSize != null)
+                {
+                    mCartUtil.addToCart(mProductBundle);
+                    toast(R.string.addedToCart);
+                    finish();
+                }
+                else
+                {
+                    toast(R.string.pleaseSelectSize);
+                }
+            }
+            else
+            {
+                mCartUtil.removeFromCart(mProductBundle);
+                mIsAddedToCart = false;
+                updateAddToCartUi();
+            }
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
+
+    }
+
+    private String getSelectedSize(boolean isAddToCart)
+    {
+        String selectedKey = null;
+        Bundle selectedSizes;
+        Log.d("selectedSizes", "isAddToCart : " + isAddToCart);
+        if (isAddToCart)
+        {
+            selectedSizes = new Bundle();
+            for (String key : mSelectedSizes.keySet())
+            {
+                if (mSelectedSizes.get(key))
+                {
+                    selectedKey = key;
+                    selectedSizes.putInt(key, 1);
+                }
+                else
+                {
+                    selectedSizes.putInt(key, 0);
+                }
+            }
+            mProductBundle.setSizesMap(selectedSizes);
+        }
+        else
+        {
+            selectedSizes = mProductBundle.getSizesMap();
+            Log.d("selectedSizes", "selectedSizes : " + selectedSizes.toString());
+            for (String key : selectedSizes.keySet())
+            {
+                if (selectedSizes.getInt(key) > 0)
+                {
+                    selectedKey = key;
+                    mSelectedSizes.put(key, true);
+                }
+                else
+                {
+                    mSelectedSizes.put(key, false);
+                }
+            }
+        }
+        Log.d("selectedSizes", "selectedKey : " + selectedKey);
+        return selectedKey;
+    }
+
+    private void updateAddToCartUi()
+    {
+        if (mIsAddedToCart)
+        {
+            mAddToCartImg.setImageResource(R.mipmap.shopping_cart_cancel_button);
+            mAddToCartText.setText(R.string.removeFromCart);
+            updateSizesUi();
+        }
+        else
+        {
+            mAddToCartImg.setImageResource(R.mipmap.shopping_cart_add_button);
+            mAddToCartText.setText(R.string.addToCart);
+        }
     }
 
     private void updateFavoriteUi()
     {
-
-        if (mIsFavorite)//if it was not favorite
+        if (mIsFavorite)
         {
             mFavoriteImageView.setImageResource(R.mipmap.favorite_fill);
         }
@@ -240,8 +498,11 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         {
             mPhotoUrlList = mProductBundle.getPhotoUrlList();
             mPhotoNameList = mProductBundle.getPhotoNameList();
-
             mAdapter.updateDataSet(mPhotoUrlList);
+
+            Glide.with(this).load(mPhotoUrlList.get(0))
+                    .asBitmap().placeholder(R.mipmap.price_tag)
+                    .centerCrop().into(mTransitionImage);
 
             mBrandText.setText(productBundle.getBrand());
             mPriceTextAfter.setText(productBundle.getPriceAfter());
@@ -277,8 +538,15 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @OnClick(R.id.edit)
     public void launchProductEditor()
     {
-        EditProductDialogFragment mEditProductDialogFragment = EditProductDialogFragment.getInstance(mProductBundle);
-        mEditProductDialogFragment.show(getSupportFragmentManager(), EDITOR);
+        if (ConnectivityUtil.isConnected())
+        {
+            EditProductDialogFragment mEditProductDialogFragment = EditProductDialogFragment.getInstance(mProductBundle);
+            mEditProductDialogFragment.show(getSupportFragmentManager(), EDITOR);
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
     }
 
     @Override
@@ -291,11 +559,18 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @OnClick(R.id.uploadMorePhotos)
     public void uploadMorePhotos()
     {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+        if (ConnectivityUtil.isConnected())
+        {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
     }
 
 
@@ -326,7 +601,14 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
                         }
                     }
                 }
-                uploadMorePhotos(mImagesEncodedList);
+                if (ConnectivityUtil.isConnected())
+                {
+                    uploadMorePhotos(mImagesEncodedList);
+                }
+                else
+                {
+                    toast(R.string.noInternet);
+                }
             }
             else
             {
@@ -460,38 +742,10 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     @OnClick(R.id.deleteProduct)
     public void deleteProduct()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.areYouSureYouWantToDeleteThisProduct);
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-
-            }
-        }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                mProductDbRef.removeValue();
-                for(String name : mPhotoNameList)
-                {
-                    mProductStorageRef.child(name).delete();
-                }
-                mProductStorageRef.delete();
-                finish();
-            }
-        }).show();
-    }
-
-    @OnClick(R.id.deletePhoto)
-    public void deleteImage()
-    {
-        if (mPhotoUrlList.size() > 1)
+        if (ConnectivityUtil.isConnected())
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.areYouSureYouWantToDeleteThisImage);
+            builder.setMessage(R.string.areYouSureYouWantToDeleteThisProduct);
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
             {
                 @Override
@@ -504,32 +758,104 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
-                    if (mCurrentPhotoUrl == null || mCurrentPhotoUrl.isEmpty())
+                    mProductDbRef.removeValue();
+                    for (String name : mPhotoNameList)
                     {
-                        mCurrentPhotoUrl = mAdapter.getItemUrl(0);
-                        mCurrentPhotoName = mPhotoNameList.get(0);
+                        mProductStorageRef.child(name).delete();
                     }
-
-                    mProductStorageRef.child(mCurrentPhotoName).delete();
-
-                    mPhotoNameList.remove(mCurrentPhotoName);
-                    mPhotoUrlList.remove(mCurrentPhotoUrl);
-
-                    mProductBundle.setPhotoUrlList(mPhotoUrlList);
-                    mProductBundle.setPhotoNameList(mPhotoNameList);
-
-                    mProductDbRef.child(PHOTO_URL).setValue(mPhotoUrlList);
-                    mProductDbRef.child(PHOTO_NAME).setValue(mPhotoNameList);
-
-                    Intent intent = getIntent();
+                    mProductStorageRef.delete();
                     finish();
-                    startActivity(intent);
                 }
             }).show();
         }
         else
         {
-            toast(R.string.youCannotDeleteAllTheImages);
+            toast(R.string.noInternet);
+        }
+    }
+
+    @OnClick(R.id.deletePhoto)
+    public void deleteImage()
+    {
+        if (ConnectivityUtil.isConnected())
+        {
+            if (mPhotoUrlList.size() > 1)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.areYouSureYouWantToDeleteThisImage);
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+
+                    }
+                }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        if (mCurrentPhotoUrl == null || mCurrentPhotoUrl.isEmpty())
+                        {
+                            mCurrentPhotoUrl = mAdapter.getItemUrl(0);
+                            mCurrentPhotoName = mPhotoNameList.get(0);
+                        }
+
+                        mProductStorageRef.child(mCurrentPhotoName).delete();
+
+                        mPhotoNameList.remove(mCurrentPhotoName);
+                        mPhotoUrlList.remove(mCurrentPhotoUrl);
+
+                        mProductBundle.setPhotoUrlList(mPhotoUrlList);
+                        mProductBundle.setPhotoNameList(mPhotoNameList);
+
+                        mProductDbRef.child(PHOTO_URL).setValue(mPhotoUrlList);
+                        mProductDbRef.child(PHOTO_NAME).setValue(mPhotoNameList);
+
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                }).show();
+            }
+            else
+            {
+                toast(R.string.youCannotDeleteAllTheImages);
+            }
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
+    }
+
+    private void updateSizesUi()
+    {
+        String selectedSize = getSelectedSize(false);
+        resetSizesUi();
+        if (selectedSize != null)
+        {
+            switch (selectedSize)
+            {
+                case XS:
+                    highlight(xs);
+                    break;
+                case S:
+                    highlight(s);
+                    break;
+                case M:
+                    highlight(m);
+                    break;
+                case L:
+                    highlight(l);
+                    break;
+                case XL:
+                    highlight(xl);
+                    break;
+                case XXL:
+                    highlight(xxl);
+                    break;
+            }
         }
     }
 }

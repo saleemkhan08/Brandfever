@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#eee"
+                android:minWidth="300dp"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/address"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dialog_title"
+            android:textStyle="bold"
+            />
+
+        <ImageView
+            android:id="@+id/closeDialog"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_drawable"
+            android:padding="13dp"
+            android:src="@mipmap/ic_clear_white_24dp"/>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/scrollViewChild"
+        android:layout_below="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dialogItemPadding"
+            android:padding="@dimen/dialogItemPadding">
+
+            <EditText
+                android:id="@+id/addressName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorPrimaryDark"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dialogItemPadding"
+            android:padding="@dimen/dialogItemPadding">
+
+            <EditText
+                android:id="@+id/addressText"
+                android:maxLines="5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/address"
+                android:inputType="textMultiLine"
+                android:textColor="@color/colorPrimaryDark"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dialogItemPadding"
+            android:padding="@dimen/dialogItemPadding">
+
+            <EditText
+                android:id="@+id/phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phoneNo"
+                android:inputType="phone"
+                android:textColor="@color/colorPrimaryDark"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dialogItemPadding"
+            android:padding="@dimen/dialogItemPadding">
+
+            <EditText
+                android:id="@+id/pinCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/pincode"
+                android:inputType="phone"
+                android:textColor="@color/colorPrimaryDark"/>
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/scrollViewChild"
+        android:background="#ddd">
+
+        <TextView
+            android:id="@+id/saveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_drawable"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="@string/save"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/colorPrimaryDark"/>
+    </LinearLayout>
+</RelativeLayout>

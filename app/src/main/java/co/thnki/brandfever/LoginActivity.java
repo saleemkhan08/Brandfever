@@ -38,8 +38,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import butterknife.BindColor;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.interfaces.ConnectivityListener;
-import co.thnki.brandfever.pojos.Accounts;
+import co.thnki.brandfever.firebase.database.models.Accounts;
+import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.FavoritesUtil;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, ConnectivityListener
 {
@@ -145,6 +147,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 .putString(Accounts.PHOTO_URL, photo_url != null ? photo_url.toString() : "")
                                 .putString(Accounts.GOOGLE_ID, account.getId())
                                 .apply();
+
+                        FavoritesUtil.getsInstance().updateFavoriteList();
+                        CartUtil.getsInstance().updateCartList();
+
                     }
                 }
                 else
@@ -176,8 +182,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onConnected(@Nullable Bundle bundle)
             {
-                if(!mPreference.getBoolean(LOGIN_STATUS, false))
+                if (!mPreference.getBoolean(LOGIN_STATUS, false))
                 {
+                    mPreference.edit().clear().apply();
+
+                    FavoritesUtil.clearInstance();
+                    CartUtil.clearInstance();
                     revokeAccess();
                     signOut();
                 }
@@ -249,10 +259,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onInternetConnected()
     {
-        if (!mIsFetched)
-        {
-
-        }
         signIn();
     }
 

@@ -11,6 +11,7 @@
     <LinearLayout
         android:id="@+id/myOrders"
         android:layout_width="0dp"
+        android:onClick="myOrders"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@color/colorSecondary"
@@ -51,6 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:clickable="true"
+        android:onClick="editAddress"
+        android:id="@+id/deliveryAddress"
         android:background="@color/colorSecondary"
         android:orientation="horizontal"
         android:layout_marginTop="1dp"

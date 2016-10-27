@@ -156,7 +156,7 @@
     <string name="buyNow">Buy Now</string>
     <string name="addToCart">Add To Cart</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="favorite">Favorite</string>
+    <string name="favorite">Wish List</string>
     <string name="editProductDetails">Edit Product Details</string>
     <string name="priceAfterDiscount">Price After Discount</string>
     <string name="priceBeforeDiscount">Price Before Discount</string>
@@ -175,8 +175,8 @@
     <string name="xl">XL</string>
     <string name="xxl">XXL</string>
     <string name="pleaseEnterAWholeNumber">Please Enter A Whole Number</string>
-    <string name="pleaseEnterAVaildPrice">Please Enter A Vaild Price</string>
-    <string name="pleaseEnterValidName">Please Enter Valid Brand Name</string>
+    <string name="pleaseEnterAValidPrice">Please Enter A Valid Price</string>
+    <string name="pleaseEnterValidName">Please Enter Valid Name</string>
     <string name="pleaseEnterAValidNumber">Please Enter A Valid Number</string>
     <string name="areYouSureYouWantToDeleteThisImage">Are You Sure You Want To Delete This Image ?</string>
     <string name="youCannotDeleteAllTheImages">You Cannot Delete All The Images!!</string>
@@ -184,4 +184,20 @@
     <string name="areYouSureYouWantToDeleteThisProduct">Are You Sure You Want To Delete This Product ?</string>
     <string name="accountOptions">Account Options</string>
     <string name="myOrders">My Orders</string>
+    <string name="removeFromCart">Remove From Cart</string>
+    <string name="placeAnOrder">Place An Order</string>
+    <string name="shoppingCart">Shopping Cart</string>
+    <string name="yourWishListIsEmpty">Your Wish List is Empty !!!</string>
+    <string name="yourCartIsEmpty">Your Cart is Empty !!!</string>
+    <string name="pleaseSelectSize">Please Select Size...</string>
+    <string name="addedToCart">Aadded To Cart.</string>
+    <string name="name">Name</string>
+    <string name="productTransitionImage">productTransitionImage</string>
+    <string name="pincode">Pin Code</string>
+    <string name="pleaseEnterValidAddress">Please Enter A Valid Address!</string>
+    <string name="pleaseEnterValidBrandName">Please Enter Valid Brand Name</string>
+    <string name="pleaseEnterValidPhoneNo">Please Enter A Valid Phone No.</string>
+    <string name="pleaseEnterValidPincode">Please Enter A Valid Pin Code</string>
+    <string name="delete">Delete</string>
+    <string name="ok">Ok</string>
 </resources>

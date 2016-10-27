@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,14 +67,7 @@ public class MainPageFragment extends Fragment implements ValueEventListener
 
     public MainPageFragment()
     {
-    }
-
-    public static Fragment getInstance(Toolbar toolbar)
-    {
-        MainPageFragment fragment = new MainPageFragment();
-        //fragment.mToolbar = toolbar;
-        fragment.mRootRef = FirebaseDatabase.getInstance().getReference();
-        return fragment;
+        mRootRef = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override

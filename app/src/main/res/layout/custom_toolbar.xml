@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:layout_height="?attr/actionBarSize">
 
@@ -30,12 +31,23 @@
     <co.thnki.brandfever.view.SquareImageView
         android:clickable="true"
         android:layout_width="?attr/actionBarSize"
-        android:src="@mipmap/shopping_cart"
-        android:padding="@dimen/toolbar_img_padding"
+        android:src="@mipmap/empty_shopping_cart"
+        android:padding="16dp"
         android:id="@+id/cart"
         android:layout_toStartOf="@+id/favorite"
         android:background="@drawable/bg_accent_drawable"
         android:layout_height="?attr/actionBarSize"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cartCount"
+        android:textColor="@color/colorAccent"
+        android:layout_toStartOf="@+id/favorite"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="5dp"
+        android:paddingBottom="5dp"/>
 
     <co.thnki.brandfever.view.SquareImageView
         android:clickable="true"
@@ -46,4 +58,14 @@
         android:layout_alignParentEnd="true"
         android:background="@drawable/bg_accent_drawable"
         android:layout_height="?attr/actionBarSize"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/favCount"
+        android:textColor="@color/colorAccent"
+        android:layout_alignParentEnd="true"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="5dp"
+        android:paddingBottom="5dp"/>
 </RelativeLayout>

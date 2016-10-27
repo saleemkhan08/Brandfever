@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="co.thnki.brandfever.fragments.FavoritesFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cartRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/placeAnOrderContainer"
+        />
+
+    <RelativeLayout
+        android:id="@+id/noProductFoundContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/emptyImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/empty_shopping_cart_display"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/emptyImage"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:text="@string/yourCartIsEmpty"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/recyclerProgress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="160dp"/>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/placeAnOrderContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:id="@+id/placeAnOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_to_bag_bg"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/addToCartText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/placeAnOrder"
+                android:textColor="@color/colorAccent"/>
+
+            <ImageView
+                android:id="@+id/addToCartImg"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center_vertical"
+                android:layout_toEndOf="@+id/addToCartText"
+                android:paddingBottom="5dp"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
+                android:src="@mipmap/empty_shopping_cart"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

@@ -22,7 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.ViewHolders.SimpleCheckedCategoryViewHolder;
+import co.thnki.brandfever.ViewHolders.DrawerCategoryEditorViewHolder;
 import co.thnki.brandfever.firebase.database.models.Category;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
@@ -67,14 +67,14 @@ public class CategoryEditorFragment extends Fragment
 
     private RecyclerView.Adapter getAdapter()
     {
-        return new FirebaseRecyclerAdapter<Category, SimpleCheckedCategoryViewHolder>(
+        return new FirebaseRecyclerAdapter<Category, DrawerCategoryEditorViewHolder>(
                 Category.class,
-                R.layout.simple_checked_list_item,
-                SimpleCheckedCategoryViewHolder.class,
+                R.layout.category_editor_list_item,
+                DrawerCategoryEditorViewHolder.class,
                 mCategoriesRef.orderByChild(CATEGORY_ID))
         {
             @Override
-            protected void populateViewHolder(final SimpleCheckedCategoryViewHolder viewHolder, final Category model, int position)
+            protected void populateViewHolder(final DrawerCategoryEditorViewHolder viewHolder, final Category model, int position)
             {
                 viewHolder.mCheckedTextView.setText(model.getCategory());
                 viewHolder.mCheckedTextView.setText(model.getCategory());

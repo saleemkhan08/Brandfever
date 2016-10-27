@@ -7,9 +7,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +23,11 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,15 +46,18 @@ import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.ViewHolders.ProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
+import co.thnki.brandfever.utils.ConnectivityUtil;
 
 import static android.app.Activity.RESULT_OK;
+import static co.thnki.brandfever.Brandfever.getResString;
 import static co.thnki.brandfever.Brandfever.toast;
-import static co.thnki.brandfever.fragments.UploadCategoriesFragment.PICK_IMAGE_MULTIPLE;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 
 
 public class ProductsFragment extends Fragment
 {
+    public static final int PICK_IMAGE_MULTIPLE = 102;
+
     @Bind(R.id.productsRecyclerView)
     RecyclerView mProductRecyclerView;
 
@@ -67,7 +74,7 @@ public class ProductsFragment extends Fragment
     //private Toolbar mToolbar;
     private Resources mResources;
     StorageReference mStorageRef;
-    private DatabaseReference mCategoryRef;
+    private DatabaseReference mCategoryDbRef;
     private ProgressDialog mProgressDialog;
     private StorageReference mCategoryStorageRef;
     private FirebaseRecyclerAdapter mAdapter;
@@ -81,7 +88,7 @@ public class ProductsFragment extends Fragment
         ProductsFragment fragment = new ProductsFragment();
         fragment.mCurrentCategory = category;
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        fragment.mCategoryRef = rootRef.child(category);
+        fragment.mCategoryDbRef = rootRef.child(category);
         fragment.mCategoryStorageRef = FirebaseStorage.getInstance().getReference().child(category);
         return fragment;
     }
@@ -92,7 +99,7 @@ public class ProductsFragment extends Fragment
     {
         View parentView = inflater.inflate(R.layout.fragment_products, container, false);
         mResources = getResources();
-        if(mCurrentCategory != null && !mCurrentCategory.isEmpty())
+        if (mCurrentCategory != null && !mCurrentCategory.isEmpty())
         {
             mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
         }
@@ -108,6 +115,20 @@ public class ProductsFragment extends Fragment
             {
                 super.onItemRangeInserted(positionStart, itemCount);
                 updateUi();
+            }
+        });
+        mCategoryDbRef.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                updateUi();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
             }
         });
         return parentView;
@@ -134,30 +155,28 @@ public class ProductsFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                updateUi();
-            }
-        }, 1000);
         Activity activity = getActivity();
-        if(activity instanceof StoreActivity)
+        if (activity instanceof StoreActivity)
         {
-            ((StoreActivity)activity).setToolBarTitle(getCategoryName());
+            ((StoreActivity) activity).setToolBarTitle(getCategoryName());
         }
     }
 
     @OnClick(R.id.uploadProducts)
     public void uploadProducts()
     {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+        if (ConnectivityUtil.isConnected())
+        {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
     }
 
     /**
@@ -198,7 +217,14 @@ public class ProductsFragment extends Fragment
                         }
                     }
                 }
-                uploadIndividualProducts(mImagesEncodedList);
+                if (ConnectivityUtil.isConnected())
+                {
+                    uploadIndividualProducts(mImagesEncodedList);
+                }
+                else
+                {
+                    toast(R.string.noInternet);
+                }
             }
             else
             {
@@ -230,7 +256,7 @@ public class ProductsFragment extends Fragment
              * 1. push an empty product to create a key
              */
 
-            final DatabaseReference product = mCategoryRef.push();
+            final DatabaseReference product = mCategoryDbRef.push();
             final String key = product.getKey();
 
             /**
@@ -266,12 +292,12 @@ public class ProductsFragment extends Fragment
                     }
 
                     int size = mAdapter.getItemCount() - currentSize + 1;
-                    Log.d("SizesIssue", "Size : "+size+",currentSize : "+currentSize+", noOfUploadingPhoto : "+noOfUploadingPhoto);
+                    Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
                     if (size >= noOfUploadingPhoto)
                     {
                         mProgressDialog.dismiss();
                     }
-                    mProgressDialog.setMessage("Uploading " + (size+1) + " of " + noOfUploadingPhoto);
+                    mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
 
                 }
             }).addOnFailureListener(new OnFailureListener()
@@ -347,7 +373,7 @@ public class ProductsFragment extends Fragment
                 Products.class,
                 R.layout.product_images_row,
                 ProductViewHolder.class,
-                mCategoryRef)
+                mCategoryDbRef)
         {
             @Override
             protected void populateViewHolder(final ProductViewHolder viewHolder, final Products model, int position)
@@ -377,10 +403,30 @@ public class ProductsFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        Intent intent = new Intent(getActivity(), ProductActivity.class);
-                        ProductBundle bundle = new ProductBundle(model);
-                        intent.putExtra(Products.PRODUCT_MODEL, bundle);
-                        startActivity(intent);
+                        if (ConnectivityUtil.isConnected())
+                        {
+                            Intent intent = new Intent(getActivity(), ProductActivity.class);
+                            ProductBundle bundle = new ProductBundle(model);
+                            intent.putExtra(Products.PRODUCT_MODEL, bundle);
+                            if(Build.VERSION.SDK_INT >= 21)
+                            {
+                                String transitionName = getResString(R.string.productTransitionImage);
+                                viewHolder.mImageView.setTransitionName(transitionName);
+
+                                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat
+                                        .makeSceneTransitionAnimation(getActivity(), viewHolder.mImageView,
+                                                transitionName);
+                                startActivity(intent, optionsCompat.toBundle());
+                            }
+                            else
+                            {
+                                startActivity(intent);
+                            }
+                        }
+                        else
+                        {
+                            toast(R.string.noInternet);
+                        }
                     }
                 });
             }

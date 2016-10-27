@@ -33,12 +33,26 @@
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="pin"/>
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/productImagePager"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:fitsSystemWindows="true"/>
+                android:fitsSystemWindows="true"
+                android:layout_height="match_parent">
 
+                <co.thnki.brandfever.view.SquareImageView
+                    android:layout_width="match_parent"
+                    android:id="@+id/transitionImage"
+                    android:fitsSystemWindows="true"
+                    android:transitionName="@string/productTransitionImage"
+                    android:layout_height="match_parent"/>
+
+                <android.support.v4.view.ViewPager
+                    android:visibility="gone"
+                    android:id="@+id/productImagePager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"/>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/pageIndicatorContainer"
@@ -60,6 +74,7 @@
                 fab:fab_colorNormal="@color/colorAccent"
                 fab:fab_colorPressed="@color/colorAccentPressed"
                 fab:fab_size="mini"/>
+
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/deletePhoto"
                 android:layout_width="wrap_content"

@@ -30,12 +30,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.ViewHolders.SimpleCategoryViewHolder;
+import co.thnki.brandfever.ViewHolders.DrawerCategoryViewHolder;
 import co.thnki.brandfever.firebase.database.models.Category;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
-import co.thnki.brandfever.pojos.Accounts;
+import co.thnki.brandfever.firebase.database.models.Accounts;
+import co.thnki.brandfever.utils.ConnectivityUtil;
 
+import static co.thnki.brandfever.Brandfever.toast;
+import static co.thnki.brandfever.R.id.categoryName;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
 import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
@@ -65,7 +68,7 @@ public class CategoryDrawerFragment extends Fragment
     @Bind(R.id.profilePic)
     ImageView mProfilePic;
 
-    @Bind(R.id.categoryName)
+    @Bind(categoryName)
     TextView mCategory;
 
     private List<String> mFirstLevelArray;
@@ -155,14 +158,14 @@ public class CategoryDrawerFragment extends Fragment
 
     private RecyclerView.Adapter getAdapter()
     {
-        return new FirebaseRecyclerAdapter<Category, SimpleCategoryViewHolder>(
+        return new FirebaseRecyclerAdapter<Category, DrawerCategoryViewHolder>(
                 Category.class,
-                R.layout.simple_list_item,
-                SimpleCategoryViewHolder.class,
+                R.layout.category_list_item,
+                DrawerCategoryViewHolder.class,
                 mAvailableCategoriesRef.orderByChild(CATEGORY_ID))
         {
             @Override
-            protected void populateViewHolder(final SimpleCategoryViewHolder viewHolder, final Category model, int position)
+            protected void populateViewHolder(final DrawerCategoryViewHolder viewHolder, final Category model, int position)
             {
                 viewHolder.mCategory.setText(model.getCategory());
                 String imageUrl = model.getCategorySquareImage();
@@ -190,15 +193,22 @@ public class CategoryDrawerFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        String categoryName = getAvailableCategoryName(model);
-                        if (mFirstLevelArray.contains(categoryName))
+                        if (ConnectivityUtil.isConnected())
                         {
-                            //Otto.post(categoryName);
-                            mItemClickListener.onFirstLevelItemClick(categoryName, ENTER);
+                            String categoryName = getAvailableCategoryName(model);
+                            if (mFirstLevelArray.contains(categoryName))
+                            {
+                                //Otto.post(categoryName);
+                                mItemClickListener.onFirstLevelItemClick(categoryName, ENTER);
+                            }
+                            else
+                            {
+                                mItemClickListener.onSecondLevelItemClick(categoryName);
+                            }
                         }
                         else
                         {
-                            mItemClickListener.onSecondLevelItemClick(categoryName);
+                            toast(R.string.noInternet);
                         }
                     }
                 });
@@ -219,8 +229,14 @@ public class CategoryDrawerFragment extends Fragment
     @OnClick(R.id.editCategories)
     public void enableEditing()
     {
-        //Otto.post(getCategoryName());
-        mItemClickListener.onEditClick(getCategoryName());
+        if (ConnectivityUtil.isConnected())
+        {
+            mItemClickListener.onEditClick(getCategoryName());
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
     }
 
     @OnClick(R.id.backIcon)

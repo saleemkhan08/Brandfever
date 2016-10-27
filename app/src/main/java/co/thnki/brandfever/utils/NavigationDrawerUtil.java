@@ -12,9 +12,9 @@ import android.util.Log;
 import java.util.Stack;
 
 import co.thnki.brandfever.R;
+import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.fragments.CategoryDrawerFragment;
 import co.thnki.brandfever.fragments.CategoryEditorFragment;
-import co.thnki.brandfever.fragments.ProductsFragment;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
 import co.thnki.brandfever.interfaces.IOnBackPressedListener;
 
@@ -64,7 +64,7 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
             }
             if (category.contains(AVAILABLE_))
             {
-                if(isEntering)
+                if (isEntering)
                 {
                     transaction.setCustomAnimations(enterAnimation, R.anim.exit_to_left,
                             R.anim.enter_from_left, R.anim.exit_to_right);
@@ -95,12 +95,7 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
     @Override
     public void onSecondLevelItemClick(String category)
     {
-        Log.d(TAG, "onSecondLevelItemClick : " + category);
-        Fragment fragment = ProductsFragment.getInstance(category);
-        mFragmentManager.beginTransaction()
-                .replace(R.id.content_main, fragment)
-                .addToBackStack(category)
-                .commit();
+        ((StoreActivity) mActivity).addFragment(category);
         mDrawer.closeDrawers();
     }
 
@@ -127,7 +122,7 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
         if (mDrawer.isDrawerOpen(GravityCompat.START))
         {
             int size = mDrawerBackStack.size();
-            Log.d(TAG, "Back stack size : "+ size);
+            Log.d(TAG, "Back stack size : " + size);
             if (size <= 1)
             {
                 mDrawer.closeDrawer(GravityCompat.START);

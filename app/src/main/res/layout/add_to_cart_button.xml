@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:clickable="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:id="@+id/addToCart"
+            android:scaleType="fitXY"
+            android:src="@drawable/add_to_bag_bg"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/addToCart"
+                android:id="@+id/addToCartText"
+                android:textColor="@color/colorAccent"/>
+            <ImageView
+                android:layout_toEndOf="@+id/addToCartText"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center_vertical"
+                android:paddingBottom="5dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:id="@+id/addToCartImg"
+                android:src="@mipmap/shopping_cart_add_button"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <!--<android.support.v7.widget.CardView
+        android:id="@+id/buyNow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/add_to_bag_bg_inverse"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/add_to_bag_bg_inverse"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="@string/buyNow"
+            android:textColor="@color/white"/>
+    </android.support.v7.widget.CardView>-->
+</LinearLayout>
