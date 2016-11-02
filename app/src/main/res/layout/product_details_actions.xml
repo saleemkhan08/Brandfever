@@ -59,12 +59,13 @@
             >
 
             <ImageView
-                android:id="@+id/edit"
+                android:id="@+id/editProductDetails"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_accent_drawable"
                 android:clickable="true"
                 android:padding="10dp"
+                android:visibility="gone"
                 android:src="@mipmap/edit_icon"/>
 
             <ImageView
@@ -74,15 +75,16 @@
                 android:background="@drawable/bg_accent_drawable"
                 android:clickable="true"
                 android:padding="10dp"
+                android:visibility="gone"
                 android:src="@mipmap/delete_bin"/>
 
-            <ImageView
+            <!--<ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_accent_drawable"
                 android:clickable="true"
                 android:padding="5dp"
-                android:src="@drawable/ic_layers_black_24px"/>
+                android:src="@drawable/ic_layers_black_24px"/>-->
             <ImageView
                 android:id="@+id/favorite"
                 android:layout_width="48dp"

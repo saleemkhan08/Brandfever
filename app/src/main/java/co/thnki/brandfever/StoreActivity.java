@@ -32,6 +32,7 @@ import co.thnki.brandfever.fragments.ProductsFragment;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.NavigationDrawerUtil;
+import co.thnki.brandfever.utils.UserUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
@@ -41,8 +42,6 @@ import static co.thnki.brandfever.utils.FavoritesUtil.FAV_LIST;
 
 public class StoreActivity extends AppCompatActivity
 {
-    private static final String TAG = "storeActivity";
-
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
     private FragmentManager mFragmentManager;
@@ -75,6 +74,7 @@ public class StoreActivity extends AppCompatActivity
         }
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        updateUserDetails();
         setContentView(R.layout.activity_store);
         ButterKnife.bind(this);
         Otto.register(this);
@@ -103,6 +103,38 @@ public class StoreActivity extends AppCompatActivity
         SharedPreferences mPreferences = Brandfever.getPreferences();
         mGoogleId = mPreferences.getString(Accounts.GOOGLE_ID, "dummyId");
         registerCountUpdateListener();
+    }
+
+    private void updateUserDetails()
+    {
+        UserUtil.getInstance().updateToken();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(Accounts.OWNERS);
+        databaseReference.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+
+                SharedPreferences preferences = Brandfever.getPreferences();
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                for(DataSnapshot snapshot : children)
+                {
+                    String emailId = snapshot.getValue(String.class);
+                    if(preferences.getString(Accounts.EMAIL, "").equals(emailId))
+                    {
+                        preferences.edit().putBoolean(Accounts.IS_OWNER, true).apply();
+                        return;
+                    }
+                }
+                preferences.edit().putBoolean(Accounts.IS_OWNER, false).apply();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 
     private void registerCountUpdateListener()

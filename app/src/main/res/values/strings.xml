@@ -200,4 +200,6 @@
     <string name="pleaseEnterValidPincode">Please Enter A Valid Pin Code</string>
     <string name="delete">Delete</string>
     <string name="ok">Ok</string>
+    <string name="serverKey">AIzaSyAP6sRTN8L2wfF-Q44DI7L1h8WN7AEYsXg</string>
+    <string name="defaultUrl">http://www.thnki.com/fcm.php</string>
 </resources>

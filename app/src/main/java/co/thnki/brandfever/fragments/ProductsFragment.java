@@ -44,6 +44,7 @@ import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.ViewHolders.ProductViewHolder;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.utils.ConnectivityUtil;
@@ -159,6 +160,10 @@ public class ProductsFragment extends Fragment
         if (activity instanceof StoreActivity)
         {
             ((StoreActivity) activity).setToolBarTitle(getCategoryName());
+        }
+        if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        {
+            mUploadButton.setVisibility(View.VISIBLE);
         }
     }
 

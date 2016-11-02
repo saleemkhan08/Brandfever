@@ -101,6 +101,7 @@
         android:layout_alignParentEnd="true"
         app:fab_icon="@mipmap/ic_mode_edit_white_24dp"
         fab:fab_colorNormal="@color/colorAccent"
+        android:visibility="gone"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>
 </RelativeLayout>

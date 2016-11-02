@@ -24,7 +24,10 @@ import butterknife.ButterKnife;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.ViewHolders.MainCategoryViewHolder;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Category;
+import co.thnki.brandfever.singletons.VolleyUtil;
+import co.thnki.brandfever.utils.UserUtil;
 
 import static co.thnki.brandfever.interfaces.Const.ALL_CATEGORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_CATEGORIES;
@@ -76,10 +79,12 @@ public class MainPageFragment extends Fragment implements ValueEventListener
     {
         View parentView = inflater.inflate(R.layout.fragment_main_category, container, false);
         ButterKnife.bind(this, parentView);
-        if(mRootRef != null)
+        if (mRootRef != null)
         {
             mRootRef.addValueEventListener(this);
         }
+        initializeDatabaseRefs();
+        initializeRecyclerView();
         return parentView;
     }
 
@@ -88,9 +93,9 @@ public class MainPageFragment extends Fragment implements ValueEventListener
     {
         super.onResume();
         Activity activity = getActivity();
-        if(activity instanceof StoreActivity)
+        if (activity instanceof StoreActivity)
         {
-            ((StoreActivity)activity).setToolBarTitle(getString(R.string.app_name));
+            ((StoreActivity) activity).setToolBarTitle(getString(R.string.app_name));
         }
     }
 
@@ -192,12 +197,13 @@ public class MainPageFragment extends Fragment implements ValueEventListener
                 super.onItemRangeInserted(positionStart, itemCount);
                 mMainCategoryProgress.setVisibility(View.GONE);
                 Log.d("AdapterDataObserver", "onItemRangeInserted");
-                if(mAdapter.hasObservers())
+                if (mAdapter.hasObservers())
                 {
                     try
                     {
                         mAdapter.unregisterAdapterDataObserver(this);
-                    }catch (IllegalStateException e)
+                    }
+                    catch (IllegalStateException e)
                     {
                         Log.d("AdapterDataObserver", "Not Registered");
                     }
@@ -208,52 +214,67 @@ public class MainPageFragment extends Fragment implements ValueEventListener
 
     private void initializeDatabaseRefs()
     {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        mCategoriesRef = rootRef.child(AVAILABLE_FIRST_LEVEL_CATEGORIES);
+        mCategoriesRef = mRootRef.child(AVAILABLE_FIRST_LEVEL_CATEGORIES);
     }
 
     private void saveCategories()
     {
+        //Child 1
+        DatabaseReference appDataDbRef = mRootRef.child(UserUtil.APP_DATA);
+        appDataDbRef.child(VolleyUtil.REQUEST_HANDLER_URL).setValue(getString(R.string.defaultUrl));
+        appDataDbRef.child(VolleyUtil.APP_ID).setValue(getString(R.string.serverKey));
+
+        //Child 2
+        DatabaseReference ownersDbRef = mRootRef.child(Accounts.OWNERS).child("0");
+        ownersDbRef.setValue("saleemkhan08@gmail.com");
+
+        //Child 3 & 4
         Log.d("Categories", "saveCategories");
         String[] firstLevelCategories = getResources().getStringArray(R.array.firstLevel);
         String[] firstLevelCategoriesId = getResources().getStringArray(R.array.firstLevelId);
-        addToDatabase(firstLevelCategories, FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId, false);
-        addToDatabase(firstLevelCategories, AVAILABLE_FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId, false);
+        addToDatabase(firstLevelCategories, FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId);
+        addToDatabase(firstLevelCategories, AVAILABLE_FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId);
 
+        //Child 5 & 6
         String[] mensWear = getResources().getStringArray(R.array.mensWear);
         String[] mensWearId = getResources().getStringArray(R.array.mensWearId);
-        addToDatabase(mensWear, MENS_WEAR, mensWearId, false);
-        addToDatabase(mensWear, AVAILABLE_MENS_WEAR, mensWearId, false);
+        addToDatabase(mensWear, MENS_WEAR, mensWearId);
+        addToDatabase(mensWear, AVAILABLE_MENS_WEAR, mensWearId);
         //addToDatabase(mensWear, MENS_WEAR, mensWearId, true);
 
-
+        //Child 7 & 8
         String[] womensWear = getResources().getStringArray(R.array.womensWear);
         String[] womensWearId = getResources().getStringArray(R.array.womensWearId);
-        addToDatabase(womensWear, WOMENS_WEAR, womensWearId, false);
-        addToDatabase(womensWear, AVAILABLE_WOMENS_WEAR, womensWearId, false);
+        addToDatabase(womensWear, WOMENS_WEAR, womensWearId);
+        addToDatabase(womensWear, AVAILABLE_WOMENS_WEAR, womensWearId);
         //addToDatabase(womensWear, WOMENS_WEAR, womensWearId, true);
 
+        //Child 9 & 10
         String[] kidsWear = getResources().getStringArray(R.array.kidsWear);
         String[] kidsWearId = getResources().getStringArray(R.array.kidsWearId);
-        addToDatabase(kidsWear, KIDS_WEAR, kidsWearId, false);
-        addToDatabase(kidsWear, AVAILABLE_KIDS_WEAR, kidsWearId, false);
+        addToDatabase(kidsWear, KIDS_WEAR, kidsWearId);
+        addToDatabase(kidsWear, AVAILABLE_KIDS_WEAR, kidsWearId);
         //addToDatabase(kidsWear, KIDS_WEAR, kidsWearId, true);
 
-
+        //Child 11 & 12
         String[] fashionAccessories = getResources().getStringArray(R.array.fashionAccessories);
         String[] fashionAccessoriesId = getResources().getStringArray(R.array.fashionAccessoriesId);
-        addToDatabase(fashionAccessories, FASHION_ACCESSORIES, fashionAccessoriesId, false);
-        addToDatabase(fashionAccessories, AVAILABLE_FASHION_ACCESSORIES, fashionAccessoriesId, false);
+        addToDatabase(fashionAccessories, FASHION_ACCESSORIES, fashionAccessoriesId);
+        addToDatabase(fashionAccessories, AVAILABLE_FASHION_ACCESSORIES, fashionAccessoriesId);
         //addToDatabase(fashionAccessories, FASHION_ACCESSORIES, fashionAccessoriesId, true);
 
+        //Child 13 & 14
         String[] homeFurnishing = getResources().getStringArray(R.array.homeFurnishing);
         String[] homeFurnishingId = getResources().getStringArray(R.array.homeFurnishingId);
-        addToDatabase(homeFurnishing, HOME_FURNISHING, homeFurnishingId, false);
-        addToDatabase(homeFurnishing, AVAILABLE_HOME_FURNISHING, homeFurnishingId, false);
+        addToDatabase(homeFurnishing, HOME_FURNISHING, homeFurnishingId);
+        addToDatabase(homeFurnishing, AVAILABLE_HOME_FURNISHING, homeFurnishingId);
         //addToDatabase(homeFurnishing, HOME_FURNISHING, homeFurnishingId, true);
+
+        initializeDatabaseRefs();
+        initializeRecyclerView();
     }
 
-    private void addToDatabase(String[] categories, String name, String[] childIds, boolean isSecondLevel)
+    private void addToDatabase(String[] categories, String name, String[] childIds)
     {
         Log.d("Categories", "addToDatabase : " + name);
         DatabaseReference mCategoriesRef = mRootRef.child(name);
@@ -269,16 +290,8 @@ public class MainPageFragment extends Fragment implements ValueEventListener
                 category = new Category(categories[i], i, childIds[i]);
             }
             category.setCategorySelected(true);
-            /*if (isSecondLevel)
-            {
-                DatabaseReference secondChildRef = mRootRef.child(AVAILABLE_ + category.getCategoryName());
-                secondChildRef.setValue(category);
-            }
-            else
-            {*/
-                DatabaseReference childRef = mCategoriesRef.child(i + "");
-                childRef.setValue(category);
-            //}
+            DatabaseReference childRef = mCategoriesRef.child(i + "");
+            childRef.setValue(category);
         }
     }
 
@@ -290,12 +303,10 @@ public class MainPageFragment extends Fragment implements ValueEventListener
     @Override
     public void onDataChange(DataSnapshot dataSnapshot)
     {
-        if (dataSnapshot.getChildrenCount() <= 0)
+        if (dataSnapshot.child(FIRST_LEVEL_CATEGORIES).getValue() == null)
         {
             saveCategories();
         }
-        initializeDatabaseRefs();
-        initializeRecyclerView();
     }
 
     @Override

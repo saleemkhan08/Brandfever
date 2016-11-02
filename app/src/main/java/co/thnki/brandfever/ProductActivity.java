@@ -74,6 +74,7 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     private static final String L = "L";
     private static final String XL = "XL";
     private static final String XXL = "XXL";
+    private static final long DELAY = 750;
 
     @Bind(R.id.pageIndicatorContainer)
     LinearLayout mPageIndicatorContainer;
@@ -128,6 +129,19 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     private boolean mIsAddedToCart;
     private SizesUtil mSizesUtil;
 
+    @Bind(R.id.deletePhoto)
+    ImageView mDeletePhotoImageView;
+
+    @Bind(R.id.uploadMorePhotos)
+    ImageView mUploadPhotoImageView;
+
+    @Bind(R.id.editProductDetails)
+    ImageView mEditProductDetailsImageView;
+
+    @Bind(R.id.deleteProduct)
+    ImageView mDeleteProductImageView;
+
+    private boolean mIsPagerLoaded;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -143,6 +157,7 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         Otto.register(this);
         ButterKnife.bind(this);
 
+        checkOwnerProfile();
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
@@ -197,27 +212,50 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         }
     }
 
+    private void checkOwnerProfile()
+    {
+        if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    mDeletePhotoImageView.setVisibility(View.VISIBLE);
+                    mDeleteProductImageView.setVisibility(View.VISIBLE);
+                    mEditProductDetailsImageView.setVisibility(View.VISIBLE);
+                    mUploadPhotoImageView.setVisibility(View.VISIBLE);
+                }
+            }, DELAY);
+        }
+    }
+
     @Override
     protected void onResume()
     {
         super.onResume();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable()
+        if(!mIsPagerLoaded)
         {
-            @Override
-            public void run()
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
             {
-                mProductImagePager.setVisibility(View.VISIBLE);
-                mProductImagePager.setAdapter(mAdapter);
-                mProductImagePager.addOnPageChangeListener(ProductActivity.this);
-            }
-        }, 1000);
+                @Override
+                public void run()
+                {
+                    mProductImagePager.setVisibility(View.VISIBLE);
+                    mProductImagePager.setAdapter(mAdapter);
+                    mProductImagePager.addOnPageChangeListener(ProductActivity.this);
+                    mIsPagerLoaded = true;
+                }
+            }, DELAY);
+        }
     }
 
     @Override
     public void onBackPressed()
     {
-        mProductImagePager.setVisibility(View.INVISIBLE);
+        hideAllIcons();
         super.onBackPressed();
     }
 
@@ -226,9 +264,19 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     {
         if(isFinishing())
         {
-            mProductImagePager.setVisibility(View.INVISIBLE);
+            hideAllIcons();
         }
         super.onPause();
+    }
+
+    private void hideAllIcons()
+    {
+        mProductImagePager.setVisibility(View.INVISIBLE);
+        mPageIndicatorContainer.setVisibility(View.GONE);
+        mDeletePhotoImageView.setVisibility(View.GONE);
+        mDeleteProductImageView.setVisibility(View.GONE);
+        mEditProductDetailsImageView.setVisibility(View.GONE);
+        mUploadPhotoImageView.setVisibility(View.GONE);
     }
 
     private Map<String, Boolean> initializeSizes()
@@ -301,27 +349,27 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         {
             case XS:
                 highlight(xs);
-                xsSpinner.performClick();
+                //xsSpinner.performClick();
                 break;
             case S:
                 highlight(s);
-                sSpinner.performClick();
+                //sSpinner.performClick();
                 break;
             case M:
                 highlight(m);
-                mSpinner.performClick();
+                //mSpinner.performClick();
                 break;
             case L:
                 highlight(l);
-                lSpinner.performClick();
+                //lSpinner.performClick();
                 break;
             case XL:
                 highlight(xl);
-                xlSpinner.performClick();
+                //xlSpinner.performClick();
                 break;
             case XXL:
                 highlight(xxl);
-                xxlSpinner.performClick();
+                //xxlSpinner.performClick();
                 break;
         }
         showCountSelectionDialog(selectedSize);
@@ -522,20 +570,28 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
         }
     }
 
-    private void updatePageIndicator(int size)
+    private void updatePageIndicator(final int size)
     {
-        mPageIndicatorContainer.removeAllViews();
-        if (size > 1)
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
         {
-            for (int i = 0; i < size; i++)
+            @Override
+            public void run()
             {
-                addIndicator();
+                mPageIndicatorContainer.removeAllViews();
+                if (size > 1)
+                {
+                    for (int i = 0; i < size; i++)
+                    {
+                        addIndicator();
+                    }
+                    highLightPageIndicator(0);
+                }
             }
-            highLightPageIndicator(0);
-        }
+        }, DELAY);
     }
 
-    @OnClick(R.id.edit)
+    @OnClick(R.id.editProductDetails)
     public void launchProductEditor()
     {
         if (ConnectivityUtil.isConnected())
@@ -715,9 +771,24 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
     }
 
     @Override
-    public void onPageSelected(int position)
+    public void onPageSelected(final int position)
     {
-        highLightPageIndicator(position);
+        if(mPageIndicatorContainer.getChildCount() <= position)
+        {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    highLightPageIndicator(position);
+                }
+            }, DELAY);
+        }
+        else
+        {
+            highLightPageIndicator(position);
+        }
         mCurrentPhotoUrl = mAdapter.getItemUrl(position);
         mCurrentPhotoName = mPhotoNameList.get(position);
     }
@@ -729,6 +800,14 @@ public class ProductActivity extends AppCompatActivity implements ViewPager.OnPa
             ImageView indicator = (ImageView) ((LinearLayout) (mPageIndicatorContainer.getChildAt(i))).getChildAt(0);
             indicator.setImageResource(R.drawable.dot);
         }
+
+        Log.d("NullCheck","mPageIndicatorContainer : "+ mPageIndicatorContainer );
+        Log.d("NullCheck","mPageIndicatorContainer.getChildCount() : "+ mPageIndicatorContainer.getChildCount() );
+        Log.d("NullCheck","position : "+ position);
+        Log.d("NullCheck","mPageIndicatorContainer.getChildAt(position) : "+ mPageIndicatorContainer.getChildAt(position) );
+        Log.d("NullCheck","((LinearLayout) (mPageIndicatorContainer.getChildAt(position))).getChildAt(0) : "
+                + ((LinearLayout) (mPageIndicatorContainer.getChildAt(position))).getChildAt(0) );
+
         ImageView indicator = (ImageView) ((LinearLayout) (mPageIndicatorContainer.getChildAt(position))).getChildAt(0);
         indicator.setImageResource(R.drawable.accent_dot);
     }

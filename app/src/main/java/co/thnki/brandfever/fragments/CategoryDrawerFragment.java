@@ -31,10 +31,10 @@ import butterknife.OnClick;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.ViewHolders.DrawerCategoryViewHolder;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Category;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
-import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
@@ -130,6 +130,16 @@ public class CategoryDrawerFragment extends Fragment
             mProfileName.setText(preferences.getString(Accounts.NAME, LOGIN));
         }
         return layout;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        {
+            mEditButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private String getParentCategory(String currentCategory)

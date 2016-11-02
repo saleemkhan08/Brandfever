@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,10 +37,12 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import butterknife.BindColor;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.interfaces.ConnectivityListener;
-import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.FavoritesUtil;
+import co.thnki.brandfever.utils.UserUtil;
+
+import static co.thnki.brandfever.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, ConnectivityListener
 {
@@ -135,23 +136,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Log.d(TAG, "REQUEST_CODE_GET_TOKEN");
                 if (result.isSuccess())
                 {
-                    GoogleSignInAccount account = result.getSignInAccount();
-                    firebaseAuthWithGoogle(account);
-                    if (account != null)
-                    {
-                        Uri photo_url = account.getPhotoUrl();
-                        mPreference.edit()
-                                .putString(Accounts.NAME, account.getDisplayName())
-                                .putBoolean(LoginActivity.LOGIN_STATUS, true)
-                                .putString(Accounts.EMAIL, account.getEmail())
-                                .putString(Accounts.PHOTO_URL, photo_url != null ? photo_url.toString() : "")
-                                .putString(Accounts.GOOGLE_ID, account.getId())
-                                .apply();
-
-                        FavoritesUtil.getsInstance().updateFavoriteList();
-                        CartUtil.getsInstance().updateCartList();
-
-                    }
+                    firebaseAuthWithGoogle(result.getSignInAccount());
                 }
                 else
                 {
@@ -184,7 +169,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             {
                 if (!mPreference.getBoolean(LOGIN_STATUS, false))
                 {
-                    mPreference.edit().clear().apply();
+                    String token = mPreference.getString(NOTIFICATION_INSTANCE_ID, "");
+                    mPreference.edit().clear()
+                            .putString(NOTIFICATION_INSTANCE_ID, token)
+                            .apply();
 
                     FavoritesUtil.clearInstance();
                     CartUtil.clearInstance();
@@ -217,7 +205,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void signIn()
     {
-        Log.d(TAG, "signIn");
         revokeAccess();
         signOut();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -359,16 +346,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         }
                         else
                         {
+                            UserUtil.getInstance().register(user);
                             // User is signed in
-                            Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getId());
-                            Uri photo_url = user.getPhotoUrl();
-                            mPreference.edit()
-                                    .putString(Accounts.NAME, user.getDisplayName())
-                                    .putBoolean(LoginActivity.LOGIN_STATUS, true)
-                                    .putString(Accounts.EMAIL, user.getEmail())
-                                    .putString(Accounts.PHOTO_URL, photo_url != null ? photo_url.toString() : "")
-                                    .putString(Accounts.GOOGLE_ID, user.getId())
-                                    .apply();
                             Log.d(TAG, "startActivity : MainActivity");
                             startActivity(new Intent(LoginActivity.this, StoreActivity.class));
                             finish();
