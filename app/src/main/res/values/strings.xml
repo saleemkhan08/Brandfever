@@ -202,4 +202,7 @@
     <string name="ok">Ok</string>
     <string name="serverKey">AIzaSyAP6sRTN8L2wfF-Q44DI7L1h8WN7AEYsXg</string>
     <string name="defaultUrl">http://www.thnki.com/fcm.php</string>
+    <string name="uploaded">Uploaded!</string>
+    <string name="photosWillBeUploadedInBackground">Photos Will Be Uploaded In Background!</string>
+    <string name="deleting">Deleting...</string>
 </resources>

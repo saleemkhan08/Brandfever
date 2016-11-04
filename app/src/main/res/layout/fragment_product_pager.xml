@@ -10,8 +10,7 @@
         android:id="@+id/productImagePager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:visibility="gone"/>
+        android:fitsSystemWindows="true"/>
 
     <LinearLayout
         android:id="@+id/pageIndicatorContainer"

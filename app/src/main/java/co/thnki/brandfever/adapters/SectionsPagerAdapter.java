@@ -13,6 +13,7 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter
 {
     private ArrayList<String> mPhotoUrls;
 
+    public boolean mIsDataSetUpdated;
     public SectionsPagerAdapter(FragmentManager fragmentManager)
     {
         super(fragmentManager);
@@ -30,6 +31,17 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter
         String url = mPhotoUrls.get(position);
         Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
         return ImagePagerFragment.getInstance(url);
+    }
+
+    @Override
+    public int getItemPosition(Object object)
+    {
+        if(mIsDataSetUpdated)
+        {
+            mIsDataSetUpdated = false;
+            return POSITION_NONE;
+        }
+        return super.getItemPosition(object);
     }
 
     @Override
