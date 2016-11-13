@@ -1,6 +1,8 @@
 package co.thnki.brandfever.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.adapters.OrdersAdapter;
@@ -29,9 +33,13 @@ import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.utils.OrdersUtil;
 import co.thnki.brandfever.view.holders.OrderListProductViewHolder;
 
+import static co.thnki.brandfever.utils.UserUtil.APP_DATA;
+import static co.thnki.brandfever.utils.UserUtil.OWNER_PHONE_NUMBER;
+
 public class UsersOrdersFragment extends Fragment
 {
     public static final String TAG = "UsersOrdersFragment";
+    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 198;
     private String mGoogleId;
     private DatabaseReference mUserReference;
     @Bind(R.id.orderRecyclerView)
@@ -58,6 +66,7 @@ public class UsersOrdersFragment extends Fragment
     private DatabaseReference mOrdersDbRef;
     private FirebaseRecyclerAdapter<Products, OrderListProductViewHolder> mAdapter;
     private DatabaseReference mAddressDbRef;
+    private String mPhoneNumber;
 
 
     public static UsersOrdersFragment getInstance(String googleId)
@@ -70,6 +79,7 @@ public class UsersOrdersFragment extends Fragment
         fragment.mOrdersDbRef = fragment.mUserReference.child(OrdersUtil.ORDERS);
         return fragment;
     }
+
     public UsersOrdersFragment()
     {
         // Required empty public constructor
@@ -82,7 +92,7 @@ public class UsersOrdersFragment extends Fragment
         View parent = inflater.inflate(R.layout.fragment_orders, container, false);
         ButterKnife.bind(this, parent);
         updateAddress();
-        mAdapter = OrdersAdapter.getInstance(mOrdersDbRef,mGoogleId, getActivity());
+        mAdapter = OrdersAdapter.getInstance(mOrdersDbRef, mGoogleId, getActivity());
         mOrdersRecyclerView.setAdapter(mAdapter);
         mOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mOrdersDbRef.addValueEventListener(new ValueEventListener()
@@ -161,6 +171,37 @@ public class UsersOrdersFragment extends Fragment
             mDeliveryAddress.setText(addressText);
             mContactPerson.setText(address.getName());
             mContactNumber.setText(address.getPhoneNo());
+            if(!Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+            {
+                DatabaseReference appDataDbRef = FirebaseDatabase.getInstance().getReference()
+                        .child(APP_DATA).child(OWNER_PHONE_NUMBER);
+                appDataDbRef.addValueEventListener(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        mPhoneNumber = dataSnapshot.getValue(String.class);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError)
+                    {
+
+                    }
+                });
+            }
+            else
+            {
+                mPhoneNumber = address.getPhoneNo();
+            }
         }
+    }
+
+    @OnClick(R.id.makeCall)
+    public void makeACall()
+    {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:"+mPhoneNumber));
+        startActivity(intent);
     }
 }

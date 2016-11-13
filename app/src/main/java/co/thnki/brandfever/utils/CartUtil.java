@@ -67,6 +67,7 @@ public class CartUtil
 
     public String addToCart(ProductBundle productBundle)
     {
+        productBundle.setOrderStatus(OrdersUtil.ORDER_ADDED_TO_CART);
         String key = getKey(productBundle);
         DatabaseReference reference = mCartRef.child(key);
 

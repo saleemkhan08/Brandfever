@@ -69,12 +69,14 @@ public class Products
         material = bundle.getMaterial();
         priceBefore = bundle.getPriceBefore();
         productId = bundle.getProductId();
+        orderStatus = bundle.getOrderStatus();
     }
 
-    public static String generateRandomKey() {
+    public static String generateRandomKey()
+    {
         int length = 6;
         Random random = new SecureRandom();
-        return String.format("%"+length+"s", new BigInteger(length*5, random)
+        return String.format("%" + length + "s", new BigInteger(length * 5, random)
                 .toString(32)).replace('\u0020', '0');
     }
 
@@ -132,6 +134,18 @@ public class Products
     {
         String priceTemp = priceAfter.replace('\u20B9' + "", "");
         return '\u20B9' + priceTemp;
+    }
+
+    public int getActualPriceAfter()
+    {
+        String price = priceAfter.replaceAll("[^\\d]", "");
+        return Integer.parseInt(price);
+    }
+
+    public int getActualPriceBefore()
+    {
+        String price = priceBefore.replaceAll("[^\\d]", "");
+        return Integer.parseInt(price);
     }
 
     public void setPriceAfter(String priceAfter)
@@ -192,9 +206,9 @@ public class Products
 
     public String getSelectedSize()
     {
-        for(Map.Entry<String, Integer> map : sizesMap.entrySet())
+        for (Map.Entry<String, Integer> map : sizesMap.entrySet())
         {
-            if(map.getValue() > 0)
+            if (map.getValue() > 0)
             {
                 return map.getKey();
             }
@@ -205,5 +219,10 @@ public class Products
     public String getOrderStatus()
     {
         return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus)
+    {
+        this.orderStatus = orderStatus;
     }
 }

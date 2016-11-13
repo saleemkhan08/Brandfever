@@ -33,6 +33,7 @@ public class UserUtil
 {
     public static final String APP_DATA = "appData";
     public static final String USER_LIST = "users";
+    public static final String OWNER_PHONE_NUMBER = "phoneNumber";
     private static UserUtil sInstance;
     private Accounts mAccount;
     private SharedPreferences mPreferences;

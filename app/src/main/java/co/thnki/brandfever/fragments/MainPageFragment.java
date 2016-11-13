@@ -30,6 +30,7 @@ import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Category;
+import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.InitialSetupUtil;
 import co.thnki.brandfever.view.holders.MainCategoryViewHolder;
@@ -268,7 +269,7 @@ public class MainPageFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        ((StoreActivity)getActivity()).addFragment(model.getCategoryName());
+                        ((StoreActivity)getActivity()).addFragment(Const.AVAILABLE_ + model.getCategoryName());
                     }
                 });
             }

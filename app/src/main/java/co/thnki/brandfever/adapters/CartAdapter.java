@@ -12,6 +12,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.view.holders.CartListProductViewHolder;
@@ -52,7 +53,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Products, CartListProdu
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
-        viewHolder.mProductSize.setText(model.getSelectedSize());
+        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size)+" "+model.getSelectedSize());
         String discountText = model.getPriceBefore();
         if (discountText != null && !discountText.isEmpty())
         {

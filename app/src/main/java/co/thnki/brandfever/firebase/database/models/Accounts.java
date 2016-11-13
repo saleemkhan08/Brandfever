@@ -16,12 +16,14 @@ public class Accounts implements Parcelable
     public String googleId;
     public String photoUrl;
     public String fcmToken;
+    public String phoneNumber;
 
     public static final String EMAIL = "email";
     public static final String NAME = "name";
     public static final String GOOGLE_ID = "googleId";
     public static final String PHOTO_URL = "photoUrl";
     public static final String FCM_TOKEN = "fcmToken";
+    public static final String PHONE_NUMBER = "phoneNumber";
 
     public Accounts()
     {
@@ -42,6 +44,7 @@ public class Accounts implements Parcelable
         dest.writeString(this.googleId);
         dest.writeString(this.photoUrl);
         dest.writeString(this.fcmToken);
+        dest.writeString(this.phoneNumber);
     }
 
     protected Accounts(Parcel in)
@@ -51,6 +54,7 @@ public class Accounts implements Parcelable
         this.googleId = in.readString();
         this.photoUrl = in.readString();
         this.fcmToken = in.readString();
+        this.phoneNumber = in.readString();
     }
 
     public static final Parcelable.Creator<Accounts> CREATOR = new Parcelable.Creator<Accounts>()

@@ -29,6 +29,7 @@ import co.thnki.brandfever.utils.ConnectivityUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.firebase.database.models.Accounts.ADDRESS_LIST;
+import static co.thnki.brandfever.firebase.database.models.Accounts.USERS;
 
 public class EditAddressDialogFragment extends DialogFragment implements Const
 {
@@ -164,6 +165,8 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
                         .putString(Addresses.PIN_CODE, mAddress.getPinCode())
                         .apply();
 
+                savePhoneNumber(mAddress.getPhoneNo());
+
                 dismiss();
             }
         }
@@ -171,5 +174,28 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
         {
             toast(R.string.noInternet);
         }
+    }
+
+    private void savePhoneNumber(final String phoneNumber)
+    {
+        final DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+                .child(USERS).child(mPreference.getString(Accounts.GOOGLE_ID, ""));
+        userDbRef.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Accounts account = dataSnapshot.getValue(Accounts.class);
+                account.phoneNumber = phoneNumber;
+                userDbRef.setValue(account);
+                userDbRef.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 }

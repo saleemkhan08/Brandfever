@@ -76,8 +76,18 @@ public class CartFragment extends Fragment
     @Bind(R.id.placeAnOrder)
     View mPlaceAnOrder;
 
+    @Bind(R.id.totalContainer)
+    View mTotalContainer;
+
     @Bind(R.id.contactPerson)
     TextView mContactPerson;
+
+    @Bind(R.id.savingsTextView)
+    TextView mSavingsTextView;
+
+    @Bind(R.id.totalTextView)
+    TextView mTotalTextView;
+
 
     @Bind(R.id.deliveryAddress)
     TextView mDeliveryAddress;
@@ -127,6 +137,20 @@ public class CartFragment extends Fragment
             {
                 updateCartUi();
                 mCartData = dataSnapshot;
+                int totalPriceBefore = 0;
+                int totalPriceAfter = 0;
+                Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+                for(DataSnapshot snapshot : snapshots)
+                {
+                    Products product = snapshot.getValue(Products.class);
+                    totalPriceAfter += product.getActualPriceAfter();
+                    totalPriceBefore += product.getActualPriceBefore();
+                }
+                String total = getString(R.string.total) + " "+'\u20B9' + totalPriceAfter;
+                String saved = getString(R.string.youSave)+ " "+'\u20B9' + (totalPriceBefore - totalPriceAfter);
+
+                mTotalTextView.setText(total);
+                mSavingsTextView.setText(saved);
             }
 
             @Override
@@ -270,11 +294,13 @@ public class CartFragment extends Fragment
             mNoProductFoundContainer.setVisibility(View.VISIBLE);
             mPlaceAnOrder.setVisibility(View.GONE);
             mAddressContainer.setVisibility(View.GONE);
+            mTotalContainer.setVisibility(View.GONE);
         }
         else
         {
             mNoProductFoundContainer.setVisibility(View.GONE);
             mPlaceAnOrder.setVisibility(View.VISIBLE);
+            mTotalContainer.setVisibility(View.VISIBLE);
         }
         Log.d("updateUi", "updateUi" + size + ", visible : " + mNoProductFoundContainer.isShown());
     }
@@ -358,7 +384,9 @@ public class CartFragment extends Fragment
         DatabaseReference myOrdersDbRef = mUserReference.child(OrdersUtil.ORDERS);
         for (DataSnapshot snapshot : mCartData.getChildren())
         {
-            myOrdersDbRef.child(snapshot.getKey()).setValue(snapshot.getValue());
+            Products products = snapshot.getValue(Products.class);
+            products.setOrderStatus(OrdersUtil.ORDER_PLACED);
+            myOrdersDbRef.child(snapshot.getKey()).setValue(products);
         }
         mCartDbRef.removeValue();
     }

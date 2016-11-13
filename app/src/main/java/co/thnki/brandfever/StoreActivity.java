@@ -87,7 +87,7 @@ public class StoreActivity extends AppCompatActivity
         mFragmentManager = getSupportFragmentManager();
         mNavigationDrawerUtil = new NavigationDrawerUtil(mFragmentManager, this);
         mNavigationDrawerUtil.onFirstLevelItemClick(AVAILABLE_FIRST_LEVEL_CATEGORIES, ENTER);
-        addMainPageFragment();
+
         mFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
         {
             @Override
@@ -108,6 +108,18 @@ public class StoreActivity extends AppCompatActivity
 
         mGoogleId = mPreferences.getString(Accounts.GOOGLE_ID, "dummyId");
         registerCountUpdateListener();
+        Intent intent = getIntent();
+        if(intent.hasExtra(NOTIFICATION_ACTION))
+        {
+            switch (intent.getStringExtra(NOTIFICATION_ACTION))
+            {
+                default: showNotification();
+            }
+        }
+        else
+        {
+            addMainPageFragment();
+        }
     }
 
     private void setupWindowProperties()
@@ -364,6 +376,11 @@ public class StoreActivity extends AppCompatActivity
     }
 
     public void showNotification(View view)
+    {
+        showNotification();
+    }
+
+    private void showNotification()
     {
         if (isNewObjectRequired(NotificationListFragment.TAG))
         {
