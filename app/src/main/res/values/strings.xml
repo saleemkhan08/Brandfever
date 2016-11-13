@@ -66,7 +66,7 @@
     <string name="pleaseEnterAddress">Please enter the address with \"@\" prefix</string>
     <string name="pleaseEnterIssueType">Please enter the issue type with \"#\" prefix</string>
     <string name="issuePosted">Issue Posted</string>
-    <string name="clickNotificationToOpen">Click on notification to open it</string>
+    <string name="clickNotificationToOpen">Click on notificationModel to open it</string>
     <string name="postingIssueFailed">Posting Issue Failed</string>
     <string name="clickOnRetryToPostAgain">Click on retry to post again</string>
     <string name="image_permission_denial">Image can\'t be added without this Permission</string>
@@ -183,7 +183,7 @@
     <string name="aProductMustHaveAtLeastOneImage">A Product Must Have At Least One Image!!</string>
     <string name="areYouSureYouWantToDeleteThisProduct">Are You Sure You Want To Delete This Product ?</string>
     <string name="accountOptions">Account Options</string>
-    <string name="myOrders">My Orders</string>
+    <string name="orders">Orders</string>
     <string name="removeFromCart">Remove From Cart</string>
     <string name="placeAnOrder">Place An Order</string>
     <string name="shoppingCart">Shopping Cart</string>
@@ -205,4 +205,22 @@
     <string name="uploaded">Uploaded!</string>
     <string name="photosWillBeUploadedInBackground">Photos Will Be Uploaded In Background!</string>
     <string name="deleting">Deleting...</string>
+    <string name="notSelected">Not Selected!</string>
+    <string name="orderPlaced">Order Placed</string>
+    <string name="placingAnOrder">Placing An Order...</string>
+    <string name="customerList">Customers</string>
+    <string name="notifications">Notifications</string>
+    <string name="noOrdersFound">No Orders Found...</string>
+    <string name="areYouSureYouWantToCancelThisOrder">Are You Sure You Want To Cancel This Order?</string>
+    <string name="cancel">Cancel</string>
+    <string name="noNotificationsFound">No Notifications Found...</string>
+    <string name="placedAnOrder">Placed An Order.</string>
+    <string name="anUser">User</string>
+    <string name="orderCancellation">Order Cancellation</string>
+    <string name="cancellationReason">Cancellation Reason</string>
+    <string name="submit">Submit</string>
+    <string name="pleaseEnterReason">Please Enter A Reason!</string>
+    <string name="cancellingTheOrder">Cancelling The Order...</string>
+    <string name="orderCancelled">Order Cancelled</string>
+    <string name="cancelledAnOrder">Cancelled An Order!</string>
 </resources>

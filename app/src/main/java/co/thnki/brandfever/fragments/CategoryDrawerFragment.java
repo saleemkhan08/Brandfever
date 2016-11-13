@@ -19,8 +19,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,15 +34,19 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.ViewHolders.DrawerCategoryViewHolder;
+import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Category;
+import co.thnki.brandfever.firebase.database.models.NotificationModel;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
+import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.NotificationsUtil;
+import co.thnki.brandfever.view.holders.DrawerCategoryViewHolder;
 
 import static co.thnki.brandfever.Brandfever.toast;
-import static co.thnki.brandfever.R.id.categoryName;
+import static co.thnki.brandfever.R.id.notificationCount;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
 import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
@@ -47,11 +55,18 @@ import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
  * Fragment handles the drawer menu.
  */
 
-public class CategoryDrawerFragment extends Fragment
+public class CategoryDrawerFragment extends Fragment implements ValueEventListener
 {
     private static final String LOGIN = "Login";
     @Bind(R.id.categoryRecyclerView)
     RecyclerView mCategoriesRecyclerView;
+
+    SharedPreferences mPreferences;
+    @Bind(R.id.customerListButton)
+    View customerListButton;
+
+    @Bind(R.id.myOrders)
+    View myOrders;
 
     @Bind(R.id.backIcon)
     View mHeaderBack;
@@ -68,8 +83,11 @@ public class CategoryDrawerFragment extends Fragment
     @Bind(R.id.profilePic)
     ImageView mProfilePic;
 
-    @Bind(categoryName)
+    @Bind(R.id.categoryName)
     TextView mCategory;
+
+    @Bind(notificationCount)
+    TextView mNotificationCountTextView;
 
     private List<String> mFirstLevelArray;
     public String mCurrentCategory = "";
@@ -85,6 +103,10 @@ public class CategoryDrawerFragment extends Fragment
         fragment.mItemClickListener = listener;
         fragment.mAvailableCategoriesRef = rootRef.child(categoryChild);
         fragment.mCurrentCategory = categoryChild;
+        fragment.mPreferences = Brandfever.getPreferences();
+        DatabaseReference notificationDbRef = rootRef.child(fragment.mPreferences.getString(Accounts.GOOGLE_ID, ""))
+                .child(NotificationsUtil.TAG);
+        notificationDbRef.addValueEventListener(fragment);
         return fragment;
     }
 
@@ -108,8 +130,7 @@ public class CategoryDrawerFragment extends Fragment
         {
             mHeaderProfile.setVisibility(View.VISIBLE);
             mHeaderBack.setVisibility(View.GONE);
-            SharedPreferences preferences = Brandfever.getPreferences();
-            String imageUrl = preferences.getString(Accounts.PHOTO_URL, "");
+            String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
             if (!imageUrl.isEmpty())
             {
                 Glide.with(getActivity()).load(imageUrl)
@@ -127,18 +148,50 @@ public class CategoryDrawerFragment extends Fragment
                     }
                 });
             }
-            mProfileName.setText(preferences.getString(Accounts.NAME, LOGIN));
+            mProfileName.setText(mPreferences.getString(Accounts.NAME, LOGIN));
         }
         return layout;
     }
 
     @Override
+    public void onStart()
+    {
+        super.onStart();
+        Otto.register(this);
+    }
+
+
+    @Override
     public void onResume()
     {
         super.onResume();
-        if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        updateOwnerProfile(StoreActivity.OWNER_PROFILE_UPDATED);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        Otto.unregister(this);
+    }
+
+    @Subscribe
+    public void updateOwnerProfile(String action)
+    {
+        if(action.equals(StoreActivity.OWNER_PROFILE_UPDATED))
         {
-            mEditButton.setVisibility(View.VISIBLE);
+            if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+            {
+                mEditButton.setVisibility(View.VISIBLE);
+                customerListButton.setVisibility(View.VISIBLE);
+                myOrders.setVisibility(View.GONE);
+            }
+            else
+            {
+                mEditButton.setVisibility(View.GONE);
+                customerListButton.setVisibility(View.GONE);
+                myOrders.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -178,7 +231,7 @@ public class CategoryDrawerFragment extends Fragment
             protected void populateViewHolder(final DrawerCategoryViewHolder viewHolder, final Category model, int position)
             {
                 viewHolder.mCategory.setText(model.getCategory());
-                String imageUrl = model.getCategorySquareImage();
+                String imageUrl = model.getCategoryImage();
                 if (imageUrl != null && !imageUrl.isEmpty())
                 {
                     Glide.with(getActivity()).load(imageUrl)
@@ -253,5 +306,34 @@ public class CategoryDrawerFragment extends Fragment
     public void back()
     {
         mItemClickListener.onBackClick();
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot)
+    {
+        int notificationCount = 0;
+        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+        for(DataSnapshot snapshot : children)
+        {
+            NotificationModel model = snapshot.getValue(NotificationModel.class);
+            if(!model.isRead)
+            {
+                notificationCount++;
+            }
+        }
+        if(notificationCount > 0)
+        {
+            mNotificationCountTextView.setText(String.valueOf(notificationCount));
+        }
+        else
+        {
+            mNotificationCountTextView.setText("");
+        }
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError)
+    {
+
     }
 }

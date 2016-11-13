@@ -5,8 +5,12 @@ import android.os.Parcelable;
 
 public class Accounts implements Parcelable
 {
+    public static final String ADDRESS_LIST = "addressList";
     public static final String IS_OWNER = "isOwner";
     public static final String OWNERS = "owners";
+    public static final String USERS = "users";
+    public static final String OWNERS_TOKENS = "ownersToken";
+    public static final String OWNERS_GOOGLE_IDS = "ownersGids";
     public String email;
     public String name;
     public String googleId;

@@ -15,6 +15,7 @@ public class ProductBundle implements Parcelable
     private String priceAfter;
     private Bundle sizesMap;
     private String material;
+    private String orderStatus;
     private String priceBefore;
     private ArrayList<String> photoUrlList;
     private ArrayList<String> photoNameList;
@@ -33,6 +34,7 @@ public class ProductBundle implements Parcelable
         priceAfter = products.getPriceAfter();
         sizesMap = convertIntMapToBundle(products.getSizesMap());
         material = products.getMaterial();
+        orderStatus = products.getOrderStatus();
         priceBefore = products.getPriceBefore();
         productId = products.getProductId();
     }
@@ -111,10 +113,19 @@ public class ProductBundle implements Parcelable
     {
         return material;
     }
+    public String getOrderStatus()
+    {
+        return orderStatus;
+    }
+
 
     public void setMaterial(String material)
     {
         this.material = material;
+    }
+    public void setOrderStatus(String orderStatus)
+    {
+        this.orderStatus = orderStatus;
     }
 
     public String getPriceBefore()
@@ -161,6 +172,7 @@ public class ProductBundle implements Parcelable
         dest.writeString(this.priceAfter);
         dest.writeBundle(sizesMap);
         dest.writeString(this.material);
+        dest.writeString(this.orderStatus);
         dest.writeString(this.priceBefore);
         dest.writeString(this.productId);
         dest.writeStringList(this.photoUrlList);
@@ -174,6 +186,7 @@ public class ProductBundle implements Parcelable
         this.priceAfter = in.readString();
         sizesMap = in.readBundle();
         this.material = in.readString();
+        this.orderStatus = in.readString();
         this.priceBefore = in.readString();
         this.productId = in.readString();
         this.photoUrlList = in.createStringArrayList();

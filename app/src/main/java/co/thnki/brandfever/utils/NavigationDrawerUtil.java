@@ -125,7 +125,7 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
             Log.d(TAG, "Back stack size : " + size);
             if (size <= 1)
             {
-                mDrawer.closeDrawer(GravityCompat.START);
+                closeDrawer();
             }
             else
             {
@@ -136,6 +136,11 @@ public class NavigationDrawerUtil implements DrawerItemClickListener, IOnBackPre
             return false;
         }
         return true;
+    }
+
+    public void closeDrawer()
+    {
+        mDrawer.closeDrawer(GravityCompat.START);
     }
 
     public void openDrawer()

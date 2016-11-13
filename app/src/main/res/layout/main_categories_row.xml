@@ -1,65 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_marginTop="10dp"
-    android:layout_marginBottom="5dp"
-    android:layout_marginEnd="15dp"
-    android:layout_marginStart="15dp"
-    android:layout_width="match_parent"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
     android:layout_height="wrap_content">
+
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        >
-    <ImageView
-        android:layout_width="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/mens_wear"
-        android:layout_height="match_parent"
-        android:id="@+id/backgroundImage"/>
-        <RelativeLayout
+        android:layout_width="150dp"
+        android:layout_height="190dp">
+
+        <ImageView
+            android:id="@+id/backgroundImage"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:background="#55000000">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:textColor="#fff"
-                android:id="@+id/categoryTitle"
-                android:layout_alignParentStart="true"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:textSize="18sp"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="@string/app_name"/>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:orientation="horizontal"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:layout_width="40dp"
-                    android:padding="5dp"
-                    android:src="@mipmap/ic_cloud_upload_white_24dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_height="40dp"
-                    android:id="@+id/uploadIcon"/>
-                <ImageView
-                    android:layout_width="40dp"
-                    android:padding="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@mipmap/ic_mode_edit_white_24dp"
-                    android:layout_height="40dp"
-                    android:id="@+id/editIcon"/>
-            </LinearLayout>
-        </RelativeLayout>
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/mens_wear"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent_black"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="Men's Wear"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/white"/>
     </RelativeLayout>
-    <!--
-    360 x 200 - 36
-    480 x 270
-    720 x 400
-    960 x 540
-    -->
 </android.support.v7.widget.CardView>

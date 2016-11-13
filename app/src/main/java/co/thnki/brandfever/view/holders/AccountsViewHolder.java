@@ -1,4 +1,4 @@
-package co.thnki.brandfever.ViewHolders;
+package co.thnki.brandfever.view.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,23 +9,23 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.R;
 
-public class ProductViewHolder extends RecyclerView.ViewHolder
+public class AccountsViewHolder extends RecyclerView.ViewHolder
 {
-    @Bind(R.id.productImage)
+    @Bind(R.id.userImage)
     public ImageView mImageView;
 
-    @Bind(R.id.productBrand)
-    public TextView mBrand;
+    @Bind(R.id.username)
+    public TextView mUsername;
 
-    @Bind(R.id.productPriceAfter)
-    public TextView mPriceAfter;
+    @Bind(R.id.userEmail)
+    public TextView mUserEmail;
 
-    @Bind(R.id.productPriceBefore)
-    public TextView mPriceBefore;
+    /*@Bind(R.id.userPhoneNo)
+    public ImageView mUserPhoneNo;*/
 
     public View mItemView;
 
-    public ProductViewHolder(View itemView)
+    public AccountsViewHolder(View itemView)
     {
         super(itemView);
         mItemView = itemView;

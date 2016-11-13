@@ -20,6 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,7 +31,10 @@ import co.thnki.brandfever.fragments.CartFragment;
 import co.thnki.brandfever.fragments.EditAddressDialogFragment;
 import co.thnki.brandfever.fragments.FavoritesFragment;
 import co.thnki.brandfever.fragments.MainPageFragment;
+import co.thnki.brandfever.fragments.NotificationListFragment;
 import co.thnki.brandfever.fragments.ProductsFragment;
+import co.thnki.brandfever.fragments.UserListFragment;
+import co.thnki.brandfever.fragments.UsersOrdersFragment;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.NavigationDrawerUtil;
@@ -42,10 +48,17 @@ import static co.thnki.brandfever.utils.FavoritesUtil.FAV_LIST;
 
 public class StoreActivity extends AppCompatActivity
 {
+    private static final String TAG = "storeActivity";
+    public static final String NOTIFICATION_ACTION = "";
+    public static final String ORDER_RECEIVED = "orderReceived";
+    public static final String ORDER_PLACED = "orderPlaced";
+    public static final String ORDER_CANCELLED = "orderCancelled";
+    public static final String OWNER_PROFILE_UPDATED = "ownerProfileUpdated";
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
     private FragmentManager mFragmentManager;
     private NavigationDrawerUtil mNavigationDrawerUtil;
+    private SharedPreferences mPreferences;
 
     @Bind(R.id.title)
     TextView mTitle;
@@ -59,21 +72,14 @@ public class StoreActivity extends AppCompatActivity
 
     private String mCurrentFragment = "";
     private String mGoogleId;
-
+    private DatabaseReference mRootDbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 21)
-        {
-            getWindow().setSharedElementExitTransition(TransitionInflater.from(this)
-                    .inflateTransition(R.transition.shared_product_transition));
-            getWindow().setSharedElementEnterTransition(TransitionInflater.from(this)
-                    .inflateTransition(R.transition.shared_product_transition));
-        }
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        setupWindowProperties();
+        mPreferences = Brandfever.getPreferences();
         updateUserDetails();
         setContentView(R.layout.activity_store);
         ButterKnife.bind(this);
@@ -96,37 +102,85 @@ public class StoreActivity extends AppCompatActivity
                 {
                     mCurrentFragment = "";
                 }
-                Log.d("CurrentFrag", "mCurrentFragment : " + mCurrentFragment);
+                Log.d("CurrentFrag", "Check - mCurrentFragment : " + mCurrentFragment);
             }
         });
 
-        SharedPreferences mPreferences = Brandfever.getPreferences();
         mGoogleId = mPreferences.getString(Accounts.GOOGLE_ID, "dummyId");
         registerCountUpdateListener();
     }
 
+    private void setupWindowProperties()
+    {
+        if (Build.VERSION.SDK_INT >= 21)
+        {
+            getWindow().setSharedElementExitTransition(TransitionInflater.from(this)
+                    .inflateTransition(R.transition.shared_product_transition));
+            getWindow().setSharedElementEnterTransition(TransitionInflater.from(this)
+                    .inflateTransition(R.transition.shared_product_transition));
+        }
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
     private void updateUserDetails()
     {
+        mRootDbRef = FirebaseDatabase.getInstance().getReference();
         UserUtil.getInstance().updateToken();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(Accounts.OWNERS);
+        DatabaseReference databaseReference = mRootDbRef.child(Accounts.OWNERS);
+        Log.d(TAG, "databaseReference : "+databaseReference);
         databaseReference.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-
-                SharedPreferences preferences = Brandfever.getPreferences();
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                for(DataSnapshot snapshot : children)
+                boolean isOwner = false;
+                for (DataSnapshot snapshot : children)
                 {
-                    String emailId = snapshot.getValue(String.class);
-                    if(preferences.getString(Accounts.EMAIL, "").equals(emailId))
+                    String googleId = "";
+                    try
                     {
-                        preferences.edit().putBoolean(Accounts.IS_OWNER, true).apply();
+                        googleId = snapshot.getValue(String.class);
+                    }
+                    catch (Exception e)
+                    {
                         return;
                     }
+                    if (mPreferences.getString(Accounts.GOOGLE_ID, "").equals(googleId))
+                    {
+                        isOwner = true;
+                    }
+                    final DatabaseReference usersDbRef = mRootDbRef.child(Accounts.USERS).child(googleId);
+                    usersDbRef.addValueEventListener(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
+                        {
+                            Accounts ownerAccount = dataSnapshot.getValue(Accounts.class);
+                            Set<String> ownerTokens = mPreferences.getStringSet(Accounts.OWNERS_TOKENS, new HashSet<String>());
+                            Set<String> ownerGids = mPreferences.getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>());
+
+                            ownerTokens.add(ownerAccount.fcmToken);
+                            ownerGids.add(ownerAccount.googleId);
+
+                            mPreferences.edit()
+                                    .putStringSet(Accounts.OWNERS_TOKENS, ownerTokens)
+                                    .putStringSet(Accounts.OWNERS_GOOGLE_IDS, ownerGids)
+                                    .apply();
+                            Log.d(TAG, "ownerTokens : " + ownerTokens+", ownerGids : "+ownerGids);
+                            usersDbRef.removeEventListener(this);
+                            Otto.post(OWNER_PROFILE_UPDATED);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError)
+                        {
+
+                        }
+                    });
                 }
-                preferences.edit().putBoolean(Accounts.IS_OWNER, false).apply();
+                mPreferences.edit().putBoolean(Accounts.IS_OWNER, isOwner).apply();
             }
 
             @Override
@@ -140,11 +194,9 @@ public class StoreActivity extends AppCompatActivity
     private void registerCountUpdateListener()
     {
         Log.d(CART_LIST, "googleId : " + mGoogleId);
-        DatabaseReference cartDbRef = FirebaseDatabase.getInstance().getReference()
-                .child(mGoogleId).child(CART_LIST);
+        DatabaseReference cartDbRef = mRootDbRef.child(mGoogleId).child(CART_LIST);
 
-        DatabaseReference favDbRef = FirebaseDatabase.getInstance().getReference()
-                .child(mGoogleId).child(FAV_LIST);
+        DatabaseReference favDbRef = mRootDbRef.child(mGoogleId).child(FAV_LIST);
 
         favDbRef.addValueEventListener(new ValueEventListener()
         {
@@ -191,7 +243,12 @@ public class StoreActivity extends AppCompatActivity
 
     private void addMainPageFragment()
     {
-        Fragment fragment = new MainPageFragment();
+
+        Fragment fragment = mFragmentManager.findFragmentByTag(MainPageFragment.TAG);
+        if(fragment == null)
+        {
+            fragment = new MainPageFragment();
+        }
         mFragmentManager.beginTransaction()
                 .replace(R.id.content_main, fragment)
                 .commit();
@@ -223,7 +280,7 @@ public class StoreActivity extends AppCompatActivity
     {
         if (ConnectivityUtil.isConnected())
         {
-            Brandfever.getPreferences().edit()
+            mPreferences.edit()
                     .putBoolean(LoginActivity.LOGIN_STATUS, false).apply();
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(this, LoginActivity.class));
@@ -257,39 +314,41 @@ public class StoreActivity extends AppCompatActivity
 
     public void addFragment(String tag)
     {
-        if (ConnectivityUtil.isConnected())
+        Fragment fragment;
+        if (isNewObjectRequired(tag))
         {
-            if (!mCurrentFragment.equals(tag))
+            switch (tag)
             {
-                boolean popped = mFragmentManager.popBackStackImmediate(tag, 0);
-                Fragment fragment;
-                if (!popped)
-                {
-                    switch (tag)
+                case CartFragment.TAG:
+                    fragment = mFragmentManager.findFragmentByTag(CartFragment.TAG);
+                    if (fragment == null)
                     {
-                        case CartFragment.TAG:
-                            fragment = new CartFragment();
-                            break;
-                        case FavoritesFragment.TAG:
-                            fragment = new FavoritesFragment();
-                            break;
-                        default:
-                            fragment = ProductsFragment.getInstance(tag);
-                            break;
+                        fragment = new CartFragment();
                     }
-                    mFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_top,
-                                    R.anim.enter_from_top, R.anim.exit_to_bottom)
-                            .replace(R.id.content_main, fragment)
-                            .addToBackStack(tag)
-                            .commit();
-                }
+                    break;
+                case FavoritesFragment.TAG:
+                    fragment = mFragmentManager.findFragmentByTag(FavoritesFragment.TAG);
+                    if (fragment == null)
+                    {
+                        fragment = new FavoritesFragment();
+                    }
+                    break;
+                default:
+                    fragment = ProductsFragment.getInstance(tag);
+                    break;
             }
+            animateFragment(fragment, tag);
         }
-        else
-        {
-            toast(R.string.noInternet);
-        }
+    }
+
+    private void animateFragment(Fragment fragment, String tag)
+    {
+        mFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_top,
+                        R.anim.enter_from_top, R.anim.exit_to_bottom)
+                .replace(R.id.content_main, fragment)
+                .addToBackStack(tag)
+                .commit();
     }
 
     public void updateCartNo(long size)
@@ -304,7 +363,39 @@ public class StoreActivity extends AppCompatActivity
         }
     }
 
-    public void editAddress(View view)
+    public void showNotification(View view)
+    {
+        if (isNewObjectRequired(NotificationListFragment.TAG))
+        {
+            Fragment fragment = mFragmentManager.findFragmentByTag(NotificationListFragment.TAG);
+            if (fragment == null)
+            {
+                fragment = new NotificationListFragment();
+            }
+            animateFragment(fragment, NotificationListFragment.TAG);
+        }
+        mNavigationDrawerUtil.closeDrawer();
+    }
+
+    public void myOrders(View view)
+    {
+        showOrdersFragment();
+    }
+
+    private void showOrdersFragment()
+    {
+        if (ConnectivityUtil.isConnected())
+        {
+            showUserOrdersFragment(mPreferences.getString(Accounts.GOOGLE_ID, ""));
+            mNavigationDrawerUtil.closeDrawer();
+        }
+        else
+        {
+            toast(R.string.noInternet);
+        }
+    }
+
+    public void showAddressEditorFragment()
     {
         if (ConnectivityUtil.isConnected())
         {
@@ -316,6 +407,8 @@ public class StoreActivity extends AppCompatActivity
                 fragment = new EditAddressDialogFragment();
             }
             fragment.show(mFragmentManager, EditAddressDialogFragment.TAG);
+
+            mNavigationDrawerUtil.closeDrawer();
         }
         else
         {
@@ -323,15 +416,51 @@ public class StoreActivity extends AppCompatActivity
         }
     }
 
-    public void myOrders(View view)
+    public void userList(View view)
+    {
+        if (isNewObjectRequired(UserListFragment.TAG))
+        {
+            Fragment fragment = mFragmentManager.findFragmentByTag(UserListFragment.TAG);
+            if(fragment == null)
+            {
+                fragment = new UserListFragment();
+            }
+            animateFragment(fragment, UserListFragment.TAG);
+        }
+        mNavigationDrawerUtil.closeDrawer();
+    }
+
+    public void showUserOrdersFragment(String googleId)
+    {
+        if (isNewObjectRequired(UsersOrdersFragment.TAG))
+        {
+            Fragment fragment = mFragmentManager.findFragmentByTag(UsersOrdersFragment.TAG);
+            if(fragment == null)
+            {
+                fragment = UsersOrdersFragment.getInstance(googleId);
+            }
+            animateFragment(fragment, UsersOrdersFragment.TAG);
+        }
+        mNavigationDrawerUtil.closeDrawer();
+    }
+
+    private boolean isNewObjectRequired(String tag)
     {
         if (ConnectivityUtil.isConnected())
         {
-            toast("my orders");
+            if (!mCurrentFragment.equals(tag))
+            {
+                boolean popped = mFragmentManager.popBackStackImmediate(tag, 0);
+                if (!popped)
+                {
+                    return true;
+                }
+            }
         }
         else
         {
             toast(R.string.noInternet);
         }
+        return false;
     }
 }

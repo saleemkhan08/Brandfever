@@ -10,11 +10,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.LoginActivity;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.fcm.UpdateDeleteTokenAsyncTask;
 
+import static co.thnki.brandfever.firebase.database.models.Accounts.USERS;
 import static co.thnki.brandfever.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
 import static co.thnki.brandfever.singletons.VolleyUtil.APP_ID;
 import static co.thnki.brandfever.singletons.VolleyUtil.DEFAULT_URL;
@@ -27,8 +31,8 @@ import static co.thnki.brandfever.singletons.VolleyUtil.REQUEST_HANDLER_URL;
  */
 public class UserUtil
 {
-    private static final String USERS = "users";
     public static final String APP_DATA = "appData";
+    public static final String USER_LIST = "users";
     private static UserUtil sInstance;
     private Accounts mAccount;
     private SharedPreferences mPreferences;
@@ -168,5 +172,18 @@ public class UserUtil
         {
             usersDbRef.setValue(mAccount);
         }
+    }
+
+    public boolean isOwner(String googleId)
+    {
+        Set<String> ownersGid = mPreferences.getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>());
+        for(String gId : ownersGid)
+        {
+            if(googleId.equals(gId))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

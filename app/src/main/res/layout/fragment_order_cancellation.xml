@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/address"
+            android:text="@string/orderCancellation"
             android:textColor="@color/white"
             android:textSize="@dimen/dialog_title"
             android:textStyle="bold"
@@ -32,7 +32,6 @@
             android:src="@mipmap/ic_clear_white_24dp"/>
     </RelativeLayout>
 
-
     <LinearLayout
         android:id="@+id/scrollViewChild"
         android:layout_below="@+id/dialogHeader"
@@ -43,61 +42,16 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialogItemPadding"
+            android:layout_margin="@dimen/dialogItemPadding"
             android:padding="@dimen/dialogItemPadding">
 
             <EditText
-                android:id="@+id/addressName"
+                android:id="@+id/cancellationReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/name"
+                android:hint="@string/cancellationReason"
+                android:gravity="center"
                 android:inputType="textPersonName"
-                android:textColor="@color/colorPrimaryDark"/>
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialogItemPadding"
-            android:padding="@dimen/dialogItemPadding">
-
-            <EditText
-                android:id="@+id/addressText"
-                android:maxLines="5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address"
-                android:inputType="textMultiLine"
-                android:textColor="@color/colorPrimaryDark"/>
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialogItemPadding"
-            android:padding="@dimen/dialogItemPadding">
-
-            <EditText
-                android:id="@+id/phoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/phoneNo"
-                android:inputType="phone"
-                android:textColor="@color/colorPrimaryDark"/>
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialogItemPadding"
-            android:padding="@dimen/dialogItemPadding">
-
-            <EditText
-                android:id="@+id/pinCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/pincode"
-                android:inputType="phone"
                 android:textColor="@color/colorPrimaryDark"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -110,14 +64,14 @@
         android:background="#ddd">
 
         <TextView
-            android:id="@+id/saveProduct"
+            android:id="@+id/submitCancellation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_drawable"
             android:clickable="true"
             android:gravity="center"
             android:padding="5dp"
-            android:text="@string/save"
+            android:text="@string/submit"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/colorPrimaryDark"/>
     </LinearLayout>

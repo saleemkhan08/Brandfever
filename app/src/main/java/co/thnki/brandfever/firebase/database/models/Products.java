@@ -29,6 +29,7 @@ public class Products
     private String priceBefore;
     private ArrayList<String> photoUrlList;
     private ArrayList<String> photoNameList;
+    private String orderStatus;
     private static final String NOT_SPECIFIED = "Not Specified";
 
     public Products()
@@ -187,5 +188,22 @@ public class Products
     public void setPhotoNameList(ArrayList<String> photoNameList)
     {
         this.photoNameList = photoNameList;
+    }
+
+    public String getSelectedSize()
+    {
+        for(Map.Entry<String, Integer> map : sizesMap.entrySet())
+        {
+            if(map.getValue() > 0)
+            {
+                return map.getKey();
+            }
+        }
+        return Brandfever.getResString(R.string.notSelected);
+    }
+
+    public String getOrderStatus()
+    {
+        return orderStatus;
     }
 }

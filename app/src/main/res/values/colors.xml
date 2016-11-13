@@ -20,7 +20,7 @@
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
     <color name="pink">#881010</color>
     <color name="colorAccentDark">#38A09E</color>
-    <color name="transparent_black">#99000000</color>
+    <color name="transparent_black">#50000000</color>
     <color name="colorPrimaryDarkTransparent">#d0101720</color>
     <color name="colorPrimaryDarkMoreTransparent">#90101720</color>
     <color name="my_location_radius">#6055c4c1</color>

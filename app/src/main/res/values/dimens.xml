@@ -40,7 +40,7 @@
     <dimen name="optionHeight">80dp</dimen>
     <dimen name="loading">35dp</dimen>
     <dimen name="issue_add_options_pad">8dp</dimen>
-    <dimen name="navigation_drawer_size">250dp</dimen>
+    <dimen name="navigation_drawer_size">280dp</dimen>
     <dimen name="drawer_list_item_size">40dp</dimen>
     <dimen name="price_text_size">16sp</dimen>
     <dimen name="discount_text_size">14sp</dimen>
@@ -52,6 +52,15 @@
     <dimen name="priceTagPadding">100dp</dimen>
     <dimen name="dialogItemPadding">8dp</dimen>
     <dimen name="cartTextPadding">5dp</dimen>
+    <dimen name="drawerOptionsTextSize">11sp</dimen>
+    <dimen name="userTextPadding">3dp</dimen>
+    <dimen name="categoryTitleSize">22sp</dimen>
+    <dimen name="categoryTitleTopMargin">25dp</dimen>
+    <dimen name="categoryRecyclerViewEndPadding">20dp</dimen>
+    <dimen name="categoryTitleBgHeight">270dp</dimen>
+    <dimen name="categoryContainerBottomPadding">10dp</dimen>
+    <dimen name="categoryRecyclerViewStartPadding">10dp</dimen>
+    <dimen name="negativeMargin">-10dp</dimen>
 
     <item name="totalWeight" format="float" type="dimen">11</item>
     <item name="imageWeight" format="float" type="dimen">8.5</item>

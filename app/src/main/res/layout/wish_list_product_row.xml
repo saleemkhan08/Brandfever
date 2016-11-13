@@ -82,7 +82,7 @@
                     android:layout_height="@dimen/favIconSize"
                     android:background="@drawable/bg_accent_drawable"
                     android:clickable="true"
-                    android:padding="12dp"
+                    android:padding="2dp"
                     android:src="@mipmap/delete_favorite_alt_2"/>
             </LinearLayout>
         </RelativeLayout>

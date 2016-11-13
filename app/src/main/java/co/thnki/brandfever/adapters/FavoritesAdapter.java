@@ -14,7 +14,7 @@ import com.google.firebase.database.Query;
 
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.ViewHolders.WishListProductViewHolder;
+import co.thnki.brandfever.view.holders.WishListProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.utils.ConnectivityUtil;

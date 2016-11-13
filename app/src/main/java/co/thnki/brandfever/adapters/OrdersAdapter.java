@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -14,33 +15,37 @@ import com.google.firebase.database.Query;
 
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.view.holders.CartListProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
+import co.thnki.brandfever.fragments.OrderCancellationDialogFragment;
 import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.view.holders.OrderListProductViewHolder;
 
 import static co.thnki.brandfever.Brandfever.getResString;
 import static co.thnki.brandfever.Brandfever.toast;
 
-public class CartAdapter extends FirebaseRecyclerAdapter<Products, CartListProductViewHolder>
+public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListProductViewHolder>
 {
     private Activity mActivity;
+    private String mGoogleId;
 
-    public static CartAdapter getInstance(DatabaseReference reference, Activity activity)
+    public static OrdersAdapter getInstance(DatabaseReference reference, String googleId, Activity activity)
     {
-        CartAdapter adapter = new CartAdapter(Products.class, R.layout.cart_list_product_row, CartListProductViewHolder.class, reference);
+        OrdersAdapter adapter = new OrdersAdapter(Products.class, R.layout.order_list_product_row,
+                OrderListProductViewHolder.class, reference);
         adapter.mActivity = activity;
+        adapter.mGoogleId = googleId;
         return adapter;
     }
 
-    private CartAdapter(Class<Products> modelClass, int modelLayout, Class<CartListProductViewHolder> viewHolderClass, Query ref)
+    private OrdersAdapter(Class<Products> modelClass, int modelLayout, Class<OrderListProductViewHolder> viewHolderClass, Query ref)
     {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
     @Override
-    protected void populateViewHolder(final CartListProductViewHolder viewHolder, final Products model, int position)
+    protected void populateViewHolder(final OrderListProductViewHolder viewHolder, final Products model, int position)
     {
         /**
          * get the zeroth item to display in the list.
@@ -72,7 +77,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Products, CartListProdu
                     ProductBundle bundle = new ProductBundle(model);
                     intent.putExtra(Products.PRODUCT_MODEL, bundle);
 
-                    if(Build.VERSION.SDK_INT >= 21)
+                    if (Build.VERSION.SDK_INT >= 21)
                     {
                         String transitionName = getResString(R.string.productTransitionImage);
                         viewHolder.mImageView.setTransitionName(transitionName);
@@ -100,7 +105,27 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Products, CartListProdu
             {
                 if (ConnectivityUtil.isConnected())
                 {
-                    CartUtil.getsInstance().removeFromCart(model);
+                    /*AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setView(R.layout.order_cancellation_dialog);
+                    builder.setMessage(R.string.areYouSureYouWantToCancelThisOrder);
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+
+                        }
+                    }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            OrdersUtil.getsInstance().cancelOrder(model);
+                        }
+                    }).show();*/
+
+                    OrderCancellationDialogFragment fragment = OrderCancellationDialogFragment.getInstance(CartUtil.getKey(model),mGoogleId);
+                    fragment.show(((AppCompatActivity)mActivity).getSupportFragmentManager(), OrderCancellationDialogFragment.TAG);
                 }
                 else
                 {

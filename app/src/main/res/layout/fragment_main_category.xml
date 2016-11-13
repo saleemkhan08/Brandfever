@@ -6,13 +6,179 @@
     tools:context="co.thnki.brandfever.fragments.MainPageFragment">
 
     <ProgressBar
-        android:layout_width="match_parent"
         android:id="@+id/mainCategoryProgress"
-        android:paddingTop="50dp"
-        android:layout_height="80dp"/>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/mainCategoryRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="80dp"
+        android:paddingTop="50dp"/>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/mensWear"
+                android:clipToPadding="false"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/categoryTitleBgHeight"
+                    android:background="@drawable/category_bg"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:textColor="@color/grey"
+                    android:text="Men's Wear"
+                    android:id="@+id/mensWearTextView"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/categoryTitleTopMargin"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_below="@+id/mensWearTextView"
+                    android:id="@+id/mensWearRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
+                    android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/womensWear"
+                android:layout_marginTop="@dimen/negativeMargin"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/categoryTitleBgHeight"
+                    android:background="@drawable/category_bg"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:textColor="@color/grey"
+                    android:text="Women's Wear"
+                    android:id="@+id/womensWearTextView"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/categoryTitleTopMargin"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/womensWearRecyclerView"
+                    android:layout_below="@+id/womensWearTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
+                    android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/kidsWear"
+                android:layout_marginTop="@dimen/negativeMargin"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/categoryTitleBgHeight"
+                    android:background="@drawable/category_bg"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:textColor="@color/grey"
+                    android:text="Kid's Wear"
+                    android:id="@+id/kidsWearTextView"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/categoryTitleTopMargin"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/kidsWearRecyclerView"
+                    android:layout_below="@+id/kidsWearTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
+                    android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/negativeMargin"
+                android:id="@+id/fashionAccessories"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/categoryTitleBgHeight"
+                    android:background="@drawable/category_bg"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:textColor="@color/grey"
+                    android:id="@+id/fashionAccessoriesTextView"
+                    android:text="Fashion Accessories"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/categoryTitleTopMargin"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_below="@+id/fashionAccessoriesTextView"
+                    android:id="@+id/fashionAccessoriesRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
+                    android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/homeFurnishing"
+                android:layout_marginTop="@dimen/negativeMargin"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/categoryTitleBgHeight"
+                    android:background="@drawable/category_bg"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:textColor="@color/grey"
+                    android:text="Home Furnishing"
+                    android:id="@+id/homeFurnishingTextView"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/categoryTitleTopMargin"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_below="@+id/homeFurnishingTextView"
+                    android:id="@+id/homeFurnishingRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
+                    android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
 </FrameLayout>

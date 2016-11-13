@@ -22,16 +22,16 @@ import co.thnki.brandfever.firebase.database.models.Accounts;
  * 2. Product Activity
  *      a. getInstance() -> onCreate()
  *      b. isAddedToCart() -> onCreate() used to update UI
- *      c. addToCart() -> addToCart()
- *      d. removeFromCart() -> addToCart()
+ *      c. placeAnOrder() -> placeAnOrder()
+ *      d. removeFromCart() -> placeAnOrder()
  *
  * 2. Product Activity
- *      a. addToCart() ->
+ *      a. placeAnOrder() ->
  *      b. removeFromCart()
  *      c. isAddedToCart()
  *
  * 3. Products Fragment
- *      a. addToCart()
+ *      a. placeAnOrder()
  *      b. removeFromCart()
  *      c. isAddedToCart()
  */
@@ -144,12 +144,12 @@ public class CartUtil
 
     public String getKey(ProductBundle product)
     {
-        return product.getCategoryId() + "*" + product.getProductId();
+        return product.getCategoryId() + "_" + product.getProductId();
     }
 
-    private String getKey(Products product)
+    public static String getKey(Products product)
     {
-        return product.getCategoryId() + "*" + product.getProductId();
+        return product.getCategoryId() + "_" + product.getProductId();
     }
 
     public boolean toggleCart(Products model)

@@ -3,68 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorSecondaryLight"
+    android:clipToPadding="false"
+    android:background="@color/colorPrimary"
     android:baselineAligned="false"
     android:orientation="horizontal"
     android:weightSum="3">
 
-    <LinearLayout
-        android:id="@+id/myOrders"
-        android:layout_width="0dp"
-        android:onClick="myOrders"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@color/colorSecondary"
-        android:clickable="true"
-        android:orientation="horizontal"
-        android:layout_marginTop="1dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/drawer_icon_top_padding"
-            android:background="@drawable/bg_drawable"
-            android:paddingEnd="@dimen/drawer_icon_padding"
-            android:paddingStart="@dimen/drawer_icon_padding"
-            android:paddingTop="@dimen/drawer_icon_top_padding">
-
-            <ImageView
-                android:id="@+id/myOrdersImage"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_shopping_cart_white_24dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/myOrdersImage"
-                android:layout_centerHorizontal="true"
-                android:textSize="12sp"
-                android:text="@string/myOrders"
-                android:textColor="@color/white"/>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
+    <!--<LinearLayout
+        android:id="@+id/deliveryAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
         android:layout_weight="1"
         android:clickable="true"
         android:onClick="editAddress"
-        android:id="@+id/deliveryAddress"
-        android:background="@color/colorSecondary"
-        android:orientation="horizontal"
-        android:layout_marginTop="1dp"
-        android:layout_marginStart="1dp">
+        android:orientation="horizontal">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_accent_drawable"
             android:paddingBottom="@dimen/drawer_icon_top_padding"
             android:paddingEnd="@dimen/drawer_icon_padding"
-            android:background="@drawable/bg_drawable"
             android:paddingStart="@dimen/drawer_icon_padding"
             android:paddingTop="@dimen/drawer_icon_top_padding">
 
@@ -81,30 +43,29 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/addressImage"
                 android:layout_centerHorizontal="true"
-                android:textSize="12sp"
                 android:text="@string/address"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="@dimen/drawerOptionsTextSize"/>
         </RelativeLayout>
-    </LinearLayout>
+    </LinearLayout>-->
 
     <LinearLayout
+        android:id="@+id/logoutButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
         android:layout_weight="1"
         android:clickable="true"
-        android:id="@+id/logoutButton"
         android:onClick="logout"
-        android:background="@color/colorSecondary"
-        android:orientation="horizontal"
-        android:layout_marginTop="1dp"
-        android:layout_marginStart="1dp">
+        android:orientation="horizontal">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_accent_drawable"
             android:paddingBottom="@dimen/drawer_icon_top_padding"
             android:paddingEnd="@dimen/drawer_icon_padding"
-            android:background="@drawable/bg_drawable"
             android:paddingStart="@dimen/drawer_icon_padding"
             android:paddingTop="@dimen/drawer_icon_top_padding">
 
@@ -121,9 +82,141 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/logoutImage"
                 android:layout_centerHorizontal="true"
-                android:textSize="12sp"
                 android:text="@string/logout"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="@dimen/drawerOptionsTextSize"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/customerListButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:clickable="true"
+            android:onClick="userList"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_accent_drawable"
+                android:paddingBottom="@dimen/drawer_icon_top_padding"
+                android:paddingEnd="@dimen/drawer_icon_padding"
+                android:paddingStart="@dimen/drawer_icon_padding"
+                android:paddingTop="@dimen/drawer_icon_top_padding">
+
+                <ImageView
+                    android:id="@+id/userListImage"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_account_circle_white_24dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/userListImage"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/customerList"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/drawerOptionsTextSize"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/myOrders"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:clickable="true"
+            android:onClick="myOrders"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_accent_drawable"
+                android:paddingBottom="@dimen/drawer_icon_top_padding"
+                android:paddingEnd="@dimen/drawer_icon_padding"
+                android:paddingStart="@dimen/drawer_icon_padding"
+                android:paddingTop="@dimen/drawer_icon_top_padding">
+
+                <ImageView
+                    android:id="@+id/myOrdersImage"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_shopping_cart_white_24dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/myOrdersImage"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/orders"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:clipToPadding="false"
+        android:id="@+id/notifications"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:onClick="showNotification"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:clipToPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_accent_drawable"
+            android:paddingBottom="@dimen/drawer_icon_top_padding"
+            android:paddingEnd="@dimen/drawer_icon_padding"
+            android:paddingStart="@dimen/drawer_icon_padding"
+            android:paddingTop="@dimen/drawer_icon_top_padding">
+
+            <ImageView
+                android:id="@+id/notificationIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_notifications_white_24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:text="2"
+                android:id="@+id/notificationCount"
+                android:layout_centerHorizontal="true"
+                android:paddingStart="25dp"
+                android:layout_marginTop="-6dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/notificationIcon"
+                android:layout_centerHorizontal="true"
+                android:text="@string/notifications"
+                android:textColor="@color/white"
+                android:textSize="@dimen/drawerOptionsTextSize"/>
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

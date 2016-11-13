@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
-import co.thnki.brandfever.ViewHolders.WishListProductViewHolder;
+import co.thnki.brandfever.view.holders.WishListProductViewHolder;
 import co.thnki.brandfever.adapters.FavoritesAdapter;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.firebase.database.models.Accounts;

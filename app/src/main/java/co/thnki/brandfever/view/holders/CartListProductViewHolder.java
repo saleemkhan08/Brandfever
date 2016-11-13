@@ -1,4 +1,4 @@
-package co.thnki.brandfever.ViewHolders;
+package co.thnki.brandfever.view.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,7 +9,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.R;
 
-public class WishListProductViewHolder extends RecyclerView.ViewHolder
+public class CartListProductViewHolder extends RecyclerView.ViewHolder
 {
     @Bind(R.id.productImage)
     public ImageView mImageView;
@@ -23,12 +23,15 @@ public class WishListProductViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.productPriceBefore)
     public TextView mPriceBefore;
 
-    @Bind(R.id.deleteFav)
-    public ImageView mDeleteFav;
+    @Bind(R.id.productSize)
+    public TextView mProductSize;
+
+    @Bind(R.id.deleteFromCart)
+    public ImageView mDeleteFromCart;
 
     public View mItemView;
 
-    public WishListProductViewHolder(View itemView)
+    public CartListProductViewHolder(View itemView)
     {
         super(itemView);
         mItemView = itemView;

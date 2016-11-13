@@ -1,4 +1,4 @@
-package co.thnki.brandfever.ViewHolders;
+package co.thnki.brandfever.view.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

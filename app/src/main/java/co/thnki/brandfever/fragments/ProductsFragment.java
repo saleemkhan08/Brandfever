@@ -43,7 +43,7 @@ import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
-import co.thnki.brandfever.ViewHolders.ProductViewHolder;
+import co.thnki.brandfever.view.holders.ProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;

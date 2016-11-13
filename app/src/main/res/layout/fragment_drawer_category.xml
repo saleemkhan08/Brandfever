@@ -7,9 +7,9 @@
 
     <LinearLayout
         android:id="@+id/drawerHeader"
-        android:background="@color/colorSecondaryDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorSecondaryDark"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -52,35 +52,46 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@+id/userDetails"
-                android:layout_margin ="20dp"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp">
+
                 <ImageView
                     android:id="@+id/profilePic"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@mipmap/user_icon_accent"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    android:contentDescription="@string/edit"/>
+                    android:contentDescription="@string/edit"
+                    android:src="@mipmap/user_icon_accent"/>
 
                 <TextView
                     android:id="@+id/profileName"
-                    android:text="Username"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/profilePic"
+                    android:text="Username"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:textColor="@color/white"/>
+
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_below="@+id/userDetails"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="5dp"
+                android:layout_below="@+id/userDetails">
+                <View
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="0.5dp"/>
                 <include layout="@layout/accounts_options"/>
             </LinearLayout>
         </RelativeLayout>
@@ -99,9 +110,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:visibility="gone"
         app:fab_icon="@mipmap/ic_mode_edit_white_24dp"
         fab:fab_colorNormal="@color/colorAccent"
-        android:visibility="gone"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>
 </RelativeLayout>

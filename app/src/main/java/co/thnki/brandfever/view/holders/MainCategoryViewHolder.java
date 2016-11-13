@@ -1,4 +1,4 @@
-package co.thnki.brandfever.ViewHolders;
+package co.thnki.brandfever.view.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -11,14 +11,8 @@ import co.thnki.brandfever.R;
 
 public class MainCategoryViewHolder extends RecyclerView.ViewHolder
 {
-    @Bind(R.id.categoryTitle)
+    @Bind(R.id.title)
     TextView mTitleTextView;
-
-    @Bind(R.id.uploadIcon)
-    public ImageView mUploadImageView;
-
-    @Bind(R.id.editIcon)
-    public ImageView mEditImageView;
 
     @Bind(R.id.backgroundImage)
     public ImageView mBackgroundImageView;

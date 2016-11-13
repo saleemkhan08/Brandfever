@@ -28,11 +28,11 @@ import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
+import static co.thnki.brandfever.firebase.database.models.Accounts.ADDRESS_LIST;
 
 public class EditAddressDialogFragment extends DialogFragment implements Const
 {
     public static final String TAG = "EditAddressDialogFragment";
-    private static final String ADDRESS_LIST = "addressList";
 
     @Bind(R.id.addressName)
     EditText mAddressName;
@@ -62,7 +62,12 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        Window window = getDialog().getWindow();
+        if(window != null)
+        {
+            window.requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
         View parentView = inflater.inflate(R.layout.fragment_edit_address, container, false);
         ButterKnife.bind(this, parentView);
         Otto.register(this);

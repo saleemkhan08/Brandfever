@@ -8,7 +8,7 @@
         android:id="@+id/cartRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/placeAnOrderContainer"
+        android:layout_above="@+id/orderContainer"
         />
 
     <RelativeLayout
@@ -45,40 +45,94 @@
         android:padding="160dp"/>
 
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/placeAnOrderContainer"
+    <LinearLayout
+        android:id="@+id/orderContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/placeAnOrder"
+        <android.support.v7.widget.CardView
+            android:id="@+id/addressContainer"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/add_to_bag_bg"
-            android:clickable="true"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:layout_margin="5dp">
 
-            <TextView
-                android:id="@+id/addToCartText"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/placeAnOrder"
-                android:textColor="@color/colorAccent"/>
+                android:padding="15dp">
+                <LinearLayout
+                    android:layout_toStartOf="@+id/editAddressIcon"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:id="@+id/contactPerson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Username"/>
+                    <TextView
+                        android:id="@+id/deliveryAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Delivery Address"/>
+                    <TextView
+                        android:id="@+id/contactNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Phone Number"/>
+                </LinearLayout>
+                <ImageView
+                    android:layout_centerVertical="true"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:background="@drawable/bg_drawable"
+                    android:src="@mipmap/edit_icon"
+                    android:id="@+id/editAddressIcon"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
 
-            <ImageView
-                android:id="@+id/addToCartImg"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center_vertical"
-                android:layout_toEndOf="@+id/addToCartText"
-                android:paddingBottom="5dp"
-                android:paddingEnd="5dp"
-                android:paddingStart="5dp"
-                android:src="@mipmap/empty_shopping_cart"/>
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/placeAnOrderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            >
+            <RelativeLayout
+                android:id="@+id/placeAnOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/add_to_bag_bg"
+                android:clickable="true"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/addToCartText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/placeAnOrder"
+                    android:textColor="@color/colorAccent"/>
+
+                <ImageView
+                    android:id="@+id/addToCartImg"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_toEndOf="@+id/addToCartText"
+                    android:paddingBottom="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp"
+                    android:src="@mipmap/empty_shopping_cart"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 </RelativeLayout>
