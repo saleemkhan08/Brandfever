@@ -68,12 +68,18 @@ public class CartUtil
     public String addToCart(ProductBundle productBundle)
     {
         productBundle.setOrderStatus(OrdersUtil.ORDER_ADDED_TO_CART);
-        String key = getKey(productBundle);
+        String key = getKey(productBundle, productBundle.getSelectedSize());
         DatabaseReference reference = mCartRef.child(key);
 
+        //TODO check where it is being used
         mPreferences.edit().putBoolean(key, true).apply();
         reference.setValue(new Products(productBundle));
         return key;
+    }
+
+    private String getKey(ProductBundle productBundle, String selectedSize)
+    {
+        return productBundle.getCategoryId() + "_" + productBundle.getProductId()+"_"+selectedSize;
     }
 
     public void removeFromCart(Products products)
@@ -150,7 +156,7 @@ public class CartUtil
 
     public static String getKey(Products product)
     {
-        return product.getCategoryId() + "_" + product.getProductId();
+        return product.getCategoryId() + "_" + product.getProductId()+"_"+product.getSelectedSize();
     }
 
     public boolean toggleCart(Products model)

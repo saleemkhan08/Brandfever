@@ -133,6 +133,7 @@ public class MainPageFragment extends Fragment
         if (activity instanceof StoreActivity)
         {
             ((StoreActivity) activity).setToolBarTitle(getString(R.string.app_name));
+
         }
     }
 

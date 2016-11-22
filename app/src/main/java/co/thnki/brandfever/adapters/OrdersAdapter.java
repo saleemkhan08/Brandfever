@@ -2,10 +2,14 @@ package co.thnki.brandfever.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -16,11 +20,13 @@ import com.google.firebase.database.Query;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
-import co.thnki.brandfever.fragments.OrderCancellationDialogFragment;
+import co.thnki.brandfever.fragments.NotificationDialogFragment;
 import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.OrdersUtil;
 import co.thnki.brandfever.view.holders.OrderListProductViewHolder;
 
 import static co.thnki.brandfever.Brandfever.getResString;
@@ -30,7 +36,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
 {
     private Activity mActivity;
     private String mGoogleId;
-    public String mPhoneNumber;
+    private SharedPreferences mPreferences;
 
     public static OrdersAdapter getInstance(DatabaseReference reference, String googleId, Activity activity)
     {
@@ -38,6 +44,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
                 OrderListProductViewHolder.class, reference);
         adapter.mActivity = activity;
         adapter.mGoogleId = googleId;
+        adapter.mPreferences = Brandfever.getPreferences();
         return adapter;
     }
 
@@ -47,7 +54,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
     }
 
     @Override
-    protected void populateViewHolder(final OrderListProductViewHolder viewHolder, final Products model, int position)
+    protected void populateViewHolder(final OrderListProductViewHolder viewHolder, final Products model, final int position)
     {
         /**
          * get the zeroth item to display in the list.
@@ -59,7 +66,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
-        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size)+" "+model.getSelectedSize());
+        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size) + " " + model.getSelectedSize());
         String discountText = model.getPriceBefore();
         if (discountText != null && !discountText.isEmpty())
         {
@@ -68,7 +75,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
                     | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener()
+        viewHolder.mImageView.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -100,40 +107,82 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Products, OrderListPr
                 }
             }
         });
-        viewHolder.mDeleteFromCart.setOnClickListener(new View.OnClickListener()
+        configureOptions(viewHolder, model, position);
+    }
+
+    private void configureOptions(final OrderListProductViewHolder holder, final Products product, final int position)
+    {
+        holder.mOrderOptions.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View view)
+            public void onClick(View v)
             {
-                if (ConnectivityUtil.isConnected())
+                PopupMenu popup = new PopupMenu(mActivity, v);
+                popup.getMenuInflater()
+                        .inflate(R.menu.order_options_menu, popup.getMenu());
+
+                Menu menu = popup.getMenu();
+                if (mPreferences.getBoolean(Accounts.IS_OWNER, false))
                 {
-                    /*AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                    builder.setView(R.layout.order_cancellation_dialog);
-                    builder.setMessage(R.string.areYouSureYouWantToCancelThisOrder);
-                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
-                        {
-
-                        }
-                    }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
-                        {
-                            OrdersUtil.getsInstance().cancelOrder(model);
-                        }
-                    }).show();*/
-
-                    OrderCancellationDialogFragment fragment = OrderCancellationDialogFragment.getInstance(CartUtil.getKey(model),mGoogleId);
-                    fragment.show(((AppCompatActivity)mActivity).getSupportFragmentManager(), OrderCancellationDialogFragment.TAG);
+                    menu.getItem(0).setVisible(true);
+                    menu.getItem(1).setVisible(true);
+                    menu.getItem(2).setVisible(true);
+                    menu.getItem(3).setVisible(true);
+                    menu.getItem(4).setVisible(true);
+                    menu.getItem(5).setVisible(false);
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    menu.getItem(0).setVisible(false);
+                    menu.getItem(1).setVisible(false);
+                    menu.getItem(2).setVisible(false);
+                    menu.getItem(3).setVisible(false);
+                    menu.getItem(4).setVisible(true);
+                    menu.getItem(5).setVisible(true);
                 }
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
+                    public boolean onMenuItemClick(MenuItem item)
+                    {
+                        if (ConnectivityUtil.isConnected())
+                        {
+                            switch (item.getItemId())
+                            {
+                                case R.id.packed:
+                                    sendNotification(product, R.string.packedNotification, OrdersUtil.ORDER_PACKED);
+                                    break;
+                                case R.id.shipped:
+                                    sendNotification(product, R.string.shippedNotification, OrdersUtil.ORDER_SHIPPED);
+                                    break;
+                                case R.id.delivered:
+                                    sendNotification(product, R.string.deliveredNotification, OrdersUtil.ORDER_DELIVERED);
+                                    break;
+                                case R.id.delayed:
+                                    sendNotification(product, R.string.delayedNotification, OrdersUtil.ORDER_DELAYED);
+                                    break;
+                                case R.id.cancel:
+                                    sendNotification(product, 0, OrdersUtil.ORDER_CANCELLED);
+                                    break;
+                                case R.id.returnOrder:
+                                    sendNotification(product, -1, OrdersUtil.ORDER_REQUESTED_RETURN);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            toast(mActivity.getString(R.string.noInternet));
+                        }
+                        return true;
+                    }
+                });
+                popup.show();
             }
         });
+    }
+
+    private void sendNotification(Products model, int msgResourceId, String status)
+    {
+        NotificationDialogFragment fragment = NotificationDialogFragment.getInstance(CartUtil.getKey(model), mGoogleId, msgResourceId, status);
+        fragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), NotificationDialogFragment.TAG);
     }
 }

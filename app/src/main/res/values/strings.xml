@@ -227,4 +227,23 @@
     <string name="youSave">You Save :</string>
     <string name="size">Size :</string>
     <string name="toMakeAcallThisPermissionIsRequired">To Make a Call This Permission is Required!!</string>
+    <string name="packed">Packed</string>
+    <string name="shipped">Shipped</string>
+    <string name="delivered">Delivered</string>
+    <string name="returnOrder">Return</string>
+    <string name="delayed">Delayed</string>
+    <string name="packedNotification">Your Order Has Been Packed and Ready to Dispatch!</string>
+    <string name="shippedNotification">Your Order Has Been Shipped!</string>
+    <string name="deliveredNotification">Your Order Has Been Delivered</string>
+    <string name="delayedNotification">Sorry!! Your Order Delivery Will Be Delayed!</string>
+    <string name="send">Send</string>
+    <string name="returnReason">Return Reason</string>
+    <string name="notify">Notify</string>
+    <string name="notification">Send Notification</string>
+    <string name="message">Message</string>
+    <string name="returned">Returned</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="sent">Sent</string>
+    <string name="sizeNotAvailable">Size Not Available!</string>
+    <string name="productNotAvailable">Product is unavailable!</string>
 </resources>

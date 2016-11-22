@@ -58,6 +58,8 @@ import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
 public class CategoryDrawerFragment extends Fragment implements ValueEventListener
 {
     private static final String LOGIN = "Login";
+    private boolean mIsFirstLevelCategory = false;
+
     @Bind(R.id.categoryRecyclerView)
     RecyclerView mCategoriesRecyclerView;
 
@@ -122,12 +124,14 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         mFirstLevelArray = getFirstLevelArray();
         if (parentCategory != null)
         {
+            mIsFirstLevelCategory = false;
             mHeaderBack.setVisibility(View.VISIBLE);
             mHeaderProfile.setVisibility(View.GONE);
             mCategory.setText(parentCategory);
         }
         else
         {
+            mIsFirstLevelCategory = true;
             mHeaderProfile.setVisibility(View.VISIBLE);
             mHeaderBack.setVisibility(View.GONE);
             String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
@@ -232,7 +236,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
             {
                 viewHolder.mCategory.setText(model.getCategory());
                 String imageUrl = model.getCategoryImage();
-                if (imageUrl != null && !imageUrl.isEmpty())
+                if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
                     Glide.with(getActivity()).load(imageUrl)
                             .asBitmap().centerCrop().into(new BitmapImageViewTarget(viewHolder.mImageView)

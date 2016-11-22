@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/packed"
+          android:title="@string/packed">
+    </item>
+    <item android:id="@+id/shipped"
+          android:title="@string/shipped">
+    </item>
+    <item android:id="@+id/delivered"
+          android:title="@string/delivered">
+    </item>
+    <item android:id="@+id/delayed"
+          android:title="@string/delayed">
+    </item>
+    <item android:id="@+id/cancel"
+          android:title="@string/cancel">
+    </item>
+    <item android:id="@+id/returnOrder"
+          android:title="@string/returnOrder">
+    </item>
+</menu>

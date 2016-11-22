@@ -8,7 +8,7 @@
         android:id="@+id/orderRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/addressContainer"
+        android:clipToPadding="false"
         />
 
     <RelativeLayout
@@ -44,55 +44,64 @@
         android:layout_height="match_parent"
         android:padding="160dp"/>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/addressContainer"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/addressContainer"
         android:layout_alignParentBottom="true"
-        android:layout_margin="5dp">
+        android:layout_height="wrap_content"
+        android:background="@drawable/above_shadow">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="5dp">
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="15dp">
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/contactPerson"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Username"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="15dp">
 
-                <TextView
-                    android:id="@+id/deliveryAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Delivery Address"/>
+                    <TextView
+                        android:id="@+id/contactPerson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Username"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
 
-                <TextView
-                    android:id="@+id/contactNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Phone Number"/>
+                    <TextView
+                        android:id="@+id/deliveryAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Delivery Address"/>
+
+                    <TextView
+                        android:id="@+id/contactNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Phone Number"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/makeCall"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/bg_accent_drawable"
+                    android:clickable="true"
+                    android:padding="10dp"
+                    android:src="@mipmap/phone_call_button"/>
             </LinearLayout>
-            <ImageView
-                android:layout_width="48dp"
-                android:padding="10dp"
-                android:clickable="true"
-                android:id="@+id/makeCall"
-                android:background="@drawable/bg_accent_drawable"
-                android:layout_gravity="center"
-                android:src="@mipmap/phone_call_button"
-                android:layout_margin="20dp"
-                android:layout_height="48dp"/>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
+        </android.support.v7.widget.CardView>
 
+    </LinearLayout>
 </RelativeLayout>

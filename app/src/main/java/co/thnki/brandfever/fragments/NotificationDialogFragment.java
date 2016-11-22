@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,9 +23,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
+import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.interfaces.ResultListener;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
@@ -32,32 +34,41 @@ import co.thnki.brandfever.utils.OrdersUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
 
-public class OrderCancellationDialogFragment extends DialogFragment
+public class NotificationDialogFragment extends DialogFragment
 {
     public static final String TAG = "EditAddressDialogFragment";
 
-    @Bind(R.id.cancellationReason)
-    EditText mCancellationReason;
+    @Bind(R.id.notificationMsgEditText)
+    EditText mNotificationMsgEditText;
+
+    @Bind(R.id.textInputHint)
+    TextInputLayout mTextInputHint;
+
+
+    @Bind(R.id.dialogTitle)
+    TextView mDialogTitleTextView;
 
     private DatabaseReference mOrderDbRef;
     private SharedPreferences mPreference;
-    private String mOrderId;
     private ProgressDialog mProgressDialog;
     private String mGoogleId;
+    private int mNotificationMessageResId;
+    private String mOrderStatus;
 
-    public static OrderCancellationDialogFragment getInstance(String orderId, String googleId)
+    public static NotificationDialogFragment getInstance(String orderId, String googleId, int msgResourceId, String status)
     {
-        OrderCancellationDialogFragment fragment = new OrderCancellationDialogFragment();
-        fragment.mOrderId = orderId;
+        NotificationDialogFragment fragment = new NotificationDialogFragment();
         fragment.mPreference = Brandfever.getPreferences();
         fragment.mOrderDbRef = FirebaseDatabase.getInstance().getReference()
                 .child(googleId)
                 .child(OrdersUtil.ORDERS).child(orderId);
         fragment.mGoogleId = googleId;
+        fragment.mNotificationMessageResId = msgResourceId;
+        fragment.mOrderStatus = status;
         return fragment;
     }
 
-    public OrderCancellationDialogFragment()
+    public NotificationDialogFragment()
     {
 
     }
@@ -71,11 +82,35 @@ public class OrderCancellationDialogFragment extends DialogFragment
         {
             window.requestFeature(Window.FEATURE_NO_TITLE);
         }
-
-        View parentView = inflater.inflate(R.layout.fragment_order_cancellation, container, false);
+        View parentView = inflater.inflate(R.layout.fragment_notification_dialog, container, false);
         ButterKnife.bind(this, parentView);
         Otto.register(this);
+        updateNotificationEditText();
+
         return parentView;
+    }
+
+    private void updateNotificationEditText()
+    {
+
+        if(mNotificationMessageResId == 0)
+        {
+            mDialogTitleTextView.setText(R.string.orderCancellation);
+            mTextInputHint.setHint(getString(R.string.cancellationReason));
+            mNotificationMsgEditText.setText("");
+        }
+        else if(mNotificationMessageResId == -1)
+        {
+            mDialogTitleTextView.setText(R.string.returnOrder);
+            mTextInputHint.setHint(getString(R.string.returnReason));
+            mNotificationMsgEditText.setText("");
+        }
+        else
+        {
+            mDialogTitleTextView.setText(R.string.notification);
+            mTextInputHint.setHint(getString(R.string.message));
+            mNotificationMsgEditText.setText(mNotificationMessageResId);
+        }
     }
 
     @Override
@@ -98,8 +133,8 @@ public class OrderCancellationDialogFragment extends DialogFragment
         dismiss();
     }
 
-    @OnClick(R.id.submitCancellation)
-    public void submitCancellation()
+    @OnClick(R.id.sendNotification)
+    public void sendNotification()
     {
         /**
          * 1. get the reason for cancellation
@@ -117,15 +152,15 @@ public class OrderCancellationDialogFragment extends DialogFragment
         if (ConnectivityUtil.isConnected())
         {
             NotificationModel model = new NotificationModel();
-            model.notification = mCancellationReason.getText().toString();
+            model.notification = mNotificationMsgEditText.getText().toString();
             if (model.notification.trim().isEmpty())
             {
                 toast(R.string.pleaseEnterReason);
             }
             else
             {
-                mOrderDbRef.removeValue();
-                model.action = StoreActivity.ORDER_CANCELLED;
+                mOrderDbRef.child(Products.ORDER_STATUS).setValue(mOrderStatus);
+                model.action = mOrderStatus;
                 model.googleId = mPreference.getString(Accounts.GOOGLE_ID, "");
                 model.username = mPreference.getString(Accounts.NAME, "");
                 NotificationsUtil notificationsUtil = NotificationsUtil.getInstance();
@@ -143,7 +178,7 @@ public class OrderCancellationDialogFragment extends DialogFragment
                     @Override
                     public void onSuccess(String result)
                     {
-                        toast(R.string.orderCancelled);
+                        toast(R.string.sent);
                         mProgressDialog.dismiss();
                         dismiss();
                     }

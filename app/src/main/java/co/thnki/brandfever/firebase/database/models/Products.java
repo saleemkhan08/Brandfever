@@ -18,6 +18,7 @@ public class Products
     public static final String PHOTO_URL = "photoUrlList";
     public static final String PHOTO_NAME = "photoNameList";
     public static final String PRODUCT_MODEL = "productModel";
+    public static final String ORDER_STATUS = "orderStatus";
 
     private String categoryId;
     private String productId;
@@ -31,6 +32,7 @@ public class Products
     private ArrayList<String> photoNameList;
     private String orderStatus;
     private static final String NOT_SPECIFIED = "Not Specified";
+    private String selectedSize;
 
     public Products()
     {
@@ -70,6 +72,7 @@ public class Products
         priceBefore = bundle.getPriceBefore();
         productId = bundle.getProductId();
         orderStatus = bundle.getOrderStatus();
+        selectedSize = bundle.getSelectedSize();
     }
 
     public static String generateRandomKey()
@@ -206,14 +209,12 @@ public class Products
 
     public String getSelectedSize()
     {
-        for (Map.Entry<String, Integer> map : sizesMap.entrySet())
-        {
-            if (map.getValue() > 0)
-            {
-                return map.getKey();
-            }
-        }
-        return Brandfever.getResString(R.string.notSelected);
+        return selectedSize;
+    }
+
+    public void setSelectedSize(String selectedSize)
+    {
+        this.selectedSize = selectedSize;
     }
 
     public String getOrderStatus()

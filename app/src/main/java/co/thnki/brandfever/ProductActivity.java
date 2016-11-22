@@ -47,7 +47,6 @@ import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.FavoritesUtil;
 
 import static co.thnki.brandfever.Brandfever.toast;
-import static co.thnki.brandfever.utils.CartUtil.CART_LIST;
 
 public class ProductActivity extends AppCompatActivity
 {
@@ -94,6 +93,9 @@ public class ProductActivity extends AppCompatActivity
     @BindDrawable(R.drawable.sizes_button_bg_inverse)
     Drawable mInverseSizeButtonDrawable;
 
+    @BindDrawable(R.drawable.sizes_button_disabled)
+    Drawable mDisableSizeButtonDrawable;
+
     @BindDrawable(R.drawable.sizes_button_bg)
     Drawable mSizeButtonDrawable;
 
@@ -102,6 +104,9 @@ public class ProductActivity extends AppCompatActivity
 
     @BindColor(R.color.white)
     int colorWhite;
+
+    @BindColor(R.color.grey)
+    int colorGrey;
 
     @Bind(R.id.xs)
     TextView xs;
@@ -152,8 +157,6 @@ public class ProductActivity extends AppCompatActivity
     private boolean mIsFavorite;
 
     private FavoritesUtil mFavoritesUtil;
-    private CartUtil mCartUtil;
-    private boolean mIsAddedToCart;
     private boolean mIsPagerLoaded;
     private ProductPagerFragment mProductPagerFragment;
 
@@ -179,13 +182,18 @@ public class ProductActivity extends AppCompatActivity
             setupEditingOptionsUi();
             setupFavoriteUi();
             setupSizesUi();
-            setupAddToCartUi();
         }
         else
         {
             toast(R.string.invalid_product);
             finish();
         }
+    }
+
+    private void disableUi(TextView view)
+    {
+        view.setBackground(mDisableSizeButtonDrawable);
+        view.setTextColor(colorGrey);
     }
 
     private void setupTransitions()
@@ -203,6 +211,25 @@ public class ProductActivity extends AppCompatActivity
     {
         DatabaseReference root = FirebaseDatabase.getInstance().getReference();
         mProductDbRef = root.child(mProductBundle.getCategoryId()).child(mProductBundle.getProductId());
+        mProductDbRef.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (!ProductActivity.this.isDestroyed() && dataSnapshot != null)
+                {
+                    mProductBundle = new ProductBundle(dataSnapshot.getValue(Products.class));
+                    setupProductInfoUi();
+                    resetSizesUi();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
         mProductStorageRef = FirebaseStorage.getInstance().getReference()
                 .child(mProductBundle.getCategoryId())
                 .child(mProductBundle.getProductId());
@@ -220,10 +247,12 @@ public class ProductActivity extends AppCompatActivity
 
     private void showProductsFirstImage()
     {
-        Glide.with(this).load(mProductBundle.getPhotoUrlList().get(0))
-                .asBitmap().placeholder(R.mipmap.price_tag)
-                .centerCrop().into(mTransitionImage);
-
+        if(mProductBundle.getPhotoUrlList() != null)
+        {
+            Glide.with(this).load(mProductBundle.getPhotoUrlList().get(0))
+                    .crossFade()
+                    .centerCrop().into(mTransitionImage);
+        }
     }
 
     private void setupProductInfoUi()
@@ -271,38 +300,7 @@ public class ProductActivity extends AppCompatActivity
         mSelectedSizes.put(L, false);
         mSelectedSizes.put(XL, false);
         mSelectedSizes.put(XXL, false);
-    }
-
-    private void setupAddToCartUi()
-    {
-        mCartUtil = CartUtil.getsInstance();
-        mIsAddedToCart = mCartUtil.isAddedToCart(mProductBundle);
-        if (mIsAddedToCart)
-        {
-            FirebaseDatabase.getInstance()
-                    .getReference().child(Brandfever.getPreferences().getString(Accounts.GOOGLE_ID, ""))
-                    .child(CART_LIST)
-                    .child(CartUtil.getsInstance().getKey(mProductBundle))
-                    .addValueEventListener(new ValueEventListener()
-                    {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot)
-                        {
-                            Products product = dataSnapshot.getValue(Products.class);
-                            if (product != null)
-                            {
-                                mProductBundle = new ProductBundle(product);
-                                updateAddToCartUi();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
-
-                        }
-                    });
-        }
+        resetSizesUi();
     }
 
     @Override
@@ -339,8 +337,6 @@ public class ProductActivity extends AppCompatActivity
     public void onBackPressed()
     {
         removePagerFragment();
-        //TODO Check if hideAllIcons is required
-        //hideAllIcons();
         super.onBackPressed();
     }
 
@@ -349,12 +345,6 @@ public class ProductActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .remove(mProductPagerFragment)
                 .commit();
-    }
-
-    private void hideAllIcons()
-    {
-        mDeleteProductImageView.setVisibility(View.GONE);
-        mEditProductDetailsImageView.setVisibility(View.GONE);
     }
 
     @OnClick({R.id.xs, R.id.s, R.id.m, R.id.l, R.id.xl, R.id.xxl,
@@ -366,50 +356,70 @@ public class ProductActivity extends AppCompatActivity
         switch (selectedSize)
         {
             case XS:
-                highlight(xs);
+                checkAvailabilitySelect(XS, xs);
                 //xsSpinner.performClick();
                 break;
             case S:
-                highlight(s);
+                checkAvailabilitySelect(S, s);
                 //sSpinner.performClick();
                 break;
             case M:
-                highlight(m);
+                checkAvailabilitySelect(M, m);
                 //mSpinner.performClick();
                 break;
             case L:
-                highlight(l);
+                checkAvailabilitySelect(L, l);
                 //lSpinner.performClick();
                 break;
             case XL:
-                highlight(xl);
+                checkAvailabilitySelect(XL, xl);
                 //xlSpinner.performClick();
                 break;
             case XXL:
-                highlight(xxl);
+                checkAvailabilitySelect(XXL, xxl);
                 //xxlSpinner.performClick();
                 break;
         }
-        showCountSelectionDialog(selectedSize);
     }
 
-    private void showCountSelectionDialog(String selectedSize)
+    private void checkAvailabilitySelect(String key, TextView view)
     {
-        mSelectedSizes.put(selectedSize, true);
-        // mSizesUtil.showSizesDialog(10);
+        if (mProductBundle.getSizesMap().getInt(key) > 0)
+        {
+            highlight(view);
+            mSelectedSizes.put(key, true);
+        }
+        else
+        {
+            toast(R.string.sizeNotAvailable);
+        }
     }
 
     private void resetSizesUi()
     {
-        unHighlight(xs);
-        unHighlight(s);
-        unHighlight(m);
-        unHighlight(l);
-        unHighlight(xl);
-        unHighlight(xxl);
+        checkAvailability(XS, xs);
+        checkAvailability(S, s);
+        checkAvailability(L, l);
+        checkAvailability(M, m);
+        checkAvailability(XL, xl);
+        checkAvailability(XXL, xxl);
+
         for (String key : mSelectedSizes.keySet())
         {
             mSelectedSizes.put(key, false);
+        }
+    }
+
+    private void checkAvailability(String key, TextView view)
+    {
+        Bundle bundle = mProductBundle.getSizesMap();
+        if (bundle != null && bundle.getInt(key) > 0)
+        {
+            unHighlight(view);
+        }
+        else
+        {
+            disableUi(view);
         }
     }
 
@@ -423,7 +433,6 @@ public class ProductActivity extends AppCompatActivity
     {
         view.setBackground(mInverseSizeButtonDrawable);
         view.setTextColor(colorWhite);
-
     }
 
     @OnClick(R.id.favorite)
@@ -451,92 +460,40 @@ public class ProductActivity extends AppCompatActivity
     @OnClick(R.id.addToCart)
     public void addToCart(View favorite)
     {
+        Log.d("AddToCart", "Clicked");
         if (ConnectivityUtil.isConnected())
         {
-            if (!mIsAddedToCart)
+            Log.d("AddToCart", "isConnected");
+            Log.d("AddToCart", "if mIsAddedToCart");
+            String selectedSize = getSelectedSize();
+            if (selectedSize != null)
             {
-                String selectedSize = getSelectedSize(true);
-                if (selectedSize != null)
-                {
-                    mCartUtil.addToCart(mProductBundle);
-                    toast(R.string.addedToCart);
-                    finish();
-                }
-                else
-                {
-                    toast(R.string.pleaseSelectSize);
-                }
+                mProductBundle.setSelectedSize(selectedSize);
+                CartUtil.getsInstance().addToCart(mProductBundle);
+                toast(R.string.addedToCart);
+                finish();
             }
             else
             {
-                mCartUtil.removeFromCart(mProductBundle);
-                mIsAddedToCart = false;
-                updateAddToCartUi();
+                toast(R.string.pleaseSelectSize);
             }
         }
         else
         {
             toast(R.string.noInternet);
         }
-
     }
 
-    private String getSelectedSize(boolean isAddToCart)
+    private String getSelectedSize()
     {
-        String selectedKey = null;
-        Bundle selectedSizes;
-        Log.d("selectedSizes", "isAddToCart : " + isAddToCart);
-        if (isAddToCart)
+        for (String key : mSelectedSizes.keySet())
         {
-            selectedSizes = new Bundle();
-            for (String key : mSelectedSizes.keySet())
+            if (mSelectedSizes.get(key))
             {
-                if (mSelectedSizes.get(key))
-                {
-                    selectedKey = key;
-                    selectedSizes.putInt(key, 1);
-                }
-                else
-                {
-                    selectedSizes.putInt(key, 0);
-                }
-            }
-            mProductBundle.setSizesMap(selectedSizes);
-        }
-        else
-        {
-            selectedSizes = mProductBundle.getSizesMap();
-            Log.d("selectedSizes", "selectedSizes : " + selectedSizes.toString());
-            for (String key : selectedSizes.keySet())
-            {
-                if (selectedSizes.getInt(key) > 0)
-                {
-                    selectedKey = key;
-                    mSelectedSizes.put(key, true);
-                }
-                else
-                {
-                    mSelectedSizes.put(key, false);
-                }
+                return key;
             }
         }
-        Log.d("selectedSizes", "selectedKey : " + selectedKey);
-        return selectedKey;
-    }
-
-    private void updateAddToCartUi()
-    {
-        if (mIsAddedToCart)
-        {
-            mAddToCartImg.setImageResource(R.mipmap.shopping_cart_cancel_button);
-            mAddToCartText.setText(R.string.removeFromCart);
-            updateSizesUi();
-        }
-        else
-        {
-            mAddToCartImg.setImageResource(R.mipmap.shopping_cart_add_button);
-            mAddToCartText.setText(R.string.addToCart);
-        }
+        return null;
     }
 
     private void updateFavoriteUi()
@@ -632,36 +589,6 @@ public class ProductActivity extends AppCompatActivity
         else
         {
             toast(R.string.noInternet);
-        }
-    }
-
-    private void updateSizesUi()
-    {
-        String selectedSize = getSelectedSize(false);
-        resetSizesUi();
-        if (selectedSize != null)
-        {
-            switch (selectedSize)
-            {
-                case XS:
-                    highlight(xs);
-                    break;
-                case S:
-                    highlight(s);
-                    break;
-                case M:
-                    highlight(m);
-                    break;
-                case L:
-                    highlight(l);
-                    break;
-                case XL:
-                    highlight(xl);
-                    break;
-                case XXL:
-                    highlight(xxl);
-                    break;
-            }
         }
     }
 }

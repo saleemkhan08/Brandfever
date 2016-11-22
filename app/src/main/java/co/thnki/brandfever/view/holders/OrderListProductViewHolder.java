@@ -27,7 +27,7 @@ public class OrderListProductViewHolder extends RecyclerView.ViewHolder
     public TextView mProductSize;
 
     @Bind(R.id.deleteFromCart)
-    public ImageView mDeleteFromCart;
+    public ImageView mOrderOptions;
 
     public View mItemView;
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -194,6 +195,22 @@ public class UsersOrdersFragment extends Fragment
             {
                 mPhoneNumber = address.getPhoneNo();
             }
+
+            Handler handler = new Handler();
+            handler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    int bottomPadding = mAddressContainer.getHeight();
+
+                    int topPadding = mOrdersRecyclerView.getPaddingTop();
+                    int rightPadding = mOrdersRecyclerView.getPaddingRight();
+                    int leftPadding = mOrdersRecyclerView.getPaddingLeft();
+
+                    mOrdersRecyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+                }
+            });
         }
     }
 

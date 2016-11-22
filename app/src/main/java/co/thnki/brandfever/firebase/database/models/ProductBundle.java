@@ -19,6 +19,7 @@ public class ProductBundle implements Parcelable
     private String priceBefore;
     private ArrayList<String> photoUrlList;
     private ArrayList<String> photoNameList;
+    private String selectedSize;
 
     public ProductBundle()
     {
@@ -27,16 +28,20 @@ public class ProductBundle implements Parcelable
 
     public ProductBundle(Products products)
     {
-        photoUrlList = products.getPhotoUrlList();
-        photoNameList = products.getPhotoNameList();
-        this.categoryId = products.getCategoryId();
-        brand = products.getBrand();
-        priceAfter = products.getPriceAfter();
-        sizesMap = convertIntMapToBundle(products.getSizesMap());
-        material = products.getMaterial();
-        orderStatus = products.getOrderStatus();
-        priceBefore = products.getPriceBefore();
-        productId = products.getProductId();
+        if(products!= null)
+        {
+            photoUrlList = products.getPhotoUrlList();
+            photoNameList = products.getPhotoNameList();
+            this.categoryId = products.getCategoryId();
+            brand = products.getBrand();
+            priceAfter = products.getPriceAfter();
+            sizesMap = convertIntMapToBundle(products.getSizesMap());
+            material = products.getMaterial();
+            orderStatus = products.getOrderStatus();
+            priceBefore = products.getPriceBefore();
+            productId = products.getProductId();
+            selectedSize = products.getSelectedSize();
+        }
     }
 
     private Bundle convertIntMapToBundle(Map<String, Integer> map)
@@ -207,4 +212,14 @@ public class ProductBundle implements Parcelable
             return new ProductBundle[size];
         }
     };
+
+    public void setSelectedSize(String selectedSize)
+    {
+        this.selectedSize = selectedSize;
+    }
+
+    public String getSelectedSize()
+    {
+        return selectedSize;
+    }
 }

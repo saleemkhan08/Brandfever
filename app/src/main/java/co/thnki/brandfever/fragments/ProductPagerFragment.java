@@ -86,6 +86,10 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         mProductBundle = productBundle;
         mPhotoUrlList = productBundle.getPhotoUrlList();
         mPhotoNameList = productBundle.getPhotoNameList();
+        if(mPhotoUrlList == null){
+            toast(R.string.productNotAvailable);
+            getActivity().finish();
+        }
     }
 
     @Override

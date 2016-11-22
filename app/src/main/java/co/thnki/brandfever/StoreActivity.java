@@ -74,6 +74,12 @@ public class StoreActivity extends AppCompatActivity
     private String mGoogleId;
     private DatabaseReference mRootDbRef;
 
+    @Bind(R.id.home)
+    View mHome;
+
+    @Bind(R.id.drawer)
+    View mDrawer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -109,17 +115,20 @@ public class StoreActivity extends AppCompatActivity
         mGoogleId = mPreferences.getString(Accounts.GOOGLE_ID, "dummyId");
         registerCountUpdateListener();
         Intent intent = getIntent();
-        if(intent.hasExtra(NOTIFICATION_ACTION))
+        if (intent.hasExtra(NOTIFICATION_ACTION))
         {
             switch (intent.getStringExtra(NOTIFICATION_ACTION))
             {
-                default: showNotification();
+                default:
+                    showNotification();
             }
         }
         else
         {
             addMainPageFragment();
         }
+
+
     }
 
     private void setupWindowProperties()
@@ -140,7 +149,7 @@ public class StoreActivity extends AppCompatActivity
         mRootDbRef = FirebaseDatabase.getInstance().getReference();
         UserUtil.getInstance().updateToken();
         DatabaseReference databaseReference = mRootDbRef.child(Accounts.OWNERS);
-        Log.d(TAG, "databaseReference : "+databaseReference);
+        Log.d(TAG, "databaseReference : " + databaseReference);
         databaseReference.addValueEventListener(new ValueEventListener()
         {
             @Override
@@ -180,7 +189,7 @@ public class StoreActivity extends AppCompatActivity
                                     .putStringSet(Accounts.OWNERS_TOKENS, ownerTokens)
                                     .putStringSet(Accounts.OWNERS_GOOGLE_IDS, ownerGids)
                                     .apply();
-                            Log.d(TAG, "ownerTokens : " + ownerTokens+", ownerGids : "+ownerGids);
+                            Log.d(TAG, "ownerTokens : " + ownerTokens + ", ownerGids : " + ownerGids);
                             usersDbRef.removeEventListener(this);
                             Otto.post(OWNER_PROFILE_UPDATED);
                         }
@@ -253,17 +262,10 @@ public class StoreActivity extends AppCompatActivity
         }
     }
 
-    private void addMainPageFragment()
+    @OnClick(R.id.home)
+    public void addMainPageFragment()
     {
-
-        Fragment fragment = mFragmentManager.findFragmentByTag(MainPageFragment.TAG);
-        if(fragment == null)
-        {
-            fragment = new MainPageFragment();
-        }
-        mFragmentManager.beginTransaction()
-                .replace(R.id.content_main, fragment)
-                .commit();
+        addFragment(MainPageFragment.TAG);
     }
 
     @Override
@@ -271,7 +273,14 @@ public class StoreActivity extends AppCompatActivity
     {
         if (mNavigationDrawerUtil.onBackPressed())
         {
-            super.onBackPressed();
+            if (mHome.isShown())
+            {
+                super.onBackPressed();
+            }
+            else
+            {
+                finish();
+            }
         }
     }
 
@@ -306,6 +315,17 @@ public class StoreActivity extends AppCompatActivity
 
     public void setToolBarTitle(String title)
     {
+        if (title.equals(getString(R.string.app_name)))
+        {
+            mHome.setVisibility(View.GONE);
+            mDrawer.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mHome.setVisibility(View.VISIBLE);
+            mDrawer.setVisibility(View.GONE);
+        }
+
         if (mTitle != null)
         {
             mTitle.setText(title);
@@ -345,6 +365,13 @@ public class StoreActivity extends AppCompatActivity
                         fragment = new FavoritesFragment();
                     }
                     break;
+                case MainPageFragment.TAG:
+                    fragment = mFragmentManager.findFragmentByTag(MainPageFragment.TAG);
+                    if (fragment == null)
+                    {
+                        fragment = new MainPageFragment();
+                    }
+                    break;
                 default:
                     fragment = ProductsFragment.getInstance(tag);
                     break;
@@ -355,8 +382,18 @@ public class StoreActivity extends AppCompatActivity
 
     private void animateFragment(Fragment fragment, String tag)
     {
+        int enterTransition = R.anim.enter_directly;
+        if (tag.equals(MainPageFragment.TAG))
+        {
+            mHome.setVisibility(View.GONE);
+            mDrawer.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            enterTransition = R.anim.enter_from_bottom;
+        }
         mFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_to_top,
+                .setCustomAnimations(enterTransition, R.anim.exit_to_top,
                         R.anim.enter_from_top, R.anim.exit_to_bottom)
                 .replace(R.id.content_main, fragment)
                 .addToBackStack(tag)
@@ -438,7 +475,7 @@ public class StoreActivity extends AppCompatActivity
         if (isNewObjectRequired(UserListFragment.TAG))
         {
             Fragment fragment = mFragmentManager.findFragmentByTag(UserListFragment.TAG);
-            if(fragment == null)
+            if (fragment == null)
             {
                 fragment = new UserListFragment();
             }
@@ -452,7 +489,7 @@ public class StoreActivity extends AppCompatActivity
         if (isNewObjectRequired(UsersOrdersFragment.TAG))
         {
             Fragment fragment = mFragmentManager.findFragmentByTag(UsersOrdersFragment.TAG);
-            if(fragment == null)
+            if (fragment == null)
             {
                 fragment = UsersOrdersFragment.getInstance(googleId);
             }

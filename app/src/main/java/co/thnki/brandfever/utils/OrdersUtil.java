@@ -46,6 +46,7 @@ public class OrdersUtil
     public static final String ORDER_CANCELLED = "OrderCancelled";
     public static final String ORDER_RETURNED = "OrderReturned";
     public static final String ORDER_REQUESTED_RETURN = "OrderRequestedReturn";
+    public static final String ORDER_DELAYED = "orderDelayed";
 
 
     private DatabaseReference mMyOrdersRef;

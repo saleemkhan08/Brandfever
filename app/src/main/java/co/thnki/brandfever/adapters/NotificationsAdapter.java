@@ -16,6 +16,7 @@ import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
 import co.thnki.brandfever.fragments.NotificationListFragment;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.OrdersUtil;
 import co.thnki.brandfever.utils.UserUtil;
 import co.thnki.brandfever.view.holders.NotificationViewHolder;
 
@@ -24,6 +25,7 @@ import static co.thnki.brandfever.Brandfever.toast;
 public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationModel, NotificationViewHolder>
 {
     private Activity mActivity;
+
     public static NotificationsAdapter getInstance(DatabaseReference reference, Activity activity)
     {
         Log.d(NotificationListFragment.TAG, "NotificationsAdapter - getInstance");
@@ -48,7 +50,7 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationMo
         boolean isNotificationSentByOwner = UserUtil.getInstance().isOwner(model.googleId);
         boolean isCurrentUserOwner = Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false);
 
-        if(isNotificationSentByOwner)
+        if (isNotificationSentByOwner)
         {
             viewHolder.mUserImageView.setImageResource(R.mipmap.app_icon);
         }
@@ -59,31 +61,44 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationMo
                     .centerCrop().into(viewHolder.mUserImageView);
         }
 
-        if (model.action.equals(StoreActivity.ORDER_PLACED))
+        switch (model.action)
         {
-            viewHolder.mUsername.setText(model.username);
-            viewHolder.mNotificationImageView.setImageResource(R.mipmap.shopping_cart);
-            viewHolder.mItemView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
+            case OrdersUtil.ORDER_PLACED:
+                viewHolder.mUsername.setText(model.username);
+                viewHolder.mNotificationImageView.setImageResource(R.mipmap.shopping_cart);
+                viewHolder.mItemView.setOnClickListener(new View.OnClickListener()
                 {
-                    if (ConnectivityUtil.isConnected())
+                    @Override
+                    public void onClick(View view)
                     {
-                        ((StoreActivity) mActivity).showUserOrdersFragment(model.googleId);
+                        if (ConnectivityUtil.isConnected())
+                        {
+                            ((StoreActivity) mActivity).showUserOrdersFragment(model.googleId);
+                        }
+                        else
+                        {
+                            toast(R.string.noInternet);
+                        }
                     }
-                    else
-                    {
-                        toast(R.string.noInternet);
-                    }
-                }
-            });
-        }
-        else if (model.action.equals(StoreActivity.ORDER_CANCELLED))
-        {
-            String cancellationTitle = model.username+" "+mActivity.getString(R.string.cancelledAnOrder);
-            viewHolder.mUsername.setText(cancellationTitle);
-            viewHolder.mNotificationImageView.setImageResource(R.mipmap.ic_remove_shopping_cart_black_48dp);
+                });
+                break;
+            case OrdersUtil.ORDER_CANCELLED:
+                String cancellationTitle = model.username + " " + mActivity.getString(R.string.cancelledAnOrder);
+                viewHolder.mUsername.setText(cancellationTitle);
+                viewHolder.mNotificationImageView.setImageResource(R.mipmap.ic_remove_shopping_cart_black_48dp);
+                break;
+            case OrdersUtil.ORDER_PACKED:
+                break;
+            case OrdersUtil.ORDER_DELIVERED:
+                break;
+            case OrdersUtil.ORDER_SHIPPED:
+                break;
+            case OrdersUtil.ORDER_RETURNED:
+                break;
+            case OrdersUtil.ORDER_REQUESTED_RETURN:
+                break;
+            case OrdersUtil.ORDER_DELAYED:
+                break;
         }
 
     }

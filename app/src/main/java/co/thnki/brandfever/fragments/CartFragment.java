@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,7 +90,6 @@ public class CartFragment extends Fragment
     @Bind(R.id.totalTextView)
     TextView mTotalTextView;
 
-
     @Bind(R.id.deliveryAddress)
     TextView mDeliveryAddress;
 
@@ -97,6 +98,9 @@ public class CartFragment extends Fragment
 
     @Bind(R.id.addressContainer)
     View mAddressContainer;
+
+    @Bind(R.id.orderContainer)
+    View mOrderContainer;
 
 
     private DatabaseReference mCartDbRef;
@@ -135,22 +139,25 @@ public class CartFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                updateCartUi();
-                mCartData = dataSnapshot;
-                int totalPriceBefore = 0;
-                int totalPriceAfter = 0;
-                Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
-                for(DataSnapshot snapshot : snapshots)
+                if(getActivity()!= null)
                 {
-                    Products product = snapshot.getValue(Products.class);
-                    totalPriceAfter += product.getActualPriceAfter();
-                    totalPriceBefore += product.getActualPriceBefore();
-                }
-                String total = getString(R.string.total) + " "+'\u20B9' + totalPriceAfter;
-                String saved = getString(R.string.youSave)+ " "+'\u20B9' + (totalPriceBefore - totalPriceAfter);
+                    updateCartUi();
+                    mCartData = dataSnapshot;
+                    int totalPriceBefore = 0;
+                    int totalPriceAfter = 0;
+                    Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+                    for (DataSnapshot snapshot : snapshots)
+                    {
+                        Products product = snapshot.getValue(Products.class);
+                        totalPriceAfter += product.getActualPriceAfter();
+                        totalPriceBefore += product.getActualPriceBefore();
+                    }
+                    String total = getString(R.string.total) + " " + '\u20B9' + totalPriceAfter;
+                    String saved = getString(R.string.youSave) + " " + '\u20B9' + (totalPriceBefore - totalPriceAfter);
 
-                mTotalTextView.setText(total);
-                mSavingsTextView.setText(saved);
+                    mTotalTextView.setText(total);
+                    mSavingsTextView.setText(saved);
+                }
             }
 
             @Override
@@ -198,6 +205,19 @@ public class CartFragment extends Fragment
             mContactPerson.setText(address.getName());
             mContactNumber.setText(address.getPhoneNo());
         }
+        Handler handler = new Handler();
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                int bottomPadding = mOrderContainer.getHeight();
+                int topPadding = mTotalContainer.getHeight();
+                int rightPadding = mCartRecyclerView.getPaddingRight();
+                int leftPadding = mCartRecyclerView.getPaddingLeft();
+                mCartRecyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+            }
+        });
     }
 
     @Override
@@ -395,5 +415,11 @@ public class CartFragment extends Fragment
     public void showAddressEditorFragment()
     {
         ((StoreActivity) getActivity()).showAddressEditorFragment();
+    }
+
+    private float getPaddingInPixel(int paddingInDp)
+    {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return paddingInDp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
