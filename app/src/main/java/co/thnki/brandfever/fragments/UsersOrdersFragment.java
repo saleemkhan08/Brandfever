@@ -30,19 +30,18 @@ import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.adapters.OrdersAdapter;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Addresses;
-import co.thnki.brandfever.firebase.database.models.Products;
+import co.thnki.brandfever.firebase.database.models.Order;
+import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.OrdersUtil;
 import co.thnki.brandfever.view.holders.OrderListProductViewHolder;
 
+import static co.thnki.brandfever.StoreActivity.RESTART_ACTIVITY;
 import static co.thnki.brandfever.utils.UserUtil.APP_DATA;
 import static co.thnki.brandfever.utils.UserUtil.OWNER_PHONE_NUMBER;
 
 public class UsersOrdersFragment extends Fragment
 {
     public static final String TAG = "UsersOrdersFragment";
-    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 198;
-    private String mGoogleId;
-    private DatabaseReference mUserReference;
     @Bind(R.id.orderRecyclerView)
     RecyclerView mOrdersRecyclerView;
 
@@ -64,22 +63,9 @@ public class UsersOrdersFragment extends Fragment
     @Bind(R.id.addressContainer)
     View mAddressContainer;
 
-    private DatabaseReference mOrdersDbRef;
-    private FirebaseRecyclerAdapter<Products, OrderListProductViewHolder> mAdapter;
+    private FirebaseRecyclerAdapter<Order, OrderListProductViewHolder> mAdapter;
     private DatabaseReference mAddressDbRef;
     private String mPhoneNumber;
-
-
-    public static UsersOrdersFragment getInstance(String googleId)
-    {
-        UsersOrdersFragment fragment = new UsersOrdersFragment();
-        fragment.mGoogleId = googleId;
-        fragment.mUserReference = FirebaseDatabase.getInstance().getReference()
-                .child(googleId);
-        fragment.mAddressDbRef = fragment.mUserReference.child(Accounts.ADDRESS_LIST);
-        fragment.mOrdersDbRef = fragment.mUserReference.child(OrdersUtil.ORDERS);
-        return fragment;
-    }
 
     public UsersOrdersFragment()
     {
@@ -92,25 +78,44 @@ public class UsersOrdersFragment extends Fragment
     {
         View parent = inflater.inflate(R.layout.fragment_orders, container, false);
         ButterKnife.bind(this, parent);
-        updateAddress();
-        mAdapter = OrdersAdapter.getInstance(mOrdersDbRef, mGoogleId, getActivity());
-        mOrdersRecyclerView.setAdapter(mAdapter);
-        mOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mOrdersDbRef.addValueEventListener(new ValueEventListener()
+        String mGoogleId = getArguments().getString(Accounts.GOOGLE_ID);
+        if (mGoogleId != null)
         {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
+            DatabaseReference mUserReference = FirebaseDatabase.getInstance().getReference()
+                    .child(mGoogleId);
+            mAddressDbRef = mUserReference.child(Accounts.ADDRESS_LIST);
+            DatabaseReference mOrdersDbRef = mUserReference.child(OrdersUtil.ORDERS);
+
+            updateAddress();
+            mAdapter = OrdersAdapter.getInstance(mOrdersDbRef, mGoogleId, getActivity());
+            mOrdersRecyclerView.setAdapter(mAdapter);
+            mOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mOrdersDbRef.addValueEventListener(new ValueEventListener()
             {
-                updateUi();
-            }
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    try
+                    {
+                        updateUi();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
+                    }
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
 
-            }
-        });
-
+                }
+            });
+        }
+        else
+        {
+            Otto.post(RESTART_ACTIVITY);
+        }
         return parent;
     }
 
@@ -152,7 +157,14 @@ public class UsersOrdersFragment extends Fragment
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    updateAddressUi(dataSnapshot.getValue(Addresses.class));
+                    try
+                    {
+                        updateAddressUi(dataSnapshot.getValue(Addresses.class));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
+                    }
                 }
 
                 @Override
@@ -172,7 +184,7 @@ public class UsersOrdersFragment extends Fragment
             mDeliveryAddress.setText(addressText);
             mContactPerson.setText(address.getName());
             mContactNumber.setText(address.getPhoneNo());
-            if(!Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+            if (!Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
             {
                 DatabaseReference appDataDbRef = FirebaseDatabase.getInstance().getReference()
                         .child(APP_DATA).child(OWNER_PHONE_NUMBER);
@@ -181,7 +193,14 @@ public class UsersOrdersFragment extends Fragment
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
                     {
-                        mPhoneNumber = dataSnapshot.getValue(String.class);
+                        try
+                        {
+                            mPhoneNumber = dataSnapshot.getValue(String.class);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.d("Exception", e.getMessage());
+                        }
                     }
 
                     @Override
@@ -218,7 +237,7 @@ public class UsersOrdersFragment extends Fragment
     public void makeACall()
     {
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:"+mPhoneNumber));
+        intent.setData(Uri.parse("tel:" + mPhoneNumber));
         startActivity(intent);
     }
 }

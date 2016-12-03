@@ -16,8 +16,7 @@
         <ImageView
             android:layout_width="@dimen/drawer_list_item_size"
             android:layout_height="@dimen/drawer_list_item_size"
-            android:id="@+id/imageView"
-            android:src="@mipmap/mens_wear_square"/>
+            android:id="@+id/imageView"/>
 
         <TextView
             android:id="@+id/category"

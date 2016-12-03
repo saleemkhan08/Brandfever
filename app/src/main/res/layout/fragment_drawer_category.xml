@@ -29,7 +29,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/edit"
-                android:src="@drawable/ic_chevron_left_white_24dp"/>
+                android:src="@mipmap/chevron_left_white"/>
 
             <TextView
                 android:id="@+id/categoryName"
@@ -96,7 +96,6 @@
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/categoryRecyclerView"
         android:layout_width="match_parent"
@@ -111,7 +110,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:visibility="gone"
-        app:fab_icon="@mipmap/ic_mode_edit_white_24dp"
+        app:fab_icon="@mipmap/mode_edit_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>

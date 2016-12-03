@@ -58,6 +58,7 @@ import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
 public class CategoryDrawerFragment extends Fragment implements ValueEventListener
 {
     private static final String LOGIN = "Login";
+    public static final String CATEGORY_CHILD = "categoryChild";
     private boolean mIsFirstLevelCategory = false;
 
     @Bind(R.id.categoryRecyclerView)
@@ -100,16 +101,18 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 
     public static CategoryDrawerFragment getInstance(String categoryChild, DrawerItemClickListener listener)
     {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         CategoryDrawerFragment fragment = new CategoryDrawerFragment();
         fragment.mItemClickListener = listener;
-        fragment.mAvailableCategoriesRef = rootRef.child(categoryChild);
-        fragment.mCurrentCategory = categoryChild;
-        fragment.mPreferences = Brandfever.getPreferences();
-        DatabaseReference notificationDbRef = rootRef.child(fragment.mPreferences.getString(Accounts.GOOGLE_ID, ""))
-                .child(NotificationsUtil.TAG);
-        notificationDbRef.addValueEventListener(fragment);
+        fragment.setArguments(categoryChild);
+
         return fragment;
+    }
+
+    private void setArguments(String categoryChild)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putString(CATEGORY_CHILD, categoryChild);
+        setArguments(bundle);
     }
 
     @Override
@@ -117,42 +120,60 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     {
         View layout = inflater.inflate(R.layout.fragment_drawer_category, container, false);
         ButterKnife.bind(this, layout);
-        mResources = getResources();
-        String parentCategory = getParentCategory(mCurrentCategory.replace(AVAILABLE_, ""));
-        mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCategoriesRecyclerView.setAdapter(getAdapter());
-        mFirstLevelArray = getFirstLevelArray();
-        if (parentCategory != null)
+
+        Bundle bundle = getArguments();
+        String categoryChild = bundle.getString(CATEGORY_CHILD);
+        if (categoryChild == null)
         {
-            mIsFirstLevelCategory = false;
-            mHeaderBack.setVisibility(View.VISIBLE);
-            mHeaderProfile.setVisibility(View.GONE);
-            mCategory.setText(parentCategory);
+            Otto.post(StoreActivity.RESTART_ACTIVITY);
         }
         else
         {
-            mIsFirstLevelCategory = true;
-            mHeaderProfile.setVisibility(View.VISIBLE);
-            mHeaderBack.setVisibility(View.GONE);
-            String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
-            if (!imageUrl.isEmpty())
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            mAvailableCategoriesRef = rootRef.child(categoryChild);
+            mCurrentCategory = categoryChild;
+            mPreferences = Brandfever.getPreferences();
+            DatabaseReference notificationDbRef = rootRef.child(mPreferences.getString(Accounts.GOOGLE_ID, ""))
+                    .child(NotificationsUtil.TAG);
+            notificationDbRef.addValueEventListener(this);
+
+            mResources = getResources();
+            String parentCategory = getParentCategory(mCurrentCategory.replace(AVAILABLE_, ""));
+            mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mCategoriesRecyclerView.setAdapter(getAdapter());
+            mFirstLevelArray = getFirstLevelArray();
+            if (parentCategory != null)
             {
-                Glide.with(getActivity()).load(imageUrl)
-                        .asBitmap()
-                        .placeholder(R.mipmap.user_icon_accent)
-                        .centerCrop().into(new BitmapImageViewTarget(mProfilePic)
-                {
-                    @Override
-                    protected void setResource(Bitmap resource)
-                    {
-                        RoundedBitmapDrawable circularBitmapDrawable =
-                                RoundedBitmapDrawableFactory.create(mResources, resource);
-                        circularBitmapDrawable.setCircular(true);
-                        mProfilePic.setImageDrawable(circularBitmapDrawable);
-                    }
-                });
+                mIsFirstLevelCategory = false;
+                mHeaderBack.setVisibility(View.VISIBLE);
+                mHeaderProfile.setVisibility(View.GONE);
+                mCategory.setText(parentCategory);
             }
-            mProfileName.setText(mPreferences.getString(Accounts.NAME, LOGIN));
+            else
+            {
+                mIsFirstLevelCategory = true;
+                mHeaderProfile.setVisibility(View.VISIBLE);
+                mHeaderBack.setVisibility(View.GONE);
+                String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
+                if (!imageUrl.isEmpty())
+                {
+                    Glide.with(getActivity()).load(imageUrl)
+                            .asBitmap()
+                            .placeholder(R.mipmap.user_icon_accent)
+                            .centerCrop().into(new BitmapImageViewTarget(mProfilePic)
+                    {
+                        @Override
+                        protected void setResource(Bitmap resource)
+                        {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(mResources, resource);
+                            circularBitmapDrawable.setCircular(true);
+                            mProfilePic.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
+                }
+                mProfileName.setText(mPreferences.getString(Accounts.NAME, LOGIN));
+            }
         }
         return layout;
     }
@@ -182,9 +203,9 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     @Subscribe
     public void updateOwnerProfile(String action)
     {
-        if(action.equals(StoreActivity.OWNER_PROFILE_UPDATED))
+        if (action.equals(StoreActivity.OWNER_PROFILE_UPDATED))
         {
-            if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+            if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
             {
                 mEditButton.setVisibility(View.VISIBLE);
                 customerListButton.setVisibility(View.VISIBLE);
@@ -263,14 +284,17 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
                         if (ConnectivityUtil.isConnected())
                         {
                             String categoryName = getAvailableCategoryName(model);
-                            if (mFirstLevelArray.contains(categoryName))
+                            if (mItemClickListener != null)
                             {
-                                //Otto.post(categoryName);
-                                mItemClickListener.onFirstLevelItemClick(categoryName, ENTER);
-                            }
-                            else
-                            {
-                                mItemClickListener.onSecondLevelItemClick(categoryName);
+                                if (mFirstLevelArray.contains(categoryName))
+                                {
+                                    //Otto.post(categoryName);
+                                    mItemClickListener.onFirstLevelItemClick(categoryName, ENTER);
+                                }
+                                else
+                                {
+                                    mItemClickListener.onSecondLevelItemClick(categoryName);
+                                }
                             }
                         }
                         else
@@ -298,7 +322,10 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     {
         if (ConnectivityUtil.isConnected())
         {
-            mItemClickListener.onEditClick(getCategoryName());
+            if (mItemClickListener != null)
+            {
+                mItemClickListener.onEditClick(getCategoryName());
+            }
         }
         else
         {
@@ -309,29 +336,42 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     @OnClick(R.id.backIcon)
     public void back()
     {
-        mItemClickListener.onBackClick();
+        if (mItemClickListener != null)
+        {
+            mItemClickListener.onBackClick();
+        }
     }
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot)
     {
-        int notificationCount = 0;
-        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-        for(DataSnapshot snapshot : children)
+        try
         {
-            NotificationModel model = snapshot.getValue(NotificationModel.class);
-            if(!model.isRead)
+            int notificationCount = 0;
+            Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+            for (DataSnapshot snapshot : children)
             {
-                notificationCount++;
+                NotificationModel model = snapshot.getValue(NotificationModel.class);
+                if (!model.isRead)
+                {
+                    notificationCount++;
+                }
+            }
+            if (mNotificationCountTextView != null)
+            {
+                if (notificationCount > 0)
+                {
+                    mNotificationCountTextView.setText(String.valueOf(notificationCount));
+                }
+                else
+                {
+                    mNotificationCountTextView.setText("");
+                }
             }
         }
-        if(notificationCount > 0)
+        catch (Exception e)
         {
-            mNotificationCountTextView.setText(String.valueOf(notificationCount));
-        }
-        else
-        {
-            mNotificationCountTextView.setText("");
+            Log.d("Exception", e.getMessage());
         }
     }
 
@@ -340,4 +380,6 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     {
 
     }
+
+
 }

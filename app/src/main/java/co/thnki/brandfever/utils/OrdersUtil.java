@@ -11,29 +11,29 @@ import com.google.firebase.database.ValueEventListener;
 
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.firebase.database.models.Accounts;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
+import co.thnki.brandfever.firebase.database.models.Order;
 import co.thnki.brandfever.firebase.database.models.Products;
 
 /**
  * 1. Login Activity
- *      a. getInstance() $ updateCartList() - > onActivityResult()
- *      b. clearInstance() -> setUpLogin()
- *
+ * a. getInstance() $ updateCartList() - > onActivityResult()
+ * b. clearInstance() -> setUpLogin()
+ * <p>
  * 2. Product Activity
- *      a. getInstance() -> onCreate()
- *      b. isAddedToCart() -> onCreate() used to update UI
- *      c. placeAnOrder() -> placeAnOrder()
- *      d. removeFromCart() -> placeAnOrder()
- *
+ * a. getInstance() -> onCreate()
+ * b. isAddedToCart() -> onCreate() used to update UI
+ * c. placeAnOrder() -> placeAnOrder()
+ * d. removeFromCart() -> placeAnOrder()
+ * <p>
  * 2. Product Activity
- *      a. placeAnOrder() ->
- *      b. removeFromCart()
- *      c. isAddedToCart()
- *
+ * a. placeAnOrder() ->
+ * b. removeFromCart()
+ * c. isAddedToCart()
+ * <p>
  * 3. Products Fragment
- *      a. placeAnOrder()
- *      b. removeFromCart()
- *      c. isAddedToCart()
+ * a. placeAnOrder()
+ * b. removeFromCart()
+ * c. isAddedToCart()
  */
 public class OrdersUtil
 {
@@ -76,13 +76,13 @@ public class OrdersUtil
         sInstance = null;
     }
 
-    public String placeAnOrder(ProductBundle productBundle)
+    public String placeAnOrder(Order order)
     {
-        String key = getKey(productBundle);
+        String key = getKey(order);
         DatabaseReference reference = mMyOrdersRef.child(key);
 
         mPreferences.edit().putBoolean(key, true).apply();
-        reference.setValue(new Products(productBundle));
+        reference.setValue(order);
         return key;
     }
 
@@ -103,9 +103,9 @@ public class OrdersUtil
         return key;
     }
 
-    public void cancelOrder(ProductBundle productBundle)
+    public void cancelOrder(Order order)
     {
-        String key = getKey(productBundle);
+        String key = getKey(order);
 
         mPreferences.edit().remove(key).apply();
         mMyOrdersRef.child(key).removeValue();
@@ -118,14 +118,21 @@ public class OrdersUtil
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                try
                 {
-                    Products product = snapshot.getValue(Products.class);
-                    String key = getKey(product);
-                    Log.d(OrdersUtil.ORDERS, "key : " + key);
-                    mPreferences.edit()
-                            .putBoolean(key, true)
-                            .apply();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        Products product = snapshot.getValue(Products.class);
+                        String key = getKey(product);
+                        Log.d(OrdersUtil.ORDERS, "key : " + key);
+                        mPreferences.edit()
+                                .putBoolean(key, true)
+                                .apply();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -137,9 +144,9 @@ public class OrdersUtil
         });
     }
 
-    public boolean isOrdered(ProductBundle productBundle)
+    public boolean isOrdered(Order order)
     {
-        String key = getKey(productBundle);
+        String key = getKey(order);
         boolean isFav = mPreferences.getBoolean(key, false);
         Log.d(OrdersUtil.ORDERS, "isAddedToCart : " + isFav);
         return isFav;
@@ -153,9 +160,9 @@ public class OrdersUtil
         return isFav;
     }
 
-    public String getKey(ProductBundle product)
+    public String getKey(Order order)
     {
-        return product.getCategoryId() + "*" + product.getProductId();
+        return order.getCategoryId() + "_" + order.getProductId() + "_" + order.getSelectedSize();
     }
 
     private String getKey(Products product)
@@ -166,7 +173,7 @@ public class OrdersUtil
     public boolean toggleOrder(Products model)
     {
         boolean isOrdered = isOrdered(model);
-        if(isOrdered)
+        if (isOrdered)
         {
             cancelOrder(model);
         }

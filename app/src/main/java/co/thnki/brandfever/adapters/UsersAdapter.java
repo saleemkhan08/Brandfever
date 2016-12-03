@@ -6,6 +6,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import co.thnki.brandfever.R;
@@ -19,11 +20,14 @@ import static co.thnki.brandfever.Brandfever.toast;
 public class UsersAdapter extends FirebaseRecyclerAdapter<Accounts, AccountsViewHolder>
 {
     private Activity mActivity;
+    private DatabaseReference mRootReference;
 
     public static UsersAdapter getInstance(DatabaseReference reference, Activity activity)
     {
-        return new UsersAdapter(Accounts.class,
-                R.layout.user_list_row, AccountsViewHolder.class, reference, activity);
+        UsersAdapter adapter = new UsersAdapter(Accounts.class,
+                R.layout.user_list_row, AccountsViewHolder.class, reference.orderByChild(Accounts.NAME), activity);
+        adapter.mRootReference = FirebaseDatabase.getInstance().getReference();
+        return adapter;
     }
 
     private UsersAdapter(Class<Accounts> modelClass, int modelLayout, Class<AccountsViewHolder> viewHolderClass,
@@ -43,6 +47,24 @@ public class UsersAdapter extends FirebaseRecyclerAdapter<Accounts, AccountsView
 
         viewHolder.mUsername.setText(model.name);
         viewHolder.mUserEmail.setText(model.email);
+       /* mRootReference.child(model.googleId).child(OrdersUtil.ORDERS).addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Log.d("DataSnapshot","dataSnapshot : "+dataSnapshot);
+                if (dataSnapshot != null && dataSnapshot.getValue() instanceof Order)
+                {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });*/
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener()
         {

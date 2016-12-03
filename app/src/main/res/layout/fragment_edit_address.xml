@@ -29,15 +29,15 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/bg_drawable"
             android:padding="13dp"
-            android:src="@mipmap/ic_clear_white_24dp"/>
+            android:src="@mipmap/clear_white"/>
     </RelativeLayout>
 
 
     <LinearLayout
         android:id="@+id/scrollViewChild"
-        android:layout_below="@+id/dialogHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogHeader"
         android:orientation="vertical">
 
         <android.support.design.widget.TextInputLayout
@@ -63,11 +63,11 @@
 
             <EditText
                 android:id="@+id/addressText"
-                android:maxLines="5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/address"
                 android:inputType="textMultiLine"
+                android:maxLines="5"
                 android:textColor="@color/colorPrimaryDark"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -107,18 +107,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scrollViewChild"
-        android:background="#ddd">
+        android:background="#ccc"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/saveProduct"
+        <LinearLayout
+            android:id="@+id/saveProductButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_drawable"
             android:clickable="true"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="@string/save"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/saveProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/save"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="9dp"
+                android:src="@mipmap/save_button"/>
+        </LinearLayout>
     </LinearLayout>
+
 </RelativeLayout>

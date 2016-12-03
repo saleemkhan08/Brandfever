@@ -36,11 +36,22 @@
     <color name="colorAccentBgLite">#3bb1b1</color>
     <color name="colorAccentBgDark">#0a1f1f</color>
     <color name="windowBackground">#eee</color>
-    <color name="colorAccentTransparent">#5538A09E</color>
+    <color name="colorAccentTransparent">#55d75a4a</color>
     <color name="drawerBackground">#ddd</color>
     <color name="transparent_grey">#55AAAAAA</color>
     <color name="colorSecondaryAccent">#d75a4a</color>
     <color name="colorSecondaryDark">#101720</color>
     <color name="colorSecondaryLight">#2a3b52</color>
     <color name="colorSecondary">#192331</color>
+    <color name="delayed">#9900AAAA</color>
+    <color name="transparent_blue_2">#AA00BBAA</color>
+    <color name="packed">#BB00CCAA</color>
+    <color name="transparent_blue_4">#CC00DDAA</color>
+    <color name="shipped">#DD00EEAA</color>
+    <color name="transparent_blue_6">#EE00FFAA</color>
+    <color name="delivered">#FF00FFAA</color>
+    <color name="cancelled">#99cccccc</color>
+    <color name="returnRequested">#99bbbbbb</color>
+    <color name="returned">#99aaaaaa</color>
+    <color name="transparentWhite">#99ffffff</color>
 </resources>

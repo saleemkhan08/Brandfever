@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,7 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
                              Bundle savedInstanceState)
     {
         Window window = getDialog().getWindow();
-        if(window != null)
+        if (window != null)
         {
             window.requestFeature(Window.FEATURE_NO_TITLE);
         }
@@ -83,13 +84,20 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mAddress = dataSnapshot.getValue(Addresses.class);
-                if (mAddress != null)
+                try
                 {
-                    mAddressName.setText(mAddress.getName());
-                    mAddressText.setText(mAddress.getAddress());
-                    mPhoneNumber.setText(mAddress.getPhoneNo());
-                    mPinCode.setText(mAddress.getPinCode());
+                    mAddress = dataSnapshot.getValue(Addresses.class);
+                    if (mAddress != null)
+                    {
+                        mAddressName.setText(mAddress.getName());
+                        mAddressText.setText(mAddress.getAddress());
+                        mPhoneNumber.setText(mAddress.getPhoneNo());
+                        mPinCode.setText(mAddress.getPinCode());
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -122,12 +130,12 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
         dismiss();
     }
 
-    @OnClick(R.id.saveProduct)
+    @OnClick(R.id.saveProductButton)
     public void save()
     {
         if (ConnectivityUtil.isConnected())
         {
-            if(mAddress == null)
+            if (mAddress == null)
             {
                 mAddress = new Addresses();
             }
@@ -185,10 +193,21 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                Accounts account = dataSnapshot.getValue(Accounts.class);
-                account.phoneNumber = phoneNumber;
-                userDbRef.setValue(account);
-                userDbRef.removeEventListener(this);
+                try
+                {
+
+                    Accounts account = dataSnapshot.getValue(Accounts.class);
+                    if (account != null)
+                    {
+                        account.phoneNumber = phoneNumber;
+                        userDbRef.setValue(account);
+                        userDbRef.removeEventListener(this);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
 
             @Override

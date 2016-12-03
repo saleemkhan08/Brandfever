@@ -22,6 +22,7 @@ public class NotificationReceiverService extends FirebaseMessagingService
 
         NotificationModel model = new NotificationModel();
 
+        //TODO update isNotified in DB
         model.photoUrl = data.get(NotificationModel.PHOTO_URL);
         model.username = data.get(NotificationModel.USERNAME);
         model.googleId = data.get(NotificationModel.GOOGLE_ID);

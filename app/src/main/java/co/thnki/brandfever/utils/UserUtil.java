@@ -2,6 +2,7 @@ package co.thnki.brandfever.utils;
 
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DataSnapshot;
@@ -104,15 +105,22 @@ public class UserUtil
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                String url = dataSnapshot.child(REQUEST_HANDLER_URL).getValue(String.class);
-                String serverKey = dataSnapshot.child(APP_ID).getValue(String.class);
-                if (url == null || url.isEmpty())
+                try
                 {
-                    url = DEFAULT_URL;
+                    String url = dataSnapshot.child(REQUEST_HANDLER_URL).getValue(String.class);
+                    String serverKey = dataSnapshot.child(APP_ID).getValue(String.class);
+                    if (url == null || url.isEmpty())
+                    {
+                        url = DEFAULT_URL;
+                    }
+                    Brandfever.getPreferences().edit()
+                            .putString(APP_ID, serverKey)
+                            .putString(REQUEST_HANDLER_URL, url).apply();
                 }
-                Brandfever.getPreferences().edit()
-                        .putString(APP_ID, serverKey)
-                        .putString(REQUEST_HANDLER_URL, url).apply();
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
 
             @Override
@@ -151,10 +159,17 @@ public class UserUtil
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    mAccount = dataSnapshot.getValue(Accounts.class);
-                    mAccount.fcmToken = refreshedToken;
-                    updateUserInfo();
-                    databaseReference.removeEventListener(this);
+                    try
+                    {
+                        mAccount = dataSnapshot.getValue(Accounts.class);
+                        mAccount.fcmToken = refreshedToken;
+                        updateUserInfo();
+                        databaseReference.removeEventListener(this);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
+                    }
                 }
 
                 @Override
@@ -178,9 +193,9 @@ public class UserUtil
     public boolean isOwner(String googleId)
     {
         Set<String> ownersGid = mPreferences.getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>());
-        for(String gId : ownersGid)
+        for (String gId : ownersGid)
         {
-            if(googleId.equals(gId))
+            if (googleId.equals(gId))
             {
                 return true;
             }

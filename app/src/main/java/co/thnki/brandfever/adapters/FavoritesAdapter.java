@@ -14,41 +14,42 @@ import com.google.firebase.database.Query;
 
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.view.holders.WishListProductViewHolder;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
+import co.thnki.brandfever.firebase.database.models.FavoriteProduct;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.FavoritesUtil;
+import co.thnki.brandfever.view.holders.WishListProductViewHolder;
 
 import static co.thnki.brandfever.Brandfever.getResString;
 import static co.thnki.brandfever.Brandfever.toast;
 
-public class FavoritesAdapter extends FirebaseRecyclerAdapter<Products, WishListProductViewHolder>
+public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, WishListProductViewHolder>
 {
     private Activity mActivity;
 
     public static FavoritesAdapter getInstance(DatabaseReference reference, Activity activity)
     {
-        FavoritesAdapter adapter = new FavoritesAdapter(Products.class,
-                R.layout.wish_list_product_row, WishListProductViewHolder.class, reference);
+        FavoritesAdapter adapter = new FavoritesAdapter(FavoriteProduct.class,
+                R.layout.wish_list_product_row, WishListProductViewHolder.class,
+                reference.orderByChild(FavoriteProduct.TIME_STAMP));
         adapter.mActivity = activity;
         return adapter;
     }
 
-    private FavoritesAdapter(Class<Products> modelClass, int modelLayout, Class<WishListProductViewHolder> viewHolderClass, Query ref)
+    private FavoritesAdapter(Class<FavoriteProduct> modelClass, int modelLayout, Class<WishListProductViewHolder> viewHolderClass, Query ref)
     {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
 
     @Override
-    protected void populateViewHolder(final WishListProductViewHolder viewHolder, final Products model, int position)
+    protected void populateViewHolder(final WishListProductViewHolder viewHolder, final FavoriteProduct model, int position)
     {
         /**
          * get the zeroth item to display in the list.
          */
 
-        String imageUrl = model.getPhotoUrlList().get(0);
+        String imageUrl = model.getPhotoUrl();
         Glide.with(mActivity).load(imageUrl)
                 .asBitmap().placeholder(R.mipmap.price_tag)
                 .centerCrop().into(viewHolder.mImageView);
@@ -72,8 +73,8 @@ public class FavoritesAdapter extends FirebaseRecyclerAdapter<Products, WishList
                 if (ConnectivityUtil.isConnected())
                 {
                     Intent intent = new Intent(mActivity, ProductActivity.class);
-                    ProductBundle bundle = new ProductBundle(model);
-                    intent.putExtra(Products.PRODUCT_MODEL, bundle);
+                    intent.putExtra(Products.PRODUCT_ID, model.getProductId());
+                    intent.putExtra(Products.CATEGORY_ID, model.getCategoryId());
                     if(Build.VERSION.SDK_INT >= 21)
                     {
                         String transitionName = getResString(R.string.productTransitionImage);

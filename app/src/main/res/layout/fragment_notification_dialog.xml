@@ -29,23 +29,23 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/bg_drawable"
             android:padding="13dp"
-            android:src="@mipmap/ic_clear_white_24dp"/>
+            android:src="@mipmap/clear_white"/>
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/scrollViewChild"
-        android:layout_below="@+id/dialogHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogHeader"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dialogItemPadding"
-            android:id="@+id/textInputHint"
             android:padding="@dimen/dialogItemPadding">
 
             <EditText
@@ -53,9 +53,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:maxLines="4"
-                android:maxLength ="500"
                 android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="500"
+                android:maxLines="4"
                 android:scrollHorizontally="false"
                 android:textColor="@color/colorPrimaryDark"/>
         </android.support.design.widget.TextInputLayout>
@@ -66,26 +66,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scrollViewChild"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="#ddd">
+        android:background="#ccc"
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
+        <LinearLayout
+            android:id="@+id/sendNotificationButton"
             android:gravity="center"
-            android:id="@+id/sendNotification"
-            android:clickable="true"
-            android:padding="5dp"
-            android:text="@string/send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/bg_drawable"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"/>
-        <ImageView
-            android:layout_width="40dp"
-            android:src="@mipmap/send_button"
-            android:padding="8dp"
-            android:layout_height="40dp"/>
+            android:clickable="true">
+
+            <TextView
+                android:id="@+id/sendNotification"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/send"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="9dp"
+                android:src="@mipmap/send_button"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

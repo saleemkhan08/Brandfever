@@ -1,7 +1,6 @@
 package co.thnki.brandfever.fragments;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,9 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,6 +32,7 @@ import co.thnki.brandfever.adapters.CartAdapter;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Addresses;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
+import co.thnki.brandfever.firebase.database.models.Order;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.interfaces.ResultListener;
 import co.thnki.brandfever.utils.CartUtil;
@@ -45,7 +42,6 @@ import co.thnki.brandfever.utils.OrdersUtil;
 import co.thnki.brandfever.view.holders.CartListProductViewHolder;
 
 import static co.thnki.brandfever.Brandfever.toast;
-import static co.thnki.brandfever.R.string.orderPlaced;
 import static co.thnki.brandfever.firebase.database.models.Accounts.ADDRESS_LIST;
 
 //Todo
@@ -61,7 +57,6 @@ import static co.thnki.brandfever.firebase.database.models.Accounts.ADDRESS_LIST
 public class CartFragment extends Fragment
 {
     public static final String TAG = "CartFragment";
-    private DatabaseReference mRootDbRef;
     private DatabaseReference mUserReference;
     private DatabaseReference mAddressDbRef;
     private String mGoogleId;
@@ -104,11 +99,10 @@ public class CartFragment extends Fragment
 
 
     private DatabaseReference mCartDbRef;
-    private FirebaseRecyclerAdapter<Products, CartListProductViewHolder> mAdapter;
+    private FirebaseRecyclerAdapter<Order, CartListProductViewHolder> mAdapter;
     private DataSnapshot mCartData;
     private Addresses mAddress;
     private boolean mIsOrderPlaced;
-    private ProgressDialog mDialog;
     private SharedPreferences mPreferences;
 
     public CartFragment()
@@ -116,11 +110,10 @@ public class CartFragment extends Fragment
         // Required empty public constructor
         mPreferences = Brandfever.getPreferences();
         mGoogleId = mPreferences.getString(Accounts.GOOGLE_ID, "");
-        mRootDbRef = FirebaseDatabase.getInstance().getReference();
-        mUserReference = mRootDbRef.child(mGoogleId);
+        DatabaseReference rootDbRef = FirebaseDatabase.getInstance().getReference();
+        mUserReference = rootDbRef.child(mGoogleId);
         mAddressDbRef = mUserReference.child(ADDRESS_LIST);
         mCartDbRef = mUserReference.child(CartUtil.CART_LIST);
-        updateOwnerDetails();
     }
 
     @Override
@@ -139,24 +132,31 @@ public class CartFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(getActivity()!= null)
+                try
                 {
-                    updateCartUi();
-                    mCartData = dataSnapshot;
-                    int totalPriceBefore = 0;
-                    int totalPriceAfter = 0;
-                    Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
-                    for (DataSnapshot snapshot : snapshots)
+                    if (getActivity() != null)
                     {
-                        Products product = snapshot.getValue(Products.class);
-                        totalPriceAfter += product.getActualPriceAfter();
-                        totalPriceBefore += product.getActualPriceBefore();
-                    }
-                    String total = getString(R.string.total) + " " + '\u20B9' + totalPriceAfter;
-                    String saved = getString(R.string.youSave) + " " + '\u20B9' + (totalPriceBefore - totalPriceAfter);
+                        updateCartUi();
+                        mCartData = dataSnapshot;
+                        int totalPriceBefore = 0;
+                        int totalPriceAfter = 0;
+                        Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+                        for (DataSnapshot snapshot : snapshots)
+                        {
+                            Products product = snapshot.getValue(Products.class);
+                            totalPriceAfter += product.getActualPriceAfter();
+                            totalPriceBefore += product.getActualPriceBefore();
+                        }
+                        String total = getString(R.string.total) + " " + '\u20B9' + totalPriceAfter;
+                        String saved = getString(R.string.youSave) + " " + '\u20B9' + (totalPriceBefore - totalPriceAfter);
 
-                    mTotalTextView.setText(total);
-                    mSavingsTextView.setText(saved);
+                        mTotalTextView.setText(total);
+                        mSavingsTextView.setText(saved);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -178,10 +178,17 @@ public class CartFragment extends Fragment
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    updateAddressUi(dataSnapshot.getValue(Addresses.class));
-                    if (mIsOrderPlaced)
+                    try
                     {
-                        submitOrder();
+                        updateAddressUi(dataSnapshot.getValue(Addresses.class));
+                        if (mIsOrderPlaced)
+                        {
+                            submitOrder();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
                     }
                 }
 
@@ -231,72 +238,6 @@ public class CartFragment extends Fragment
         }
     }
 
-    private void updateOwnerDetails()
-    {
-        mRootDbRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference databaseReference = mRootDbRef.child(Accounts.OWNERS);
-        Log.d(TAG, "databaseReference : "+databaseReference);
-        databaseReference.addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                boolean isOwner = false;
-                for (DataSnapshot snapshot : children)
-                {
-                    String googleId = "";
-                    try
-                    {
-                        googleId = snapshot.getValue(String.class);
-                    }
-                    catch (Exception e)
-                    {
-                        return;
-                    }
-                    if (mPreferences.getString(Accounts.GOOGLE_ID, "").equals(googleId))
-                    {
-                        isOwner = true;
-                    }
-                    final DatabaseReference usersDbRef = mRootDbRef.child(Accounts.USERS).child(googleId);
-                    usersDbRef.addValueEventListener(new ValueEventListener()
-                    {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot)
-                        {
-                            Accounts ownerAccount = dataSnapshot.getValue(Accounts.class);
-                            Set<String> ownerTokens = mPreferences.getStringSet(Accounts.OWNERS_TOKENS, new HashSet<String>());
-                            Set<String> ownerGids = mPreferences.getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>());
-
-                            ownerTokens.add(ownerAccount.fcmToken);
-                            ownerGids.add(ownerAccount.googleId);
-
-                            mPreferences.edit()
-                                    .putStringSet(Accounts.OWNERS_TOKENS, ownerTokens)
-                                    .putStringSet(Accounts.OWNERS_GOOGLE_IDS, ownerGids)
-                                    .apply();
-                            Log.d(TAG, "ownerTokens : " + ownerTokens+", ownerGids : "+ownerGids);
-                            usersDbRef.removeEventListener(this);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
-
-                        }
-                    });
-                }
-                mPreferences.edit().putBoolean(Accounts.IS_OWNER, isOwner).apply();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
-    }
-
     @Override
     public void onStop()
     {
@@ -312,13 +253,13 @@ public class CartFragment extends Fragment
         if (size < 1)
         {
             mNoProductFoundContainer.setVisibility(View.VISIBLE);
-            mPlaceAnOrder.setVisibility(View.GONE);
-            mAddressContainer.setVisibility(View.GONE);
+            mOrderContainer.setVisibility(View.GONE);
             mTotalContainer.setVisibility(View.GONE);
         }
         else
         {
             mNoProductFoundContainer.setVisibility(View.GONE);
+            mOrderContainer.setVisibility(View.VISIBLE);
             mPlaceAnOrder.setVisibility(View.VISIBLE);
             mTotalContainer.setVisibility(View.VISIBLE);
         }
@@ -334,47 +275,28 @@ public class CartFragment extends Fragment
 
     private void submitOrder()
     {
-        /**
-         *  1. check if address is available otherwise show address dialog.
-         *  2. //TODO check if that product is available then allow the placement of order.
-         *  3. save the order in DB
-         *  4. save a notification in all the owners profile
-         *  5. send notification through FCM to all the owners
-         *  6. //TODO reduce the item count in server
-         */
         if (ConnectivityUtil.isConnected())
         {
             if (mAddress != null)
             {
                 Log.d(TAG, "submitOrder");
-                mDialog = new ProgressDialog(getActivity());
-                mDialog.setMessage(getString(R.string.placingAnOrder));
-                mDialog.show();
-
                 saveOrderInDb();
-                NotificationsUtil.getInstance().sendNotificationToAllOwners(getNotification(), mGoogleId, new ResultListener<String>()
+                NotificationsUtil.getInstance().sendNotificationToAll(getNotification(), mGoogleId, new ResultListener<String>()
                 {
                     @Override
                     public void onSuccess(String result)
                     {
-                        toast(orderPlaced);
                         Log.d(TAG, "Response : " + result);
-                        if (mDialog != null)
-                        {
-                            mDialog.dismiss();
-                        }
                     }
 
                     @Override
                     public void onError(VolleyError error)
                     {
-                        toast(R.string.please_try_again);
-                        if (mDialog != null)
-                        {
-                            mDialog.dismiss();
-                        }
+                        Log.d(TAG, "Response error : " + error.getMessage());
                     }
                 });
+                toast(R.string.orderPlaced);
+                ((StoreActivity) getActivity()).showUserOrdersFragment(mPreferences.getString(Accounts.GOOGLE_ID, ""));
             }
             else
             {
@@ -389,12 +311,14 @@ public class CartFragment extends Fragment
 
     private NotificationModel getNotification()
     {
+        //PUK : 11203510 0000 0000
         NotificationModel notificationModel = new NotificationModel();
         notificationModel.googleId = mGoogleId;
-        notificationModel.action = StoreActivity.ORDER_PLACED;
+        notificationModel.action = OrdersUtil.ORDER_PLACED;
         notificationModel.photoUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
         notificationModel.notification = getString(R.string.placedAnOrder);
         notificationModel.username = mPreferences.getString(Accounts.NAME, getString(R.string.anUser));
+        notificationModel.timeStamp = -System.currentTimeMillis();
         return notificationModel;
     }
 
@@ -404,9 +328,11 @@ public class CartFragment extends Fragment
         DatabaseReference myOrdersDbRef = mUserReference.child(OrdersUtil.ORDERS);
         for (DataSnapshot snapshot : mCartData.getChildren())
         {
-            Products products = snapshot.getValue(Products.class);
-            products.setOrderStatus(OrdersUtil.ORDER_PLACED);
-            myOrdersDbRef.child(snapshot.getKey()).setValue(products);
+            Order order = snapshot.getValue(Order.class);
+
+            order.setOrderStatus(OrdersUtil.ORDER_PLACED);
+            order.setTimeStamp(-System.currentTimeMillis());
+            myOrdersDbRef.child(snapshot.getKey()).setValue(order);
         }
         mCartDbRef.removeValue();
     }
@@ -420,6 +346,6 @@ public class CartFragment extends Fragment
     private float getPaddingInPixel(int paddingInDp)
     {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        return paddingInDp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return paddingInDp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }

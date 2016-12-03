@@ -168,12 +168,19 @@ public class MainPageFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                hideAllCategories();
-                Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
-                for (DataSnapshot snapshot : snapshots)
+                try
                 {
-                    Category category = snapshot.getValue(Category.class);
-                    unHideCategory(category.getCategoryName(), category.getCategory());
+                    hideAllCategories();
+                    Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+                    for (DataSnapshot snapshot : snapshots)
+                    {
+                        Category category = snapshot.getValue(Category.class);
+                        unHideCategory(category.getCategoryName(), category.getCategory());
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 

@@ -5,12 +5,6 @@
     android:layout_height="match_parent"
     tools:context="co.thnki.brandfever.fragments.MainPageFragment">
 
-    <ProgressBar
-        android:id="@+id/mainCategoryProgress"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:paddingTop="50dp"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -181,4 +175,12 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <ProgressBar
+        android:background="@color/transparent_black"
+        android:id="@+id/mainCategoryProgress"
+        android:layout_width="match_parent"
+        android:padding="160dp"
+        android:layout_height="match_parent"
+        />
 </FrameLayout>

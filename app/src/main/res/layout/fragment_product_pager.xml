@@ -8,6 +8,7 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/productImagePager"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"/>
@@ -30,7 +31,7 @@
         android:layout_alignParentEnd="true"
         android:visibility="gone"
         android:layout_margin="10dp"
-        app:fab_icon="@drawable/ic_photo_camera_white_24dp"
+        app:fab_icon="@mipmap/photo_camera_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>
@@ -42,7 +43,7 @@
         android:layout_margin="10dp"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
-        app:fab_icon="@drawable/ic_delete_forever_white_24dp"
+        app:fab_icon="@mipmap/delete_forever_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>

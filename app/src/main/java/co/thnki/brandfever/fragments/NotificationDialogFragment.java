@@ -1,6 +1,5 @@
 package co.thnki.brandfever.fragments;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,9 +24,10 @@ import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
-import co.thnki.brandfever.firebase.database.models.Products;
+import co.thnki.brandfever.firebase.database.models.Order;
 import co.thnki.brandfever.interfaces.ResultListener;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.NotificationsUtil;
 import co.thnki.brandfever.utils.OrdersUtil;
@@ -44,27 +44,26 @@ public class NotificationDialogFragment extends DialogFragment
     @Bind(R.id.textInputHint)
     TextInputLayout mTextInputHint;
 
-
     @Bind(R.id.dialogTitle)
     TextView mDialogTitleTextView;
 
     private DatabaseReference mOrderDbRef;
     private SharedPreferences mPreference;
-    private ProgressDialog mProgressDialog;
     private String mGoogleId;
     private int mNotificationMessageResId;
-    private String mOrderStatus;
+    private Order mOrder;
 
-    public static NotificationDialogFragment getInstance(String orderId, String googleId, int msgResourceId, String status)
+    public static NotificationDialogFragment getInstance(Order order, String googleId, int msgResourceId)
     {
         NotificationDialogFragment fragment = new NotificationDialogFragment();
         fragment.mPreference = Brandfever.getPreferences();
+        fragment.mOrder = order;
+        Log.d("OrderStatus", "getInstance : "+order.getOrderStatus());
         fragment.mOrderDbRef = FirebaseDatabase.getInstance().getReference()
                 .child(googleId)
-                .child(OrdersUtil.ORDERS).child(orderId);
+                .child(OrdersUtil.ORDERS).child(CartUtil.getsInstance().getKey(order));
         fragment.mGoogleId = googleId;
         fragment.mNotificationMessageResId = msgResourceId;
-        fragment.mOrderStatus = status;
         return fragment;
     }
 
@@ -92,14 +91,13 @@ public class NotificationDialogFragment extends DialogFragment
 
     private void updateNotificationEditText()
     {
-
-        if(mNotificationMessageResId == 0)
+        if (mNotificationMessageResId == 0)
         {
             mDialogTitleTextView.setText(R.string.orderCancellation);
             mTextInputHint.setHint(getString(R.string.cancellationReason));
             mNotificationMsgEditText.setText("");
         }
-        else if(mNotificationMessageResId == -1)
+        else if (mNotificationMessageResId == -1)
         {
             mDialogTitleTextView.setText(R.string.returnOrder);
             mTextInputHint.setHint(getString(R.string.returnReason));
@@ -133,63 +131,54 @@ public class NotificationDialogFragment extends DialogFragment
         dismiss();
     }
 
-    @OnClick(R.id.sendNotification)
+    @OnClick(R.id.sendNotificationButton)
     public void sendNotification()
     {
-        /**
-         * 1. get the reason for cancellation
-         * 2. if owner is cancelling then
-         *      a. notify the user who's order is cancelled
-         *      b. notify all other owners
-         * 3. if user is cancelling then notify all the owners
-         *
-         */
-        Log.d("OrderCancellation", ""+mOrderDbRef);
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage(getString(R.string.cancellingTheOrder));
-        mProgressDialog.show();
-        getDialog().hide();
         if (ConnectivityUtil.isConnected())
         {
             NotificationModel model = new NotificationModel();
             model.notification = mNotificationMsgEditText.getText().toString();
             if (model.notification.trim().isEmpty())
             {
-                toast(R.string.pleaseEnterReason);
+                toast(R.string.pleaseEnterMessage);
             }
             else
             {
-                mOrderDbRef.child(Products.ORDER_STATUS).setValue(mOrderStatus);
-                model.action = mOrderStatus;
+                mOrderDbRef.child(Order.ORDER_STATUS).setValue(mOrder.getOrderStatus());
+                mOrderDbRef.child(Order.TIME_STAMP).setValue(-System.currentTimeMillis());
+
+                model.action = mOrder.getOrderStatus();
+                Log.d("OrderStatus", "SendNotification : "+model.action);
                 model.googleId = mPreference.getString(Accounts.GOOGLE_ID, "");
-                model.username = mPreference.getString(Accounts.NAME, "");
+                model.timeStamp = -System.currentTimeMillis();
                 NotificationsUtil notificationsUtil = NotificationsUtil.getInstance();
                 if (mPreference.getBoolean(Accounts.IS_OWNER, false))
                 {
-                    model.photoUrl = "";
+                    model.username = getString(R.string.app_name);
+                    model.photoUrl = mOrder.getPhotoUrl();
                 }
                 else
                 {
+                    model.username = mPreference.getString(Accounts.NAME, "");
                     model.photoUrl = mPreference.getString(Accounts.PHOTO_URL, "");
                     mGoogleId = null;
                 }
-                notificationsUtil.sendNotificationToAllOwners(model, mGoogleId, new ResultListener<String>()
+                notificationsUtil.sendNotificationToAll(model, mGoogleId, new ResultListener<String>()
                 {
                     @Override
                     public void onSuccess(String result)
                     {
-                        toast(R.string.sent);
-                        mProgressDialog.dismiss();
-                        dismiss();
+                        Log.d("notificationsUtil","Response result : "+result);
                     }
 
                     @Override
                     public void onError(VolleyError error)
                     {
-                        mProgressDialog.dismiss();
-                        dismiss();
+                        Log.d("notificationsUtil","Response error : "+error);
                     }
                 });
+                toast(R.string.sent);
+                dismiss();
             }
         }
         else

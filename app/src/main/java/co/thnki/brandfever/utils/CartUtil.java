@@ -10,30 +10,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import co.thnki.brandfever.Brandfever;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
-import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.firebase.database.models.Accounts;
+import co.thnki.brandfever.firebase.database.models.Order;
+import co.thnki.brandfever.firebase.database.models.Products;
 
 /**
  * 1. Login Activity
- *      a. getInstance() $ updateCartList() - > onActivityResult()
- *      b. clearInstance() -> setUpLogin()
- *
+ * a. getInstance() $ updateCartList() - > onActivityResult()
+ * b. clearInstance() -> setUpLogin()
+ * <p>
  * 2. Product Activity
- *      a. getInstance() -> onCreate()
- *      b. isAddedToCart() -> onCreate() used to update UI
- *      c. placeAnOrder() -> placeAnOrder()
- *      d. removeFromCart() -> placeAnOrder()
- *
+ * a. getInstance() -> onCreate()
+ * b. isAddedToCart() -> onCreate() used to update UI
+ * c. placeAnOrder() -> placeAnOrder()
+ * d. removeFromCart() -> placeAnOrder()
+ * <p>
  * 2. Product Activity
- *      a. placeAnOrder() ->
- *      b. removeFromCart()
- *      c. isAddedToCart()
- *
+ * a. placeAnOrder() ->
+ * b. removeFromCart()
+ * c. isAddedToCart()
+ * <p>
  * 3. Products Fragment
- *      a. placeAnOrder()
- *      b. removeFromCart()
- *      c. isAddedToCart()
+ * a. placeAnOrder()
+ * b. removeFromCart()
+ * c. isAddedToCart()
  */
 public class CartUtil
 {
@@ -65,31 +65,33 @@ public class CartUtil
         sInstance = null;
     }
 
-    public String addToCart(ProductBundle productBundle)
+    public String addToCart(Products product, String selectedSize)
     {
-        productBundle.setOrderStatus(OrdersUtil.ORDER_ADDED_TO_CART);
-        String key = getKey(productBundle, productBundle.getSelectedSize());
+        Order order = new Order(product, OrdersUtil.ORDER_ADDED_TO_CART, selectedSize);
+        String key = getKey(product, selectedSize);
         DatabaseReference reference = mCartRef.child(key);
-
-        //TODO check where it is being used
-        mPreferences.edit().putBoolean(key, true).apply();
-        reference.setValue(new Products(productBundle));
+        reference.setValue(order);
         return key;
     }
 
-    private String getKey(ProductBundle productBundle, String selectedSize)
+    public String getKey(Order order)
     {
-        return productBundle.getCategoryId() + "_" + productBundle.getProductId()+"_"+selectedSize;
+        return order.getCategoryId() + "_" + order.getProductId() + "_" + order.getSelectedSize();
     }
 
-    public void removeFromCart(Products products)
+    private String getKey(Products product, String selectedSize)
     {
-        String key = getKey(products);
+        return product.getCategoryId() + "_" + product.getProductId() + "_" + selectedSize;
+    }
+
+    public void removeFromCart(Order order)
+    {
+        String key = getKey(order);
         mPreferences.edit().remove(key).apply();
         mCartRef.child(key).removeValue();
     }
 
-    public String addToCart(Products products)
+    public String addToCart(Order products)
     {
         String key = getKey(products);
         DatabaseReference reference = mCartRef.child(key);
@@ -99,14 +101,6 @@ public class CartUtil
         return key;
     }
 
-    public void removeFromCart(ProductBundle productBundle)
-    {
-        String key = getKey(productBundle);
-
-        mPreferences.edit().remove(key).apply();
-        mCartRef.child(key).removeValue();
-    }
-
     public void updateCartList()
     {
         mCartRef.addValueEventListener(new ValueEventListener()
@@ -114,14 +108,21 @@ public class CartUtil
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                try
                 {
-                    Products product = snapshot.getValue(Products.class);
-                    String key = getKey(product);
-                    Log.d(CartUtil.CART_LIST, "key : " + key);
-                    mPreferences.edit()
-                            .putBoolean(key, true)
-                            .apply();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        Order order = snapshot.getValue(Order.class);
+                        String key = getKey(order);
+                        Log.d(CartUtil.CART_LIST, "key : " + key);
+                        mPreferences.edit()
+                                .putBoolean(key, true)
+                                .apply();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -133,7 +134,7 @@ public class CartUtil
         });
     }
 
-    public boolean isAddedToCart(ProductBundle productBundle)
+    public boolean isAddedToCart(Order productBundle)
     {
         String key = getKey(productBundle);
         boolean isFav = mPreferences.getBoolean(key, false);
@@ -141,28 +142,10 @@ public class CartUtil
         return isFav;
     }
 
-    public boolean isAddedToCart(Products product)
-    {
-        String key = getKey(product);
-        boolean isFav = mPreferences.getBoolean(key, false);
-        Log.d(CartUtil.CART_LIST, "isAddedToCart : " + isFav);
-        return isFav;
-    }
-
-    public String getKey(ProductBundle product)
-    {
-        return product.getCategoryId() + "_" + product.getProductId();
-    }
-
-    public static String getKey(Products product)
-    {
-        return product.getCategoryId() + "_" + product.getProductId()+"_"+product.getSelectedSize();
-    }
-
-    public boolean toggleCart(Products model)
+    public boolean toggleCart(Order model)
     {
         boolean isAddedToCart = isAddedToCart(model);
-        if(isAddedToCart)
+        if (isAddedToCart)
         {
             removeFromCart(model);
         }

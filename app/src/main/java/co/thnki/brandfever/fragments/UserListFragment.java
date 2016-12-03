@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,14 @@ public class UserListFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mProgress.setVisibility(View.GONE);
+                try
+                {
+                    mProgress.setVisibility(View.GONE);
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
 
             @Override

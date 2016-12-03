@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Brandfever</string>
+    <string name="app_name">Shoppon</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
@@ -219,7 +219,7 @@
     <string name="orderCancellation">Order Cancellation</string>
     <string name="cancellationReason">Cancellation Reason</string>
     <string name="submit">Submit</string>
-    <string name="pleaseEnterReason">Please Enter A Reason!</string>
+    <string name="pleaseEnterMessage">Please enter the message!</string>
     <string name="cancellingTheOrder">Cancelling The Order...</string>
     <string name="orderCancelled">Order Cancelled</string>
     <string name="cancelledAnOrder">Cancelled An Order!</string>
@@ -230,7 +230,7 @@
     <string name="packed">Packed</string>
     <string name="shipped">Shipped</string>
     <string name="delivered">Delivered</string>
-    <string name="returnOrder">Return</string>
+    <string name="returnOrder">Return Request</string>
     <string name="delayed">Delayed</string>
     <string name="packedNotification">Your Order Has Been Packed and Ready to Dispatch!</string>
     <string name="shippedNotification">Your Order Has Been Shipped!</string>
@@ -246,4 +246,18 @@
     <string name="sent">Sent</string>
     <string name="sizeNotAvailable">Size Not Available!</string>
     <string name="productNotAvailable">Product is unavailable!</string>
+    <string name="status">Status</string>
+    <string name="OrderAddedToCart">Added to Cart</string>
+    <string name="OrderPlaced">Order Placed</string>
+    <string name="OrderPacked">Packed</string>
+    <string name="OrderShipped">Shipped</string>
+    <string name="OrderDelivered">Delivered</string>
+    <string name="OrderCancelled">Cancelled</string>
+    <string name="OrderReturned">Returned</string>
+    <string name="OrderRequestedReturn">Requested for Return</string>
+    <string name="orderDelayed">Delayed</string>
+    <string name="sending">Sending...</string>
+    <string name="copyright">Copyright \u00A9 2016</string>
+    <string name="loggingOut">Logging Out ....</string>
+    <string name="returnOrderAccepted">Returned Product is received!</string>
 </resources>

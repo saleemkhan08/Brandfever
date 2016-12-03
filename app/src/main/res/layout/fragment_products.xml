@@ -53,7 +53,7 @@
         android:layout_margin="10dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        app:fab_icon="@drawable/ic_file_upload_white_24dp"
+        app:fab_icon="@mipmap/file_upload_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"/>
 </RelativeLayout>

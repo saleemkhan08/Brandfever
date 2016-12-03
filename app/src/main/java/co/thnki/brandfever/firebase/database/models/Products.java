@@ -17,8 +17,10 @@ public class Products
 {
     public static final String PHOTO_URL = "photoUrlList";
     public static final String PHOTO_NAME = "photoNameList";
-    public static final String PRODUCT_MODEL = "productModel";
     public static final String ORDER_STATUS = "orderStatus";
+    public static final String PRODUCT_ID = "productId";
+    public static final String CATEGORY_ID = "categoryId";
+    public static final String TIME_STAMP = "timeStamp";
 
     private String categoryId;
     private String productId;
@@ -30,9 +32,8 @@ public class Products
     private String priceBefore;
     private ArrayList<String> photoUrlList;
     private ArrayList<String> photoNameList;
-    private String orderStatus;
     private static final String NOT_SPECIFIED = "Not Specified";
-    private String selectedSize;
+    private long timeStamp;
 
     public Products()
     {
@@ -58,21 +59,7 @@ public class Products
         sizesMap.put(Brandfever.getResString(R.string.xxl), 0);
         material = NOT_SPECIFIED;
         productId = key;
-    }
-
-    public Products(ProductBundle bundle)
-    {
-        photoUrlList = bundle.getPhotoUrlList();
-        photoNameList = bundle.getPhotoUrlList();
-        this.categoryId = bundle.getCategoryId();
-        brand = bundle.getBrand();
-        priceAfter = bundle.getPriceAfter();
-        sizesMap = convertBundleToIntMap(bundle.getSizesMap());
-        material = bundle.getMaterial();
-        priceBefore = bundle.getPriceBefore();
-        productId = bundle.getProductId();
-        orderStatus = bundle.getOrderStatus();
-        selectedSize = bundle.getSelectedSize();
+        timeStamp = - System.currentTimeMillis();
     }
 
     public static String generateRandomKey()
@@ -207,23 +194,13 @@ public class Products
         this.photoNameList = photoNameList;
     }
 
-    public String getSelectedSize()
+    public long getTimeStamp()
     {
-        return selectedSize;
+        return timeStamp;
     }
 
-    public void setSelectedSize(String selectedSize)
+    public void setTimeStamp(long timeStamp)
     {
-        this.selectedSize = selectedSize;
-    }
-
-    public String getOrderStatus()
-    {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(String orderStatus)
-    {
-        this.orderStatus = orderStatus;
+        this.timeStamp = timeStamp;
     }
 }

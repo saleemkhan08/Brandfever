@@ -22,7 +22,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.singletons.Otto;
@@ -103,7 +102,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
         dismiss();
     }
 
-    @OnClick(R.id.saveProduct)
+    @OnClick(R.id.saveProductButton)
     public void save()
     {
         /**
@@ -238,10 +237,10 @@ public class EditProductDialogFragment extends DialogFragment implements Const
         Otto.unregister(this);
     }
 
-    public static EditProductDialogFragment getInstance(ProductBundle productBundle)
+    public static EditProductDialogFragment getInstance(Products product)
     {
         EditProductDialogFragment fragment = new EditProductDialogFragment();
-        fragment.mProduct = new Products(productBundle);
+        fragment.mProduct = product;
         return fragment;
     }
 

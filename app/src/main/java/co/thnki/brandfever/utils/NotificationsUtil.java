@@ -1,6 +1,5 @@
 package co.thnki.brandfever.utils;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -35,10 +34,10 @@ import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
+import co.thnki.brandfever.interfaces.IOnTokensUpdatedListener;
 import co.thnki.brandfever.interfaces.ResultListener;
 import co.thnki.brandfever.singletons.VolleyUtil;
 
-import static co.thnki.brandfever.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
 import static co.thnki.brandfever.singletons.VolleyUtil.RECEIVER_TOKENS;
 
 public class NotificationsUtil
@@ -83,12 +82,12 @@ public class NotificationsUtil
         Intent contentIntent = new Intent(Brandfever.getAppContext(), StoreActivity.class);
 
         contentIntent.putExtra(StoreActivity.NOTIFICATION_ACTION, model.action);
-        PendingIntent contentPendingIntent = PendingIntent.getBroadcast(Brandfever.getAppContext(),
+        PendingIntent contentPendingIntent = PendingIntent.getActivity(Brandfever.getAppContext(),
                 (int) System.currentTimeMillis(), contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mAppContext);
         mBuilder.setContentTitle(model.username)
-                .setSmallIcon(R.drawable.ic_shopping_cart_white_24dp)
+                .setSmallIcon(R.mipmap.shopping_cart_white)
                 .setAutoCancel(true)
                 .setContentText(model.notification)
                 .setContentIntent(contentPendingIntent);
@@ -111,7 +110,7 @@ public class NotificationsUtil
         try
         {
             URL url = new URL(photoUrl);
-            return getCircleBitmap(BitmapFactory.decodeStream(url.openConnection().getInputStream()));
+            return getSquareBitmap(BitmapFactory.decodeStream(url.openConnection().getInputStream()));
         }
         catch (Exception e)
         {
@@ -141,15 +140,40 @@ public class NotificationsUtil
         }
     }
 
+    private Bitmap getSquareBitmap(Bitmap srcBmp)
+    {
+
+        Bitmap dstBmp = Bitmap.createBitmap(
+                srcBmp,
+                0,
+                srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2,
+                srcBmp.getWidth(),
+                srcBmp.getWidth()
+                                           );
+        if (srcBmp.getWidth() >= srcBmp.getHeight())
+        {
+
+            dstBmp = Bitmap.createBitmap(
+                    srcBmp,
+                    srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2,
+                    0,
+                    srcBmp.getHeight(),
+                    srcBmp.getHeight()
+                                        );
+
+        }
+        return Bitmap.createScaledBitmap(dstBmp, 120, 120, true);
+    }
+
     private Bitmap getCircleBitmap(Bitmap bitmap)
     {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Bitmap output = Bitmap.createBitmap(120,
+                120, Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
 
         final int color = Color.RED;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final Rect rect = new Rect(0, 0, 120, 120);
         final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);
@@ -192,32 +216,27 @@ public class NotificationsUtil
         }
     }
 
-    public void sendNotificationToAllOwners(NotificationModel model, String googleId, ResultListener<String> listener)
+    public void sendNotificationToAll(final NotificationModel model, final String googleId, final ResultListener<String> listener)
     {
-        saveNotificationInAllOwnersProfile(model, googleId);
-        Log.d(TAG, "sendNotificationToAllOwners");
-        Map<String, String> data = new HashMap<>();
-        data.put(NotificationModel.GOOGLE_ID, model.googleId);
-        data.put(NotificationModel.ACTION, model.action);
-        data.put(NotificationModel.APP_ID, mPreferences.getString(VolleyUtil.APP_ID, Brandfever.getResString(R.string.serverKey)));
-        data.put(NotificationModel.NOTIFICATION, model.notification);
-        data.put(NotificationModel.PHOTO_URL, model.photoUrl);
-        data.put(NotificationModel.USERNAME, model.username);
-
-        @SuppressLint("UseSparseArrays")
-        Map<String, String> ownersTokenList = new HashMap<>();
-        int index = 0;
-
-        for (String token : mPreferences.getStringSet(Accounts.OWNERS_TOKENS, new HashSet<String>()))
+        FcmTokensUtil.getInstance().updateAllTokens(googleId, new IOnTokensUpdatedListener()
         {
-            if (token != null && !token.equals(mPreferences.getString(NOTIFICATION_INSTANCE_ID, "")))
+            @Override
+            public void onTokensUpdated(Map<String, String> ownersTokenList)
             {
-                ownersTokenList.put("" + (index++), token);
+                Log.d(TAG, "sendNotificationToAllOwners");
+                Map<String, String> data = new HashMap<>();
+                data.put(NotificationModel.GOOGLE_ID, model.googleId);
+                Log.d("OrderStatus", "sendNotificationToAll : " + model.action);
+                data.put(NotificationModel.ACTION, model.action);
+                data.put(NotificationModel.APP_ID, mPreferences.getString(VolleyUtil.APP_ID, Brandfever.getResString(R.string.serverKey)));
+                data.put(NotificationModel.NOTIFICATION, model.notification);
+                data.put(NotificationModel.PHOTO_URL, model.photoUrl);
+                data.put(NotificationModel.USERNAME, model.username);
+                data.put(RECEIVER_TOKENS, new JSONObject(ownersTokenList).toString());
+                Log.d(TAG, "Request : " + data);
+                VolleyUtil.getInstance().sendPostData(data, listener);
+                saveNotificationInAllOwnersProfile(model, googleId);
             }
-        }
-
-        data.put(RECEIVER_TOKENS, new JSONObject(ownersTokenList).toString());
-        Log.d(TAG, "Request : " + data);
-        VolleyUtil.getInstance().sendPostData(data, listener);
+        });
     }
 }

@@ -19,4 +19,7 @@
     <item android:id="@+id/returnOrder"
           android:title="@string/returnOrder">
     </item>
+    <item android:id="@+id/returnAccepted"
+          android:title="@string/returned">
+    </item>
 </menu>

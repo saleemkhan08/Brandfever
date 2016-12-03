@@ -127,7 +127,7 @@ public class InitialSetupUtil implements ValueEventListener
         Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
                 + ", categoryName :" + categoryName + ", childId : " + childId);
         StorageReference storageReference = FirebaseStorage.getInstance()
-                .getReference().child(APP_IMAGES).child(parentCategory.replace(AVAILABLE_, "")).child(childId+".jpg");
+                .getReference().child(APP_IMAGES).child(parentCategory.replace(AVAILABLE_, "")).child(childId + ".jpg");
 
         Log.d(TAG, "storageReference : " + storageReference);
 
@@ -136,13 +136,20 @@ public class InitialSetupUtil implements ValueEventListener
             @Override
             public void onSuccess(Uri uri)
             {
-                Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
-                        + ", categoryName :" + categoryName + ", childId : " + childId);
+                try
+                {
+                    Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
+                            + ", categoryName :" + categoryName + ", childId : " + childId);
 
-                DatabaseReference childRef = mCategoriesRef.child(index+"");
-                Category category = new Category(categoryName, index, childId, uri.toString());
-                category.setCategorySelected(true);
-                childRef.setValue(category);
+                    DatabaseReference childRef = mCategoriesRef.child(index + "");
+                    Category category = new Category(categoryName, index, childId, uri.toString());
+                    category.setCategorySelected(true);
+                    childRef.setValue(category);
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
         });
     }
@@ -150,16 +157,23 @@ public class InitialSetupUtil implements ValueEventListener
     @Override
     public void onDataChange(DataSnapshot dataSnapshot)
     {
-        Log.d(TAG, "onDataChange : dataSnapshot.getValue() : " + dataSnapshot.getValue());
-        if (dataSnapshot.getValue() == null)
+        try
         {
-            saveCategories();
+            Log.d(TAG, "onDataChange : dataSnapshot.getValue() : " + dataSnapshot.getValue());
+            if (dataSnapshot.getValue() == null)
+            {
+                saveCategories();
+            }
+            else
+            {
+                Otto.post(INITIAL_SETUP_COMPLETE);
+            }
+            mFirstLevelDbRef.removeEventListener(this);
         }
-        else
+        catch (Exception e)
         {
-            Otto.post(INITIAL_SETUP_COMPLETE);
+            Log.d("Exception", e.getMessage());
         }
-        mFirstLevelDbRef.removeEventListener(this);
     }
 
     @Override

@@ -83,9 +83,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         TextView title = (TextView) findViewById(R.id.title);
         title.setTypeface(Brandfever.getTypeFace());
 
-        TextView description = (TextView) findViewById(R.id.descriptionText);
-        description.setTypeface(Brandfever.getTypeFace());
-
         checkGooglePlayServices();
 
         // [START initialize_auth]

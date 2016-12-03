@@ -37,7 +37,6 @@ import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.firebase.database.models.Accounts;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.fragments.EditProductDialogFragment;
 import co.thnki.brandfever.fragments.ProductPagerFragment;
@@ -147,7 +146,7 @@ public class ProductActivity extends AppCompatActivity
     @BindColor(R.color.background)
     int statusBarColor;
 
-    private ProductBundle mProductBundle;
+    private Products mProduct;
 
     private Map<String, Boolean> mSelectedSizes;
     private DatabaseReference mProductDbRef;
@@ -164,8 +163,12 @@ public class ProductActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mProductBundle = getIntent().getParcelableExtra(Products.PRODUCT_MODEL);
-        if (mProductBundle != null)
+        if (!ConnectivityUtil.isConnected())
+        {
+            toast(R.string.noInternet);
+            finish();
+        }
+        else
         {
             setupTransitions();
             setContentView(R.layout.activity_product);
@@ -174,19 +177,6 @@ public class ProductActivity extends AppCompatActivity
             ButterKnife.bind(this);
 
             setupFirebaseStorageDb();
-
-            //Setting up the UI
-            setUpActionBarUi();
-            showProductsFirstImage();
-            setupProductInfoUi();
-            setupEditingOptionsUi();
-            setupFavoriteUi();
-            setupSizesUi();
-        }
-        else
-        {
-            toast(R.string.invalid_product);
-            finish();
         }
     }
 
@@ -209,18 +199,42 @@ public class ProductActivity extends AppCompatActivity
 
     private void setupFirebaseStorageDb()
     {
+        String productId = getIntent().getStringExtra(Products.PRODUCT_ID);
+        String categoryId = getIntent().getStringExtra(Products.CATEGORY_ID);
+
         DatabaseReference root = FirebaseDatabase.getInstance().getReference();
-        mProductDbRef = root.child(mProductBundle.getCategoryId()).child(mProductBundle.getProductId());
+        mProductDbRef = root.child(categoryId).child(productId);
         mProductDbRef.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if (!ProductActivity.this.isDestroyed() && dataSnapshot != null)
+                try
                 {
-                    mProductBundle = new ProductBundle(dataSnapshot.getValue(Products.class));
-                    setupProductInfoUi();
-                    resetSizesUi();
+                    if (dataSnapshot != null)
+                    {
+                        Products product = dataSnapshot.getValue(Products.class);
+                        if (product != null)
+                        {
+                            if (!ProductActivity.this.isDestroyed())
+                            {
+                                mProduct = product;
+                                setUpActionBarUi();
+                                showProductsFirstImage();
+                                setupProductInfoUi();
+                                setupEditingOptionsUi();
+                                setupFavoriteUi();
+                                setupSizesUi();
+                                resetSizesUi();
+                                loadProductImages();
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -231,8 +245,8 @@ public class ProductActivity extends AppCompatActivity
             }
         });
         mProductStorageRef = FirebaseStorage.getInstance().getReference()
-                .child(mProductBundle.getCategoryId())
-                .child(mProductBundle.getProductId());
+                .child(categoryId)
+                .child(productId);
     }
 
     private void setUpActionBarUi()
@@ -247,9 +261,9 @@ public class ProductActivity extends AppCompatActivity
 
     private void showProductsFirstImage()
     {
-        if(mProductBundle.getPhotoUrlList() != null)
+        if (mProduct.getPhotoUrlList() != null)
         {
-            Glide.with(this).load(mProductBundle.getPhotoUrlList().get(0))
+            Glide.with(this).load(mProduct.getPhotoUrlList().get(0))
                     .crossFade()
                     .centerCrop().into(mTransitionImage);
         }
@@ -257,9 +271,9 @@ public class ProductActivity extends AppCompatActivity
 
     private void setupProductInfoUi()
     {
-        mBrandText.setText(mProductBundle.getBrand());
-        mPriceTextAfter.setText(mProductBundle.getPriceAfter());
-        String discountText = mProductBundle.getPriceBefore();
+        mBrandText.setText(mProduct.getBrand());
+        mPriceTextAfter.setText(mProduct.getPriceAfter());
+        String discountText = mProduct.getPriceBefore();
         if (discountText != null && !discountText.isEmpty())
         {
             mPriceTextBefore.setText(discountText);
@@ -287,7 +301,7 @@ public class ProductActivity extends AppCompatActivity
     private void setupFavoriteUi()
     {
         mFavoritesUtil = FavoritesUtil.getsInstance();
-        mIsFavorite = mFavoritesUtil.isFavorite(mProductBundle);
+        mIsFavorite = mFavoritesUtil.isFavorite(mProduct);
         updateFavoriteUi();
     }
 
@@ -307,16 +321,25 @@ public class ProductActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+        //loadProductImages();
+    }
+
+    private void loadProductImages()
+    {
         if (!mIsPagerLoaded)
         {
+            //TODO check if slow internet affects this part!
             Handler handler = new Handler();
             handler.postDelayed(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    updateProductImagesFragment();
-                    mIsPagerLoaded = true;
+                    if(mProduct != null)
+                    {
+                        updateProductImagesFragment();
+                        mIsPagerLoaded = true;
+                    }
                 }
             }, DELAY);
         }
@@ -326,7 +349,7 @@ public class ProductActivity extends AppCompatActivity
     {
         showProductsFirstImage();
         mProductPagerFragment = new ProductPagerFragment();
-        mProductPagerFragment.updateFragmentData(mProductBundle, mProductStorageRef, mProductDbRef);
+        mProductPagerFragment.updateFragmentData(mProduct, mProductStorageRef, mProductDbRef);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.pagerFragmentContainer, mProductPagerFragment, PRODUCT_PAGER_FRAGMENT)
@@ -384,7 +407,7 @@ public class ProductActivity extends AppCompatActivity
 
     private void checkAvailabilitySelect(String key, TextView view)
     {
-        if (mProductBundle.getSizesMap().getInt(key) > 0)
+        if (mProduct.getSizesMap().get(key) > 0)
         {
             highlight(view);
             mSelectedSizes.put(key, true);
@@ -412,8 +435,8 @@ public class ProductActivity extends AppCompatActivity
 
     private void checkAvailability(String key, TextView view)
     {
-        Bundle bundle = mProductBundle.getSizesMap();
-        if (bundle != null && bundle.getInt(key) > 0)
+        Map<String, Integer> bundle = mProduct.getSizesMap();
+        if (bundle != null && bundle.get(key) > 0)
         {
             unHighlight(view);
         }
@@ -444,11 +467,11 @@ public class ProductActivity extends AppCompatActivity
             updateFavoriteUi();
             if (mIsFavorite)
             {
-                mFavoritesUtil.addToFavorites(mProductBundle);
+                mFavoritesUtil.addToFavorites(mProduct);
             }
             else
             {
-                mFavoritesUtil.removeFromFavorites(mProductBundle);
+                mFavoritesUtil.removeFromFavorites(mProduct);
             }
         }
         else
@@ -464,12 +487,10 @@ public class ProductActivity extends AppCompatActivity
         if (ConnectivityUtil.isConnected())
         {
             Log.d("AddToCart", "isConnected");
-            Log.d("AddToCart", "if mIsAddedToCart");
             String selectedSize = getSelectedSize();
             if (selectedSize != null)
             {
-                mProductBundle.setSelectedSize(selectedSize);
-                CartUtil.getsInstance().addToCart(mProductBundle);
+                CartUtil.getsInstance().addToCart(mProduct, selectedSize);
                 toast(R.string.addedToCart);
                 finish();
             }
@@ -511,7 +532,7 @@ public class ProductActivity extends AppCompatActivity
     @Subscribe
     public void updateProduct(Products product)
     {
-        mProductBundle = new ProductBundle(product);
+        mProduct = product;
         setupProductInfoUi();
     }
 
@@ -541,7 +562,7 @@ public class ProductActivity extends AppCompatActivity
     {
         if (ConnectivityUtil.isConnected())
         {
-            EditProductDialogFragment mEditProductDialogFragment = EditProductDialogFragment.getInstance(mProductBundle);
+            EditProductDialogFragment mEditProductDialogFragment = EditProductDialogFragment.getInstance(mProduct);
             mEditProductDialogFragment.show(getSupportFragmentManager(), EDITOR);
         }
         else
@@ -577,7 +598,7 @@ public class ProductActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
                     mProductDbRef.removeValue();
-                    for (String name : mProductBundle.getPhotoNameList())
+                    for (String name : mProduct.getPhotoNameList())
                     {
                         mProductStorageRef.child(name).delete();
                     }

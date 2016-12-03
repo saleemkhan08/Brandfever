@@ -10,25 +10,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import co.thnki.brandfever.Brandfever;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
-import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.firebase.database.models.Accounts;
-/**
- * 1. Login Activity
- *      a. getInstance() $ updateFavoriteList() - > onActivityResult()
- *      b. clearInstance() -> setUpLogin()
- *
- * 2. Product Activity
- *      a. getInstance() -> onCreate()
- *      b. isFavorite() -> onCreate() used to update UI
- *      c. addToFavorite() -> addToFavorite()
- *      d. removeFromFavorite() -> addToFavorite()
- *
- * 3. Products Fragment
- *      a. placeAnOrder()
- *      b. removeFromCart()
- *      c. isAddedToCart()
- */
+import co.thnki.brandfever.firebase.database.models.FavoriteProduct;
+import co.thnki.brandfever.firebase.database.models.Products;
+
 public class FavoritesUtil
 {
     public static final String FAV_LIST = "favList";
@@ -59,39 +44,30 @@ public class FavoritesUtil
         sInstance = null;
     }
 
-    public String addToFavorites(ProductBundle productBundle)
+    public void removeFromFavorites(FavoriteProduct product)
     {
-        String key = getKey(productBundle);
-        DatabaseReference reference = mFavRef.child(key);
-
-        mPreferences.edit().putBoolean(key, true).apply();
-        reference.setValue(new Products(productBundle));
-        return key;
+        String key = getKey(product);
+        mPreferences.edit().remove(key).apply();
+        mFavRef.child(key).removeValue();
     }
 
-    public void removeFromFavorites(Products products)
+    public void removeFromFavorites(Products product)
     {
-        String key = getKey(products);
+        FavoriteProduct favoriteProduct = new FavoriteProduct(product);
+        String key = getKey(favoriteProduct);
         mPreferences.edit().remove(key).apply();
         mFavRef.child(key).removeValue();
     }
 
     public String addToFavorites(Products products)
     {
-        String key = getKey(products);
+        FavoriteProduct favoriteProduct = new FavoriteProduct(products);
+        String key = getKey(favoriteProduct);
         DatabaseReference reference = mFavRef.child(key);
 
         mPreferences.edit().putBoolean(key, true).apply();
-        reference.setValue(products);
+        reference.setValue(favoriteProduct);
         return key;
-    }
-
-    public void removeFromFavorites(ProductBundle productBundle)
-    {
-        String key = getKey(productBundle);
-
-        mPreferences.edit().remove(key).apply();
-        mFavRef.child(key).removeValue();
     }
 
     public void updateFavoriteList()
@@ -101,14 +77,21 @@ public class FavoritesUtil
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                try
                 {
-                    Products product = snapshot.getValue(Products.class);
-                    String key = getKey(product);
-                    Log.d(FavoritesUtil.FAV_LIST, "key : " + key);
-                    mPreferences.edit()
-                            .putBoolean(key, true)
-                            .apply();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        FavoriteProduct product = snapshot.getValue(FavoriteProduct.class);
+                        String key = getKey(product);
+                        Log.d(FavoritesUtil.FAV_LIST, "key : " + key);
+                        mPreferences.edit()
+                                .putBoolean(key, true)
+                                .apply();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -120,43 +103,17 @@ public class FavoritesUtil
         });
     }
 
-    public boolean isFavorite(ProductBundle productBundle)
-    {
-        String key = getKey(productBundle);
-        boolean isFav = mPreferences.getBoolean(key, false);
-        Log.d(FavoritesUtil.FAV_LIST, "isAddedToCart : " + isFav);
-        return isFav;
-    }
-
     public boolean isFavorite(Products product)
     {
-        String key = getKey(product);
+        FavoriteProduct favoriteProduct = new FavoriteProduct(product);
+        String key = getKey(favoriteProduct);
         boolean isFav = mPreferences.getBoolean(key, false);
         Log.d(FavoritesUtil.FAV_LIST, "isAddedToCart : " + isFav);
         return isFav;
     }
 
-    private String getKey(ProductBundle product)
+    private String getKey(FavoriteProduct product)
     {
         return product.getCategoryId() + "_" + product.getProductId();
-    }
-
-    private String getKey(Products product)
-    {
-        return product.getCategoryId() + "_" + product.getProductId();
-    }
-
-    public boolean toggleFavorite(Products model)
-    {
-        boolean isFavorite = isFavorite(model);
-        if(isFavorite)
-        {
-            removeFromFavorites(model);
-        }
-        else
-        {
-            addToFavorites(model);
-        }
-        return !isFavorite;
     }
 }

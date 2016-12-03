@@ -23,11 +23,11 @@ import butterknife.ButterKnife;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
-import co.thnki.brandfever.view.holders.WishListProductViewHolder;
 import co.thnki.brandfever.adapters.FavoritesAdapter;
-import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.firebase.database.models.Accounts;
+import co.thnki.brandfever.firebase.database.models.FavoriteProduct;
 import co.thnki.brandfever.utils.FavoritesUtil;
+import co.thnki.brandfever.view.holders.WishListProductViewHolder;
 
 public class FavoritesFragment extends Fragment
 {
@@ -43,7 +43,7 @@ public class FavoritesFragment extends Fragment
 
     public static final String TAG = "FavoritesFragment";
     private DatabaseReference mFavoritesDbRef;
-    private FirebaseRecyclerAdapter<Products, WishListProductViewHolder> mAdapter;
+    private FirebaseRecyclerAdapter<FavoriteProduct, WishListProductViewHolder> mAdapter;
 
     public FavoritesFragment()
     {
@@ -67,7 +67,14 @@ public class FavoritesFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                updateUi();
+                try
+                {
+                    updateUi();
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
 
             @Override

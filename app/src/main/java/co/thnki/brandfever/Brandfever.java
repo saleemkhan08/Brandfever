@@ -72,4 +72,9 @@ public class Brandfever extends MultiDexApplication
     {
         return context.getResources().getStringArray(resId);
     }
+
+    public static String getResString(String stringName)
+    {
+        return context.getResources().getString(context.getResources().getIdentifier(stringName, "string", context.getPackageName()));
+    }
 }

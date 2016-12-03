@@ -43,21 +43,23 @@ import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.ProductActivity;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
-import co.thnki.brandfever.view.holders.ProductViewHolder;
 import co.thnki.brandfever.firebase.database.models.Accounts;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
+import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.view.holders.ProductViewHolder;
 
 import static android.app.Activity.RESULT_OK;
 import static co.thnki.brandfever.Brandfever.getResString;
 import static co.thnki.brandfever.Brandfever.toast;
+import static co.thnki.brandfever.StoreActivity.RESTART_ACTIVITY;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 
 
 public class ProductsFragment extends Fragment
 {
     public static final int PICK_IMAGE_MULTIPLE = 102;
+    public static final String FRAGMENT_TAG = "fragmentTag";
 
     @Bind(R.id.productsRecyclerView)
     RecyclerView mProductRecyclerView;
@@ -84,54 +86,64 @@ public class ProductsFragment extends Fragment
     {
     }
 
-    public static ProductsFragment getInstance(String category)
-    {
-        ProductsFragment fragment = new ProductsFragment();
-        fragment.mCurrentCategory = category;
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        fragment.mCategoryDbRef = rootRef.child(category);
-        fragment.mCategoryStorageRef = FirebaseStorage.getInstance().getReference().child(category);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         View parentView = inflater.inflate(R.layout.fragment_products, container, false);
-        mResources = getResources();
-        if (mCurrentCategory != null && !mCurrentCategory.isEmpty())
+
+        mCurrentCategory = getArguments().getString(FRAGMENT_TAG);
+        if (mCurrentCategory != null)
         {
-            mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            mCategoryDbRef = rootRef.child(mCurrentCategory);
+            mCategoryStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
+
+            mResources = getResources();
+            if (!mCurrentCategory.isEmpty())
+            {
+                mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
+            }
+            ButterKnife.bind(this, parentView);
+            mProgressDialog = new ProgressDialog(getActivity());
+            mAdapter = getAdapter();
+            mProductRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            mProductRecyclerView.setAdapter(mAdapter);
+            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
+            {
+                @Override
+                public void onItemRangeInserted(int positionStart, int itemCount)
+                {
+                    super.onItemRangeInserted(positionStart, itemCount);
+                    updateUi();
+                }
+            });
+            mCategoryDbRef.addValueEventListener(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    try
+                    {
+                        updateUi();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+
+                }
+            });
         }
-        ButterKnife.bind(this, parentView);
-        mProgressDialog = new ProgressDialog(getActivity());
-        mAdapter = getAdapter();
-        mProductRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        mProductRecyclerView.setAdapter(mAdapter);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
+        else
         {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount)
-            {
-                super.onItemRangeInserted(positionStart, itemCount);
-                updateUi();
-            }
-        });
-        mCategoryDbRef.addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                updateUi();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
+            Otto.post(RESTART_ACTIVITY);
+        }
         return parentView;
     }
 
@@ -161,7 +173,7 @@ public class ProductsFragment extends Fragment
         {
             ((StoreActivity) activity).setToolBarTitle(getCategoryName());
         }
-        if(Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
         {
             mUploadButton.setVisibility(View.VISIBLE);
         }
@@ -277,32 +289,39 @@ public class ProductsFragment extends Fragment
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
 
-                    /**
-                     * 3. put a file and get the download Url
-                     */
-
-                    Uri downloadUri = taskSnapshot.getDownloadUrl();
-                    if (downloadUri != null)
+                    try
                     {
                         /**
-                         * 4. Create a product using download Url, Current Category and the key generated previously
+                         * 3. put a file and get the download Url
                          */
 
-                        Products products = new Products(downloadUri.toString(), photoName, mCurrentCategory, key);
-                        product.setValue(products);
-                    }
-                    else
-                    {
-                        product.removeValue();
-                    }
+                        Uri downloadUri = taskSnapshot.getDownloadUrl();
+                        if (downloadUri != null)
+                        {
+                            /**
+                             * 4. Create a product using download Url, Current Category and the key generated previously
+                             */
 
-                    int size = mAdapter.getItemCount() - currentSize + 1;
-                    Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
-                    if (size >= noOfUploadingPhoto)
-                    {
-                        mProgressDialog.dismiss();
+                            Products products = new Products(downloadUri.toString(), photoName, mCurrentCategory, key);
+                            product.setValue(products);
+                        }
+                        else
+                        {
+                            product.removeValue();
+                        }
+
+                        int size = mAdapter.getItemCount() - currentSize + 1;
+                        Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
+                        if (size >= noOfUploadingPhoto)
+                        {
+                            mProgressDialog.dismiss();
+                        }
+                        mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
                     }
-                    mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
+                    catch (Exception e)
+                    {
+                        Log.d("Exception", e.getMessage());
+                    }
 
                 }
             }).addOnFailureListener(new OnFailureListener()
@@ -378,7 +397,7 @@ public class ProductsFragment extends Fragment
                 Products.class,
                 R.layout.product_images_row,
                 ProductViewHolder.class,
-                mCategoryDbRef)
+                mCategoryDbRef.orderByChild(Products.TIME_STAMP))
         {
             @Override
             protected void populateViewHolder(final ProductViewHolder viewHolder, final Products model, int position)
@@ -411,9 +430,9 @@ public class ProductsFragment extends Fragment
                         if (ConnectivityUtil.isConnected())
                         {
                             Intent intent = new Intent(getActivity(), ProductActivity.class);
-                            ProductBundle bundle = new ProductBundle(model);
-                            intent.putExtra(Products.PRODUCT_MODEL, bundle);
-                            if(Build.VERSION.SDK_INT >= 21)
+                            intent.putExtra(Products.PRODUCT_ID, model.getProductId());
+                            intent.putExtra(Products.CATEGORY_ID, model.getCategoryId());
+                            if (Build.VERSION.SDK_INT >= 21)
                             {
                                 String transitionName = getResString(R.string.productTransitionImage);
                                 viewHolder.mImageView.setTransitionName(transitionName);

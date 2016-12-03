@@ -26,15 +26,24 @@ public class OrderListProductViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.productSize)
     public TextView mProductSize;
 
-    @Bind(R.id.deleteFromCart)
+    @Bind(R.id.orderStatus)
+    public TextView mOrderStatus;
+
+    @Bind(R.id.orderOptionsImageView)
     public ImageView mOrderOptions;
 
-    public View mItemView;
+    @Bind(R.id.orderOptions)
+    public View mOrderOptionsContainer;
+
+    @Bind(R.id.statusImageView)
+    public ImageView mStatusImageView;
+
+    @Bind(R.id.itemViewContainer)
+    public View mItemViewContainer;
 
     public OrderListProductViewHolder(View itemView)
     {
         super(itemView);
-        mItemView = itemView;
         ButterKnife.bind(this, itemView);
     }
 }

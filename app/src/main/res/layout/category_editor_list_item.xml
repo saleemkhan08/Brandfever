@@ -15,8 +15,7 @@
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@mipmap/mens_wear_square"/>
+            android:layout_height="40dp"/>
 
         <CheckedTextView
             android:id="@+id/category"

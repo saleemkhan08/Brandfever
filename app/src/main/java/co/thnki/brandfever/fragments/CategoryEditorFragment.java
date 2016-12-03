@@ -22,12 +22,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import co.thnki.brandfever.R;
-import co.thnki.brandfever.view.holders.DrawerCategoryEditorViewHolder;
+import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Category;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.interfaces.DrawerItemClickListener;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.view.holders.DrawerCategoryEditorViewHolder;
 
+import static co.thnki.brandfever.fragments.CategoryDrawerFragment.CATEGORY_CHILD;
 import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
 
 /**
@@ -42,15 +44,21 @@ public class CategoryEditorFragment extends Fragment
     private DatabaseReference mAvailableCategoriesRef;
     private DatabaseReference mCategoriesRef;
     private DrawerItemClickListener mItemClickListener;
+    private boolean mIsFirstLevelCategory = false;
 
     public static CategoryEditorFragment getInstance(String category, DrawerItemClickListener itemClickListener )
     {
         CategoryEditorFragment fragment = new CategoryEditorFragment();
-        fragment.mCategoriesRef = FirebaseDatabase.getInstance().getReference().child(category);
-        fragment.mAvailableCategoriesRef = FirebaseDatabase.getInstance().getReference()
-                .child(Const.AVAILABLE_+category);
         fragment.mItemClickListener = itemClickListener;
+        fragment.setArguments(category);
         return fragment;
+    }
+
+    private void setArguments(String categoryChild)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putString(CATEGORY_CHILD, categoryChild);
+        setArguments(bundle);
     }
 
     @Override
@@ -60,8 +68,24 @@ public class CategoryEditorFragment extends Fragment
         ButterKnife.bind(this, layout);
         Otto.register(this);
 
-        mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCategoriesRecyclerView.setAdapter(getAdapter());
+        Bundle bundle = getArguments();
+        String categoryChild = bundle.getString(CATEGORY_CHILD);
+        if (categoryChild == null)
+        {
+            Otto.post(StoreActivity.RESTART_ACTIVITY);
+        }
+        else
+        {
+            mCategoriesRef = FirebaseDatabase.getInstance().getReference().child(categoryChild);
+            mAvailableCategoriesRef = FirebaseDatabase.getInstance().getReference()
+                    .child(Const.AVAILABLE_ + categoryChild);
+            if (categoryChild.equals(Const.FIRST_LEVEL_CATEGORIES))
+            {
+                mIsFirstLevelCategory = true;
+            }
+            mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mCategoriesRecyclerView.setAdapter(getAdapter());
+        }
         return layout;
     }
 
@@ -101,7 +125,7 @@ public class CategoryEditorFragment extends Fragment
                     }
                 });
                 String imageUrl = model.getCategoryImage();
-                if (imageUrl != null && !imageUrl.isEmpty())
+                if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
                     Glide.with(getActivity()).load(imageUrl)
                             .asBitmap().centerCrop().into(new BitmapImageViewTarget(viewHolder.mImageView)

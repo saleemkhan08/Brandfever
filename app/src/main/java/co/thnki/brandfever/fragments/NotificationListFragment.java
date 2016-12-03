@@ -71,9 +71,16 @@ public class NotificationListFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mProgress.setVisibility(View.GONE);
-                updateNotificationReadStatus(dataSnapshot);
-                updateUi();
+                try
+                {
+                    mProgress.setVisibility(View.GONE);
+                    updateNotificationReadStatus(dataSnapshot);
+                    updateUi();
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
 
             @Override
@@ -87,13 +94,14 @@ public class NotificationListFragment extends Fragment
 
     private void updateNotificationReadStatus(DataSnapshot dataSnapshot)
     {
-        if(mIsNotificationFragmentShown)
+        if (mIsNotificationFragmentShown)
         {
             Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
             for (DataSnapshot snapshot : snapshots)
             {
                 NotificationModel model = snapshot.getValue(NotificationModel.class);
                 model.isRead = true;
+                model.isNotified = true;
                 mNotificationsDbRef.child(snapshot.getKey()).setValue(model);
             }
         }

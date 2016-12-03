@@ -51,7 +51,7 @@
     <dimen name="favIconSize">28dp</dimen>
     <dimen name="priceTagPadding">100dp</dimen>
     <dimen name="dialogItemPadding">8dp</dimen>
-    <dimen name="cartTextPadding">5dp</dimen>
+    <dimen name="cartTextPadding">3dp</dimen>
     <dimen name="drawerOptionsTextSize">11sp</dimen>
     <dimen name="userTextPadding">3dp</dimen>
     <dimen name="categoryTitleSize">22sp</dimen>

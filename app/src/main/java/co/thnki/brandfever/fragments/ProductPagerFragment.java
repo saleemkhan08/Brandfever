@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
@@ -32,7 +33,6 @@ import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.adapters.SectionsPagerAdapter;
 import co.thnki.brandfever.firebase.database.models.Accounts;
-import co.thnki.brandfever.firebase.database.models.ProductBundle;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
@@ -61,7 +61,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     ImageView mUploadPhotoImageView;
 
     private SectionsPagerAdapter mAdapter;
-    private ProductBundle mProductBundle;
+    private Products mProduct;
 
     public ArrayList<String> mPhotoUrlList;
     public ArrayList<String> mPhotoNameList;
@@ -78,15 +78,16 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         // Required empty public constructor
     }
 
-    public void updateFragmentData(ProductBundle productBundle, StorageReference productStorageRef,
+    public void updateFragmentData(Products product, StorageReference productStorageRef,
                                    DatabaseReference productDbRef)
     {
         mProductStorageRef = productStorageRef;
         mProductDbRef = productDbRef;
-        mProductBundle = productBundle;
-        mPhotoUrlList = productBundle.getPhotoUrlList();
-        mPhotoNameList = productBundle.getPhotoNameList();
-        if(mPhotoUrlList == null){
+        mProduct = product;
+        mPhotoUrlList = product.getPhotoUrlList();
+        mPhotoNameList = product.getPhotoNameList();
+        if (mPhotoUrlList == null)
+        {
             toast(R.string.productNotAvailable);
             getActivity().finish();
         }
@@ -98,6 +99,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     {
         View parentView = inflater.inflate(R.layout.fragment_product_pager, container, false);
         ButterKnife.bind(this, parentView);
+        Otto.register(this);
         updateEditingOptionsUi();
         mAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
 
@@ -105,6 +107,15 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         mProductImagePager.setAdapter(mAdapter);
         mProductImagePager.addOnPageChangeListener(this);
         return parentView;
+    }
+
+    @Subscribe
+    public void showViewPager(String action)
+    {
+        if (action.equals(ImagePagerFragment.IMAGE_LOADED))
+        {
+            mProductImagePager.setVisibility(View.VISIBLE);
+        }
     }
 
     private void updateEditingOptionsUi()
@@ -130,14 +141,14 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         final int noOfUploadingPhoto = mImagesEncodedList.size();
         setupProgressDialog(noOfUploadingPhoto);
 
-        Log.d("mImagesEncodedList", "mImagesEncodedList : " + mImagesEncodedList.size());
-        Log.d("mImagesEncodedList", "currentSize : " + currentSize);
+        Log.d("PhotoUploadFlow", "mImagesEncodedList : " + mImagesEncodedList.size());
+        Log.d("PhotoUploadFlow", "currentSize : " + currentSize);
 
         for (int productIndex = 0; productIndex < noOfUploadingPhoto && !mIsCancelled; productIndex++)
         {
             String uri = mImagesEncodedList.get(productIndex);
             int uploadIndex = productIndex + currentSize;
-            Log.d("mImagesEncodedList", "uploadIndex : " + uploadIndex);
+            Log.d("PhotoUploadFlow", "uploadIndex : " + uploadIndex);
 
             /**
              * Put the photo using random key name does not matter as it will be directly accessed using the download URL
@@ -150,8 +161,16 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
-                    updateProgressDialog(taskSnapshot, currentSize,
-                            photoName, noOfUploadingPhoto);
+                    try
+                    {
+                        Log.d("PhotoUploadFlow", "onSuccess" );
+                        updateProgressDialog(taskSnapshot, currentSize,
+                                photoName, noOfUploadingPhoto);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("PhotoUploadFlow", "Exception " +e.getMessage());
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener()
             {
@@ -159,6 +178,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 public void onFailure(@NonNull Exception e)
                 {
                     mProgressDialog.dismiss();
+                    Log.d("PhotoUploadFlow", "onFailure" );
                     toast(R.string.please_try_again);
                 }
             });
@@ -168,6 +188,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     private void updateProgressDialog(UploadTask.TaskSnapshot taskSnapshot, int currentSize,
                                       String photoName, int noOfUploadingPhoto)
     {
+        Log.d("PhotoUploadFlow", "updateProgressDialog" );
         Uri downloadUri = taskSnapshot.getDownloadUrl();
         int listSize = mPhotoUrlList.size();
         int size = listSize - currentSize + 1;
@@ -183,12 +204,12 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 mProductDbRef.child(Products.PHOTO_URL).setValue(mPhotoUrlList);
                 mProductDbRef.child(Products.PHOTO_NAME).setValue(mPhotoNameList);
 
-                mProductBundle.setPhotoUrlList(mPhotoUrlList);
-                mProductBundle.setPhotoNameList(mPhotoNameList);
+                mProduct.setPhotoUrlList(mPhotoUrlList);
+                mProduct.setPhotoNameList(mPhotoNameList);
             }
         }
-        Log.d("SizesIssue", "listSize before : " + listSize + ", after : " + mPhotoUrlList.size());
-        Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
+        Log.d("PhotoUploadFlow", "listSize before : " + listSize + ", after : " + mPhotoUrlList.size());
+        Log.d("PhotoUploadFlow", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
 
         if (size >= noOfUploadingPhoto)
         {
@@ -201,7 +222,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
             {
                 toast(R.string.uploaded);
             }
-            if(getActivity() != null)
+            if (getActivity() != null)
             {
                 mProductImagePager.setCurrentItem(0, false);
                 mProductImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
@@ -275,8 +296,8 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                         mPhotoNameList.remove(position);
                         mPhotoUrlList.remove(position);
 
-                        mProductBundle.setPhotoUrlList(mPhotoUrlList);
-                        mProductBundle.setPhotoNameList(mPhotoNameList);
+                        mProduct.setPhotoUrlList(mPhotoUrlList);
+                        mProduct.setPhotoNameList(mPhotoNameList);
 
                         mProductDbRef.child(PHOTO_URL).setValue(mPhotoUrlList);
                         mProductDbRef.child(PHOTO_NAME).setValue(mPhotoNameList);
@@ -426,5 +447,12 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
             e.printStackTrace();
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Otto.unregister(this);
     }
 }
