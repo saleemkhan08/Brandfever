@@ -24,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -36,6 +37,7 @@ import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.ImageUtil;
 
 import static android.app.Activity.RESULT_OK;
 import static co.thnki.brandfever.Brandfever.toast;
@@ -155,8 +157,10 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
              */
             final String photoName = Products.generateRandomKey();
 
+            Uri fileUri = Uri.parse(uri);
+            final File destFile = ImageUtil.saveBitmapToFile(fileUri, photoName);
             StorageReference reference = mProductStorageRef.child(photoName);
-            reference.putFile(Uri.parse(uri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+            reference.putFile(Uri.fromFile(destFile)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
             {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
@@ -166,6 +170,10 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                         Log.d("PhotoUploadFlow", "onSuccess" );
                         updateProgressDialog(taskSnapshot, currentSize,
                                 photoName, noOfUploadingPhoto);
+                        if (destFile != null && destFile.exists())
+                        {
+                            destFile.delete();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -213,17 +221,17 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
 
         if (size >= noOfUploadingPhoto)
         {
-            if (!mIsCancelled)
-            {
-                mProgressDialog.dismiss();
-                updateImagePager();
-            }
-            else
-            {
-                toast(R.string.uploaded);
-            }
             if (getActivity() != null)
             {
+                if (!mIsCancelled)
+                {
+                    mProgressDialog.dismiss();
+                }
+                else
+                {
+                    toast(R.string.uploaded);
+                }
+                updateImagePager();
                 mProductImagePager.setCurrentItem(0, false);
                 mProductImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
             }
@@ -233,12 +241,12 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         if (!mIsCancelled)
         {
             mProgressDialog.setMessage(msg);
-            updateImagePager();
         }
         else
         {
             toast(msg);
         }
+        updateImagePager();
     }
 
     private void setupProgressDialog(int noOfUploadingPhoto)

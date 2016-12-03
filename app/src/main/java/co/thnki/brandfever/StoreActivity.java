@@ -3,6 +3,7 @@ package co.thnki.brandfever;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +55,7 @@ import co.thnki.brandfever.utils.UserUtil;
 import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.LoginActivity.LOGIN_STATUS;
 import static co.thnki.brandfever.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
+import static co.thnki.brandfever.fragments.ProductsFragment.REQUEST_CODE_SDCARD_PERMISSION;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
 import static co.thnki.brandfever.interfaces.DrawerItemClickListener.ENTER;
 import static co.thnki.brandfever.utils.CartUtil.CART_LIST;
@@ -65,6 +67,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     public static final String NOTIFICATION_ACTION = "";
     public static final String OWNER_PROFILE_UPDATED = "ownerProfileUpdated";
     public static final String RESTART_ACTIVITY = "restartActivity";
+    public static final String ON_REQUEST_PERMISSION_RESULT = "onRequestPermissionResult";
 
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
@@ -210,7 +213,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                 }
                 catch (Exception e)
                 {
-                   Log.d("Exception", e.getMessage());
+                    Log.d("Exception", e.getMessage());
                 }
             }
 
@@ -587,4 +590,29 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (REQUEST_CODE_SDCARD_PERMISSION == requestCode)
+        {
+            boolean result = true;
+            for (int grantResult : grantResults)
+            {
+                if (grantResult != PackageManager.PERMISSION_GRANTED)
+                {
+                    result &= false;
+                }
+            }
+            if (result)
+            {
+                Otto.post(ON_REQUEST_PERMISSION_RESULT);
+            }
+            else
+            {
+                toast(R.string.permissionRequiredToUploadPhotos);
+                toast(R.string.please_try_again);
+            }
+        }
+    }
 }

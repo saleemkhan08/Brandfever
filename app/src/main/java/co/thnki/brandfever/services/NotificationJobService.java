@@ -1,16 +1,17 @@
 package co.thnki.brandfever.services;
 
+import android.annotation.TargetApi;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 
 import com.squareup.otto.Subscribe;
 
 import co.thnki.brandfever.singletons.Otto;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class NotificationJobService extends JobService
 {
     public static final String JOB_FINISHED = "jobFinished";
@@ -37,6 +38,7 @@ public class NotificationJobService extends JobService
     @Override
     public boolean onStopJob(JobParameters jobParameters)
     {
+        Otto.unregister(this);
         return true;
     }
 

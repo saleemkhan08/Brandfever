@@ -1,17 +1,22 @@
 package co.thnki.brandfever.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,7 +36,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.otto.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +54,7 @@ import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.ImageUtil;
 import co.thnki.brandfever.view.holders.ProductViewHolder;
 
 import static android.app.Activity.RESULT_OK;
@@ -60,7 +68,7 @@ public class ProductsFragment extends Fragment
 {
     public static final int PICK_IMAGE_MULTIPLE = 102;
     public static final String FRAGMENT_TAG = "fragmentTag";
-
+    public static final int REQUEST_CODE_SDCARD_PERMISSION = 103;
     @Bind(R.id.productsRecyclerView)
     RecyclerView mProductRecyclerView;
 
@@ -91,7 +99,7 @@ public class ProductsFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View parentView = inflater.inflate(R.layout.fragment_products, container, false);
-
+        Otto.register(this);
         mCurrentCategory = getArguments().getString(FRAGMENT_TAG);
         if (mCurrentCategory != null)
         {
@@ -184,16 +192,54 @@ public class ProductsFragment extends Fragment
     {
         if (ConnectivityUtil.isConnected())
         {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+            if (isSdcardPermissionAvailable())
+            {
+                getImages();
+            }
+            else
+            {
+                requestSdCardPermission();
+            }
         }
         else
         {
             toast(R.string.noInternet);
         }
+    }
+
+    private boolean isSdcardPermissionAvailable()
+    {
+        Context mContext = Brandfever.getAppContext();
+        return (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @Subscribe
+    public void getImages(String action)
+    {
+        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT))
+        {
+            getImages();
+        }
+    }
+
+    private void getImages()
+    {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+    }
+
+    private void requestSdCardPermission()
+    {
+        String[] permissionTemp = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        };
+        ActivityCompat.requestPermissions(getActivity(), permissionTemp, REQUEST_CODE_SDCARD_PERMISSION);
     }
 
     /**
@@ -250,6 +296,7 @@ public class ProductsFragment extends Fragment
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             Brandfever.toast("Something went wrong");
         }
     }
@@ -282,8 +329,11 @@ public class ProductsFragment extends Fragment
              */
 
             final String photoName = Products.generateRandomKey();
+
+            Uri fileUri = Uri.parse(uri);
+            final File destFile = ImageUtil.saveBitmapToFile(fileUri, key);
             StorageReference reference = mCategoryStorageRef.child(key).child(photoName);
-            reference.putFile(Uri.parse(uri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+            reference.putFile(Uri.fromFile(destFile)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
             {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
@@ -317,6 +367,10 @@ public class ProductsFragment extends Fragment
                             mProgressDialog.dismiss();
                         }
                         mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
+                        if (destFile != null && destFile.exists())
+                        {
+                            destFile.delete();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -455,5 +509,12 @@ public class ProductsFragment extends Fragment
                 });
             }
         };
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Otto.unregister(this);
     }
 }

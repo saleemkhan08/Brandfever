@@ -260,4 +260,5 @@
     <string name="copyright">Copyright \u00A9 2016</string>
     <string name="loggingOut">Logging Out ....</string>
     <string name="returnOrderAccepted">Returned Product is received!</string>
+    <string name="permissionRequiredToUploadPhotos">Permission Required To Upload Photos!</string>
 </resources>
