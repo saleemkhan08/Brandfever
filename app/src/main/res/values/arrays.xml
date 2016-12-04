@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="firstLevel">
+    <string-array name="firstLevelCategories">
         <item>Men\'s Wear</item>
         <item>Women\'s Wear</item>
         <item>Kids\'s Wear</item>
         <item>Fashion Accessories</item>
         <item>Home Furnishing</item>
     </string-array>
-    <string-array name="firstLevelId">
-        <item>mensWear</item>
-        <item>womensWear</item>
-        <item>kidsWear</item>
-        <item>fashionAccessories</item>
-        <item>homeFurnishing</item>
+    <string-array name="firstLevelCategoriesId">
+        <item>firstLevelCategories_mensWear</item>
+        <item>firstLevelCategories_womensWear</item>
+        <item>firstLevelCategories_kidsWear</item>
+        <item>firstLevelCategories_fashionAccessories</item>
+        <item>firstLevelCategories_homeFurnishing</item>
     </string-array>
 
     <string-array name="mensWear">
@@ -30,17 +30,17 @@
         <item>Sleep Wear</item>
     </string-array>
     <string-array name="mensWearId">
-        <item>formalShirts</item>
-        <item>casualShirts</item>
-        <item>formalTrousers</item>
-        <item>casualTrousers</item>
-        <item>jeans</item>
-        <item>tShirts</item>
-        <item>coatsJackets</item>
-        <item>sweatShirts</item>
-        <item>sweaters</item>
-        <item>sportsWear</item>
-        <item>sleepWear</item>
+        <item>mensWear_formalShirts</item>
+        <item>mensWear_casualShirts</item>
+        <item>mensWear_formalTrousers</item>
+        <item>mensWear_casualTrousers</item>
+        <item>mensWear_jeans</item>
+        <item>mensWear_tShirts</item>
+        <item>mensWear_coatsJackets</item>
+        <item>mensWear_sweatShirts</item>
+        <item>mensWear_sweaters</item>
+        <item>mensWear_sportsWear</item>
+        <item>mensWear_sleepWear</item>
     </string-array>
 
 
@@ -61,20 +61,20 @@
         <item>Sleep Wear</item>
     </string-array>
     <string-array name="womensWearId">
-        <item>sarees</item>
-        <item>dressMaterials</item>
-        <item>kurtasSuits</item>
-        <item>churidarsLehengas</item>
-        <item>formalShirts</item>
-        <item>casualShirts</item>
-        <item>trousers</item>
-        <item>jeans</item>
-        <item>tShirtsTops</item>
-        <item>coatsJackets</item>
-        <item>sweatShirts</item>
-        <item>sweaters</item>
-        <item>sportsWear</item>
-        <item>sleepWear</item>
+        <item>womensWear_sarees</item>
+        <item>womensWear_dressMaterials</item>
+        <item>womensWear_kurtasSuits</item>
+        <item>womensWear_churidarsLehengas</item>
+        <item>womensWear_formalShirts</item>
+        <item>womensWear_casualShirts</item>
+        <item>womensWear_trousers</item>
+        <item>womensWear_jeans</item>
+        <item>womensWear_tShirtsTops</item>
+        <item>womensWear_coatsJackets</item>
+        <item>womensWear_sweatShirts</item>
+        <item>womensWear_sweaters</item>
+        <item>womensWear_sportsWear</item>
+        <item>womensWear_sleepWear</item>
     </string-array>
 
     <string-array name="kidsWear">
@@ -92,18 +92,18 @@
         <item>Sleep Wear</item>
     </string-array>
     <string-array name="kidsWearId">
-        <item>dresses</item>
-        <item>kurtasSuits</item>
-        <item>churidarsLehengas</item>
-        <item>shirts</item>
-        <item>trousers</item>
-        <item>jeans</item>
-        <item>tShirtsTops</item>
-        <item>coatsJackets</item>
-        <item>sweatShirts</item>
-        <item>sweaters</item>
-        <item>sportsWear</item>
-        <item>sleepWear</item>
+        <item>kidsWear_dresses</item>
+        <item>kidsWear_kurtasSuits</item>
+        <item>kidsWear_churidarsLehengas</item>
+        <item>kidsWear_shirts</item>
+        <item>kidsWear_trousers</item>
+        <item>kidsWear_jeans</item>
+        <item>kidsWear_tShirtsTops</item>
+        <item>kidsWear_coatsJackets</item>
+        <item>kidsWear_sweatShirts</item>
+        <item>kidsWear_sweaters</item>
+        <item>kidsWear_sportsWear</item>
+        <item>kidsWear_sleepWear</item>
     </string-array>
 
     <string-array name="fashionAccessories">
@@ -117,16 +117,15 @@
         <item>Hand Bags</item>
     </string-array>
     <string-array name="fashionAccessoriesId">
-        <item>belts</item>
-        <item>watches</item>
-        <item>perfumesDeo</item>
-        <item>capsHats</item>
-        <item>socks</item>
-        <item>scarvesStoles</item>
-        <item>bags</item>
-        <item>handBags</item>
+        <item>fashionAccessories_belts</item>
+        <item>fashionAccessories_watches</item>
+        <item>fashionAccessories_perfumesDeo</item>
+        <item>fashionAccessories_capsHats</item>
+        <item>fashionAccessories_socks</item>
+        <item>fashionAccessories_scarvesStoles</item>
+        <item>fashionAccessories_bags</item>
+        <item>fashionAccessories_handBags</item>
     </string-array>
-
 
     <string-array name="homeFurnishing">
         <item>Bedsheets</item>
@@ -137,14 +136,15 @@
         <item>Carpets</item>
         <item>Mattress</item>
     </string-array>
+
     <string-array name="homeFurnishingId">
-        <item>bedsheets</item>
-        <item>blankets</item>
-        <item>curtains</item>
-        <item>towels</item>
-        <item>cushionsCovers</item>
-        <item>carpets</item>
-        <item>mattress</item>
+        <item>homeFurnishing_bedsheets</item>
+        <item>homeFurnishing_blankets</item>
+        <item>homeFurnishing_curtains</item>
+        <item>homeFurnishing_towels</item>
+        <item>homeFurnishing_cushionsCovers</item>
+        <item>homeFurnishing_carpets</item>
+        <item>homeFurnishing_mattress</item>
     </string-array>
 
 </resources>

@@ -5,21 +5,32 @@ import java.util.Date;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Category
 {
-    private String category;
     private String categoryName;
+    private String category;
     private long timeStamp;
     private int categoryId;
+    private String parentCategory;
     private String categoryImage;
     private boolean categorySelected;
 
-    public void setCategoryName(String categoryName)
+    public void setCategory(String category)
     {
-        this.categoryName = categoryName;
+        this.category = category;
     }
 
-    public String getCategoryName()
+    public String getParentCategory()
     {
-        return categoryName;
+        return parentCategory;
+    }
+
+    public void setParentCategory(String parentCategory)
+    {
+        this.parentCategory = parentCategory;
+    }
+
+    public String getCategory()
+    {
+        return category;
     }
 
     public void setCategorySelected(boolean categorySelected)
@@ -47,23 +58,24 @@ public class Category
 
     }
 
-    public Category(String category, int i, String childId, String categoriesImageUrl)
+    public Category(String categoryName, int i, String parentCategory, String childCategory, String categoriesImageUrl)
     {
         timeStamp = new Date().getTime();
-        this.category = category;
+        this.categoryName = categoryName;
         this.categoryId = i;
-        this.categoryName = childId;
+        this.category = childCategory;
         this.categoryImage = categoriesImageUrl;
+        this.parentCategory = parentCategory;
     }
 
-    public String getCategory()
+    public String getCategoryName()
     {
-        return category;
+        return categoryName;
     }
 
-    public void setCategory(String category)
+    public void setCategoryName(String categoryName)
     {
-        this.category = category;
+        this.categoryName = categoryName;
     }
 
     public long getTimeStamp()

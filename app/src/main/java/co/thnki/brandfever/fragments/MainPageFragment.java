@@ -1,6 +1,9 @@
 package co.thnki.brandfever.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -24,17 +27,24 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.Brandfever;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
+import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Category;
 import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.utils.ConnectivityUtil;
+import co.thnki.brandfever.utils.ImageUtil;
 import co.thnki.brandfever.utils.InitialSetupUtil;
 import co.thnki.brandfever.view.holders.MainCategoryViewHolder;
 
+import static android.app.Activity.RESULT_OK;
+import static co.thnki.brandfever.Brandfever.toast;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FASHION_ACCESSORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_HOME_FURNISHING;
@@ -47,6 +57,7 @@ import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
 public class MainPageFragment extends Fragment
 {
     public static final String TAG = "MainPageFragment";
+    private static final int PICK_CATEGORY_IMAGE = 199;
 
     @Bind(R.id.mensWearRecyclerView)
     RecyclerView mMensWearRecyclerView;
@@ -99,6 +110,8 @@ public class MainPageFragment extends Fragment
     ProgressBar mMainCategoryProgress;
 
     String[] mFirstLevelCategories;
+    private SharedPreferences mPreference;
+    private Category mSelectedCategory;
 
     public MainPageFragment()
     {
@@ -111,7 +124,8 @@ public class MainPageFragment extends Fragment
         View parentView = inflater.inflate(R.layout.fragment_main_category, container, false);
         ButterKnife.bind(this, parentView);
         Otto.register(this);
-        mFirstLevelCategories = Brandfever.getResStringArray(R.array.firstLevelId);
+        mPreference = Brandfever.getPreferences();
+        mFirstLevelCategories = Brandfever.getResStringArray(R.array.firstLevelCategoriesId);
         mRootRef = FirebaseDatabase.getInstance().getReference();
         InitialSetupUtil.updateUi();
         return parentView;
@@ -175,7 +189,7 @@ public class MainPageFragment extends Fragment
                     for (DataSnapshot snapshot : snapshots)
                     {
                         Category category = snapshot.getValue(Category.class);
-                        unHideCategory(category.getCategoryName(), category.getCategory());
+                        unHideCategory(category.getCategory(), category.getCategoryName());
                     }
                 }
                 catch (Exception e)
@@ -267,8 +281,23 @@ public class MainPageFragment extends Fragment
             @Override
             protected void populateViewHolder(MainCategoryViewHolder viewHolder, final Category model, int position)
             {
-                viewHolder.setTitleTextView(model.getCategory());
+                viewHolder.setTitleTextView(model.getCategoryName());
 
+                viewHolder.mUploadCategoryImageButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if (mPreference.getBoolean(Accounts.IS_OWNER, false))
+                        {
+                            getImageFromGallery(model);
+                        }
+                        else
+                        {
+                            ((StoreActivity) getActivity()).addFragment(Const.AVAILABLE_ + model.getCategory());
+                        }
+                    }
+                });
                 GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(viewHolder.mBackgroundImageView);
                 Glide.with(getActivity()).load(model.getCategoryImage()).crossFade().into(imageViewTarget);
 
@@ -277,7 +306,7 @@ public class MainPageFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        ((StoreActivity)getActivity()).addFragment(Const.AVAILABLE_ + model.getCategoryName());
+                        ((StoreActivity) getActivity()).addFragment(Const.AVAILABLE_ + model.getCategory());
                     }
                 });
             }
@@ -285,6 +314,15 @@ public class MainPageFragment extends Fragment
 
         recyclerView.setAdapter(adapter);
         setupProgress(adapter);
+    }
+
+    private void getImageFromGallery(Category model)
+    {
+        mSelectedCategory = model;
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_CATEGORY_IMAGE);
     }
 
     private void setupProgress(final RecyclerView.Adapter adapter)
@@ -316,5 +354,41 @@ public class MainPageFragment extends Fragment
     private Query getCategoryRef(String availableFashionAccessories)
     {
         return mRootRef.child(availableFashionAccessories).orderByChild(CATEGORY_ID);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        try
+        {
+            if (requestCode == PICK_CATEGORY_IMAGE && resultCode == RESULT_OK && null != data)
+            {
+                Uri mImageUri = null;
+                if (data.getData() != null)
+                {
+                    mImageUri = data.getData();
+                }
+                if (ConnectivityUtil.isConnected() && mImageUri != null)
+                {
+                    final File destFile = ImageUtil.saveBitmapToFile(mImageUri, mSelectedCategory.getCategoryImage());
+                    /*StorageReference storageReference = FirebaseStorage.getInstance()
+                            .getReference().child(APP_IMAGES).child(mSelectedCategory..replace(AVAILABLE_, "")).child(childId + ".jpg");*/
+                }
+                else
+                {
+                    toast(R.string.noInternet);
+                }
+            }
+            else
+            {
+                Brandfever.toast("You haven't picked Image");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Brandfever.toast("Something went wrong");
+        }
     }
 }

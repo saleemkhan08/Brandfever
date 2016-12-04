@@ -2,10 +2,10 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_marginTop="10dp"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:layout_marginStart="10dp"
-    android:layout_height="wrap_content">
+    android:layout_marginTop="10dp">
 
     <RelativeLayout
         android:layout_width="150dp"
@@ -22,15 +22,32 @@
             android:layout_height="match_parent"
             android:background="@drawable/main_category_item_shadow"/>
 
-        <TextView
-            android:id="@+id/title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:id="@+id/uploadCategoryImageButton"
+            android:paddingTop="5dp"
+            android:background="@drawable/bg_drawable"
             android:gravity="center"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
-            android:text="Men's Wear"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/white"/>
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <ImageView
+                android:id="@+id/uploadCategoryImageIcon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@mipmap/photo_camera_white"/>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="Men's Wear"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@color/white"/>
+        </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

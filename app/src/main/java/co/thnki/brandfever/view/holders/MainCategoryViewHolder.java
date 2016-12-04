@@ -3,6 +3,7 @@ package co.thnki.brandfever.view.holders;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -13,6 +14,12 @@ public class MainCategoryViewHolder extends RecyclerView.ViewHolder
 {
     @Bind(R.id.title)
     TextView mTitleTextView;
+
+    @Bind(R.id.uploadCategoryImageButton)
+    public LinearLayout mUploadCategoryImageButton;
+
+    @Bind(R.id.uploadCategoryImageIcon)
+    public ImageView mUploadCategoryImageIcon;
 
     @Bind(R.id.backgroundImage)
     public ImageView mBackgroundImageView;

@@ -59,6 +59,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 {
     private static final String LOGIN = "Login";
     public static final String CATEGORY_CHILD = "categoryChild";
+    private static final String TAG = "CategoryDrawerFragment";
     private boolean mIsFirstLevelCategory = false;
 
     @Bind(R.id.categoryRecyclerView)
@@ -129,6 +130,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         }
         else
         {
+            Log.d(TAG, "categoryChild : "+categoryChild );
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             mAvailableCategoriesRef = rootRef.child(categoryChild);
             mCurrentCategory = categoryChild;
@@ -223,10 +225,10 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     private String getParentCategory(String currentCategory)
     {
         Log.d("getParentCategory", currentCategory);
-        List<String> firstLevelCategory = Arrays.asList(mResources.getStringArray(R.array.firstLevelId));
+        List<String> firstLevelCategory = Arrays.asList(mResources.getStringArray(R.array.firstLevelCategoriesId));
         Log.d("getParentCategory", "" + firstLevelCategory);
         int index = firstLevelCategory.indexOf(currentCategory);
-        String[] headerTitle = mResources.getStringArray(R.array.firstLevel);
+        String[] headerTitle = mResources.getStringArray(R.array.firstLevelCategories);
         if (index >= 0)
         {
             return headerTitle[index];
@@ -236,7 +238,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 
     private List<String> getFirstLevelArray()
     {
-        String[] array = getResources().getStringArray(R.array.firstLevelId);
+        String[] array = getResources().getStringArray(R.array.firstLevelCategoriesId);
         for (int i = 0; i < array.length; i++)
         {
             array[i] = Const.AVAILABLE_ + array[i];
@@ -255,7 +257,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
             @Override
             protected void populateViewHolder(final DrawerCategoryViewHolder viewHolder, final Category model, int position)
             {
-                viewHolder.mCategory.setText(model.getCategory());
+                viewHolder.mCategory.setText(model.getCategoryName());
                 String imageUrl = model.getCategoryImage();
                 if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
@@ -309,7 +311,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 
     private String getAvailableCategoryName(Category model)
     {
-        return Const.AVAILABLE_ + model.getCategoryName();
+        return Const.AVAILABLE_ + model.getCategory();
     }
 
     private String getCategoryName()

@@ -34,7 +34,7 @@ import static co.thnki.brandfever.interfaces.Const.WOMENS_WEAR;
 
 public class InitialSetupUtil implements ValueEventListener
 {
-    private static final String APP_IMAGES = "appImages";
+    public static final String APP_IMAGES = "appImages";
     private static final String FIRST_LEVEL_CATEGORIES = "firstLevelCategories";
     private static final String TAG = "InitialSetupUtil";
     private DatabaseReference mRootDbRef;
@@ -56,7 +56,7 @@ public class InitialSetupUtil implements ValueEventListener
 
     private void saveCategories()
     {
-        Log.d(TAG, "updateUi");
+        Log.d(TAG, "saveCategories");
         //Child 1
         DatabaseReference appDataDbRef = mRootDbRef.child(UserUtil.APP_DATA);
         appDataDbRef.child(VolleyUtil.REQUEST_HANDLER_URL).setValue(Brandfever.getResString(R.string.defaultUrl));
@@ -67,9 +67,8 @@ public class InitialSetupUtil implements ValueEventListener
         ownersDbRef.setValue("111955688396506807880");
 
         //Child 3 & 4
-        Log.d("Categories", "saveCategories");
-        String[] firstLevelCategories = Brandfever.getResStringArray(R.array.firstLevel);
-        String[] firstLevelCategoriesId = Brandfever.getResStringArray(R.array.firstLevelId);
+        String[] firstLevelCategories = Brandfever.getResStringArray(R.array.firstLevelCategories);
+        String[] firstLevelCategoriesId = Brandfever.getResStringArray(R.array.firstLevelCategoriesId);
         addToDatabase(firstLevelCategories, FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId);
         addToDatabase(firstLevelCategories, AVAILABLE_FIRST_LEVEL_CATEGORIES, firstLevelCategoriesId);
 
@@ -77,6 +76,8 @@ public class InitialSetupUtil implements ValueEventListener
         String[] mensWear = Brandfever.getResStringArray(R.array.mensWear);
         String[] mensWearId = Brandfever.getResStringArray(R.array.mensWearId);
         addToDatabase(mensWear, MENS_WEAR, mensWearId);
+        Log.d(TAG, "Test : " + AVAILABLE_MENS_WEAR);
+
         addToDatabase(mensWear, AVAILABLE_MENS_WEAR, mensWearId);
         //addToDatabase(mensWear, MENS_WEAR, mensWearId, true);
 
@@ -84,6 +85,7 @@ public class InitialSetupUtil implements ValueEventListener
         String[] womensWear = Brandfever.getResStringArray(R.array.womensWear);
         String[] womensWearId = Brandfever.getResStringArray(R.array.womensWearId);
         addToDatabase(womensWear, WOMENS_WEAR, womensWearId);
+        Log.d(TAG, "Test : " + AVAILABLE_WOMENS_WEAR);
         addToDatabase(womensWear, AVAILABLE_WOMENS_WEAR, womensWearId);
         //addToDatabase(womensWear, WOMENS_WEAR, womensWearId, true);
 
@@ -91,6 +93,7 @@ public class InitialSetupUtil implements ValueEventListener
         String[] kidsWear = Brandfever.getResStringArray(R.array.kidsWear);
         String[] kidsWearId = Brandfever.getResStringArray(R.array.kidsWearId);
         addToDatabase(kidsWear, KIDS_WEAR, kidsWearId);
+        Log.d(TAG, "Test : " + AVAILABLE_KIDS_WEAR);
         addToDatabase(kidsWear, AVAILABLE_KIDS_WEAR, kidsWearId);
         //addToDatabase(kidsWear, KIDS_WEAR, kidsWearId, true);
 
@@ -98,6 +101,7 @@ public class InitialSetupUtil implements ValueEventListener
         String[] fashionAccessories = Brandfever.getResStringArray(R.array.fashionAccessories);
         String[] fashionAccessoriesId = Brandfever.getResStringArray(R.array.fashionAccessoriesId);
         addToDatabase(fashionAccessories, FASHION_ACCESSORIES, fashionAccessoriesId);
+        Log.d(TAG, "Test : " + AVAILABLE_FASHION_ACCESSORIES);
         addToDatabase(fashionAccessories, AVAILABLE_FASHION_ACCESSORIES, fashionAccessoriesId);
         //addToDatabase(fashionAccessories, FASHION_ACCESSORIES, fashionAccessoriesId, true);
 
@@ -105,6 +109,7 @@ public class InitialSetupUtil implements ValueEventListener
         String[] homeFurnishing = Brandfever.getResStringArray(R.array.homeFurnishing);
         String[] homeFurnishingId = Brandfever.getResStringArray(R.array.homeFurnishingId);
         addToDatabase(homeFurnishing, HOME_FURNISHING, homeFurnishingId);
+        Log.d(TAG, "Test : " + AVAILABLE_HOME_FURNISHING);
         addToDatabase(homeFurnishing, AVAILABLE_HOME_FURNISHING, homeFurnishingId);
         //addToDatabase(homeFurnishing, HOME_FURNISHING, homeFurnishingId, true);
         Otto.post(INITIAL_SETUP_COMPLETE);
@@ -117,8 +122,8 @@ public class InitialSetupUtil implements ValueEventListener
         DatabaseReference mCategoriesRef = mRootDbRef.child(name);
         for (int i = 0; i < categories.length; i++)
         {
-            Log.d(TAG, "categories[i] : " + categories[i] + ", childIds[i] : " + childIds[i]);
-            saveIndividualCategory(mCategoriesRef, i, name, categories[i], childIds[i]);
+            Log.d(TAG, "categories["+i+"] : " + categories[i] + ", childIds["+i+"] : " + childIds[i]);
+            saveIndividualCategory(mCategoriesRef, i, name.replace(AVAILABLE_, ""), categories[i], childIds[i]);
         }
     }
 
@@ -127,7 +132,7 @@ public class InitialSetupUtil implements ValueEventListener
         Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
                 + ", categoryName :" + categoryName + ", childId : " + childId);
         StorageReference storageReference = FirebaseStorage.getInstance()
-                .getReference().child(APP_IMAGES).child(parentCategory.replace(AVAILABLE_, "")).child(childId + ".jpg");
+                .getReference().child(APP_IMAGES).child(parentCategory).child(childId + ".jpg");
 
         Log.d(TAG, "storageReference : " + storageReference);
 
@@ -142,7 +147,7 @@ public class InitialSetupUtil implements ValueEventListener
                             + ", categoryName :" + categoryName + ", childId : " + childId);
 
                     DatabaseReference childRef = mCategoriesRef.child(index + "");
-                    Category category = new Category(categoryName, index, childId, uri.toString());
+                    Category category = new Category(categoryName, index, parentCategory, childId, uri.toString());
                     category.setCategorySelected(true);
                     childRef.setValue(category);
                 }

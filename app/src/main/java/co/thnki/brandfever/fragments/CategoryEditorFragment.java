@@ -100,8 +100,8 @@ public class CategoryEditorFragment extends Fragment
             @Override
             protected void populateViewHolder(final DrawerCategoryEditorViewHolder viewHolder, final Category model, int position)
             {
-                viewHolder.mCheckedTextView.setText(model.getCategory());
-                viewHolder.mCheckedTextView.setText(model.getCategory());
+                viewHolder.mCheckedTextView.setText(model.getCategoryName());
+                viewHolder.mCheckedTextView.setText(model.getCategoryName());
                 viewHolder.mCheckedTextView.setChecked(model.isCategorySelected());
                 viewHolder.mCheckedTextView.setOnClickListener(new View.OnClickListener()
                 {
