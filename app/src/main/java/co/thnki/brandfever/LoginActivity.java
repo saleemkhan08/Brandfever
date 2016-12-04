@@ -343,7 +343,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         }
                         else
                         {
-                            UserUtil.getInstance().register(user);
+
+                            UserUtil userUtil = new UserUtil();
+                            userUtil.register(user);
                             // User is signed in
                             Log.d(TAG, "startActivity : MainActivity");
                             startActivity(new Intent(LoginActivity.this, StoreActivity.class));

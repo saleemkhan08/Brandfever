@@ -13,6 +13,6 @@ public class NotificationInstanceIdService extends FirebaseInstanceIdService
     public void onTokenRefresh()
     {
         String notificationInstanceId = FirebaseInstanceId.getInstance().getToken();
-        UserUtil.getInstance().updateNotificationInstanceId(notificationInstanceId);
+        new UserUtil().updateNotificationInstanceId(notificationInstanceId);
     }
 }

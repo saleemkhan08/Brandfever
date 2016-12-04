@@ -1,6 +1,7 @@
 package co.thnki.brandfever.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,12 +20,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
@@ -36,7 +41,6 @@ import co.thnki.brandfever.R;
 import co.thnki.brandfever.StoreActivity;
 import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Category;
-import co.thnki.brandfever.interfaces.Const;
 import co.thnki.brandfever.singletons.Otto;
 import co.thnki.brandfever.utils.ConnectivityUtil;
 import co.thnki.brandfever.utils.ImageUtil;
@@ -45,6 +49,7 @@ import co.thnki.brandfever.view.holders.MainCategoryViewHolder;
 
 import static android.app.Activity.RESULT_OK;
 import static co.thnki.brandfever.Brandfever.toast;
+import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FASHION_ACCESSORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_HOME_FURNISHING;
@@ -52,6 +57,7 @@ import static co.thnki.brandfever.interfaces.Const.AVAILABLE_KIDS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_MENS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_WOMENS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
+import static co.thnki.brandfever.utils.InitialSetupUtil.APP_IMAGES;
 
 
 public class MainPageFragment extends Fragment
@@ -112,6 +118,7 @@ public class MainPageFragment extends Fragment
     String[] mFirstLevelCategories;
     private SharedPreferences mPreference;
     private Category mSelectedCategory;
+    private ProgressDialog mDialog;
 
     public MainPageFragment()
     {
@@ -194,6 +201,10 @@ public class MainPageFragment extends Fragment
                 }
                 catch (Exception e)
                 {
+                    if(mDialog != null)
+                    {
+                        mDialog.dismiss();
+                    }
                     Log.d("Exception", e.getMessage());
                 }
             }
@@ -282,7 +293,10 @@ public class MainPageFragment extends Fragment
             protected void populateViewHolder(MainCategoryViewHolder viewHolder, final Category model, int position)
             {
                 viewHolder.setTitleTextView(model.getCategoryName());
-
+                if (!mPreference.getBoolean(Accounts.IS_OWNER, false))
+                {
+                    viewHolder.mUploadCategoryImageIcon.setVisibility(View.INVISIBLE);
+                }
                 viewHolder.mUploadCategoryImageButton.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
@@ -294,7 +308,7 @@ public class MainPageFragment extends Fragment
                         }
                         else
                         {
-                            ((StoreActivity) getActivity()).addFragment(Const.AVAILABLE_ + model.getCategory());
+                            ((StoreActivity) getActivity()).addFragment(AVAILABLE_ + model.getCategory());
                         }
                     }
                 });
@@ -306,7 +320,7 @@ public class MainPageFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        ((StoreActivity) getActivity()).addFragment(Const.AVAILABLE_ + model.getCategory());
+                        ((StoreActivity) getActivity()).addFragment(AVAILABLE_ + model.getCategory());
                     }
                 });
             }
@@ -344,6 +358,10 @@ public class MainPageFragment extends Fragment
                     }
                     catch (IllegalStateException e)
                     {
+                        if(mDialog != null)
+                        {
+                            mDialog.dismiss();
+                        }
                         Log.d("AdapterDataObserver", "Not Registered");
                     }
                 }
@@ -364,16 +382,14 @@ public class MainPageFragment extends Fragment
         {
             if (requestCode == PICK_CATEGORY_IMAGE && resultCode == RESULT_OK && null != data)
             {
-                Uri mImageUri = null;
+                Uri uri = null;
                 if (data.getData() != null)
                 {
-                    mImageUri = data.getData();
+                    uri = data.getData();
                 }
-                if (ConnectivityUtil.isConnected() && mImageUri != null)
+                if (ConnectivityUtil.isConnected() && uri != null)
                 {
-                    final File destFile = ImageUtil.saveBitmapToFile(mImageUri, mSelectedCategory.getCategoryImage());
-                    /*StorageReference storageReference = FirebaseStorage.getInstance()
-                            .getReference().child(APP_IMAGES).child(mSelectedCategory..replace(AVAILABLE_, "")).child(childId + ".jpg");*/
+                    changeTheCategoryImage(uri);
                 }
                 else
                 {
@@ -382,13 +398,52 @@ public class MainPageFragment extends Fragment
             }
             else
             {
-                Brandfever.toast("You haven't picked Image");
+                toast(R.string.youHaventPickedAnImage);
             }
         }
         catch (Exception e)
         {
+            if(mDialog != null)
+            {
+                mDialog.dismiss();
+            }
             e.printStackTrace();
-            Brandfever.toast("Something went wrong");
+            toast(R.string.something_went_wrong);
         }
+    }
+
+    private void changeTheCategoryImage(Uri imageUri)
+    {
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage(getString(R.string.changing));
+        mDialog.show();
+        Log.d("ChangeCategoryImg", mSelectedCategory.toString());
+        final File destFile = ImageUtil.saveBitmapToFile(imageUri, mSelectedCategory.getCategory());
+        StorageReference storageReference = FirebaseStorage.getInstance()
+                .getReference().child(APP_IMAGES).child(mSelectedCategory.getParentCategory());
+
+        Log.d("ChangeCategoryImg", "StorageReference :"+ storageReference.toString());
+        storageReference.putFile(Uri.fromFile(destFile))
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+                {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                    {
+                        if (taskSnapshot != null)
+                        {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            mSelectedCategory.setCategoryImage(downloadUrl.toString());
+                            DatabaseReference ref = mRootRef.child(AVAILABLE_ + mSelectedCategory.getParentCategory())
+                                    .child(mSelectedCategory.getCategoryId() + "");
+                            Log.d("ChangeCategoryImg", "DatabaseReference : " + ref.toString());
+                            ref.setValue(mSelectedCategory);
+                        }
+                        if (destFile != null && destFile.exists())
+                        {
+                            destFile.delete();
+                        }
+                        mDialog.dismiss();
+                    }
+                });
     }
 }

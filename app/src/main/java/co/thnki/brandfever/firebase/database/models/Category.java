@@ -97,4 +97,14 @@ public class Category
     {
         this.categoryImage = categoryImage;
     }
+
+    @Override
+    public String toString()
+    {
+        return "categoryName : "+ categoryName+", "
+                +"category : "+ category+", "
+                +"categoryId : "+ categoryId+", "
+                +"categoryImage : "+ categoryImage+", "
+                +"parentCategory : "+ parentCategory+", ";
+    }
 }

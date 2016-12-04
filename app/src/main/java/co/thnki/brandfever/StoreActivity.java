@@ -101,7 +101,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setupWindowProperties();
         mPreferences = Brandfever.getPreferences();
-        UserUtil.getInstance().updateToken();
+        new UserUtil().updateToken();
         FcmTokensUtil.getInstance().updateIsOwner();
         setContentView(R.layout.activity_store);
         ButterKnife.bind(this);

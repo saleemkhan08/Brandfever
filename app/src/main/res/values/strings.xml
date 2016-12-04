@@ -261,4 +261,6 @@
     <string name="loggingOut">Logging Out ....</string>
     <string name="returnOrderAccepted">Returned Product is received!</string>
     <string name="permissionRequiredToUploadPhotos">Permission Required To Upload Photos!</string>
+    <string name="changing">Changing...</string>
+    <string name="youHaventPickedAnImage">You haven\'t picked Image</string>
 </resources>

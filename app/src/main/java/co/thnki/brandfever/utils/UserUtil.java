@@ -35,23 +35,13 @@ public class UserUtil
     public static final String APP_DATA = "appData";
     public static final String USER_LIST = "users";
     public static final String OWNER_PHONE_NUMBER = "phoneNumber";
-    private static UserUtil sInstance;
     private Accounts mAccount;
     private SharedPreferences mPreferences;
 
-    private UserUtil()
+    public UserUtil()
     {
         mPreferences = Brandfever.getPreferences();
         mAccount = new Accounts();
-    }
-
-    public static UserUtil getInstance()
-    {
-        if (sInstance == null)
-        {
-            sInstance = new UserUtil();
-        }
-        return sInstance;
     }
 
     private DatabaseReference getDbReference()

@@ -7,6 +7,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
 
 public class CategoryEditorFragment extends Fragment
 {
+    private static final String TAG = "CategoryEditorFragment";
     @Bind(R.id.categoryRecyclerView)
     RecyclerView mCategoriesRecyclerView;
 
@@ -46,7 +48,7 @@ public class CategoryEditorFragment extends Fragment
     private DrawerItemClickListener mItemClickListener;
     private boolean mIsFirstLevelCategory = false;
 
-    public static CategoryEditorFragment getInstance(String category, DrawerItemClickListener itemClickListener )
+    public static CategoryEditorFragment getInstance(String category, DrawerItemClickListener itemClickListener)
     {
         CategoryEditorFragment fragment = new CategoryEditorFragment();
         fragment.mItemClickListener = itemClickListener;
@@ -77,6 +79,7 @@ public class CategoryEditorFragment extends Fragment
         else
         {
             mCategoriesRef = FirebaseDatabase.getInstance().getReference().child(categoryChild);
+            Log.d(TAG, "mCategoriesRef : " + mCategoriesRef);
             mAvailableCategoriesRef = FirebaseDatabase.getInstance().getReference()
                     .child(Const.AVAILABLE_ + categoryChild);
             if (categoryChild.equals(Const.FIRST_LEVEL_CATEGORIES))
@@ -112,15 +115,15 @@ public class CategoryEditorFragment extends Fragment
                         CheckedTextView category = (CheckedTextView) view;
                         if (category.isChecked())
                         {
-                            mAvailableCategoriesRef.child(catId+"").removeValue();
+                            mAvailableCategoriesRef.child(catId + "").removeValue();
                             category.setChecked(false);
-                            mCategoriesRef.child(catId+"").child("categorySelected").setValue(false);
+                            mCategoriesRef.child(catId + "").child("categorySelected").setValue(false);
                         }
                         else
                         {
                             category.setChecked(true);
-                            mAvailableCategoriesRef.child(catId+"").setValue(model);
-                            mCategoriesRef.child(catId+"").child("categorySelected").setValue(true);
+                            mAvailableCategoriesRef.child(catId + "").setValue(model);
+                            mCategoriesRef.child(catId + "").child("categorySelected").setValue(true);
                         }
                     }
                 });
@@ -139,7 +142,8 @@ public class CategoryEditorFragment extends Fragment
                             viewHolder.mImageView.setImageDrawable(circularBitmapDrawable);
                         }
                     });
-                }else
+                }
+                else
                 {
                     viewHolder.mImageView.setVisibility(View.GONE);
                 }
