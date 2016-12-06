@@ -9,6 +9,7 @@ public class Order
     private String priceAfter;
     private String selectedSize;
     private int noOfProducts;
+    private int availableNoOfProducts;
     private String productId;
     private String categoryId;
     private String orderStatus;
@@ -20,6 +21,18 @@ public class Order
 
     }
 
+    public int getActualPriceAfter()
+    {
+        String price = priceAfter.replaceAll("[^\\d]", "");
+        return Integer.parseInt(price);
+    }
+
+    public int getActualPriceBefore()
+    {
+        String price = priceBefore.replaceAll("[^\\d]", "");
+        return Integer.parseInt(price);
+    }
+
     public Order(Products product, String orderStatus, String selectedSize)
     {
         brand = product.getBrand();
@@ -28,9 +41,10 @@ public class Order
         priceBefore = product.getPriceBefore();
         this.selectedSize = selectedSize;
         noOfProducts = 1;
+        availableNoOfProducts = product.getAvailableNoOfProducts(selectedSize);
         productId = product.getProductId();
         categoryId = product.getCategoryId();
-        timeStamp = - System.currentTimeMillis();
+        timeStamp = -System.currentTimeMillis();
         setOrderStatus(orderStatus);
     }
 
@@ -132,5 +146,15 @@ public class Order
     public void setPriceBefore(String priceBefore)
     {
         this.priceBefore = priceBefore;
+    }
+
+    public int getAvailableNoOfProducts()
+    {
+        return availableNoOfProducts;
+    }
+
+    public void setAvailableNoOfProducts(int availableNoOfProducts)
+    {
+        this.availableNoOfProducts = availableNoOfProducts;
     }
 }

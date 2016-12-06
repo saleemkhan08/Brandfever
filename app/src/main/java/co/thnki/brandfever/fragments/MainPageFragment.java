@@ -1,12 +1,12 @@
 package co.thnki.brandfever.fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,6 +49,7 @@ import co.thnki.brandfever.view.holders.MainCategoryViewHolder;
 
 import static android.app.Activity.RESULT_OK;
 import static co.thnki.brandfever.Brandfever.toast;
+import static co.thnki.brandfever.fragments.ProductsFragment.REQUEST_CODE_SDCARD_PERMISSION;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FASHION_ACCESSORIES;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
@@ -57,6 +58,11 @@ import static co.thnki.brandfever.interfaces.Const.AVAILABLE_KIDS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_MENS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.AVAILABLE_WOMENS_WEAR;
 import static co.thnki.brandfever.interfaces.Const.CATEGORY_ID;
+import static co.thnki.brandfever.interfaces.Const.FASHION_ACCESSORIES;
+import static co.thnki.brandfever.interfaces.Const.HOME_FURNISHING;
+import static co.thnki.brandfever.interfaces.Const.KIDS_WEAR;
+import static co.thnki.brandfever.interfaces.Const.MENS_WEAR;
+import static co.thnki.brandfever.interfaces.Const.WOMENS_WEAR;
 import static co.thnki.brandfever.utils.InitialSetupUtil.APP_IMAGES;
 
 
@@ -119,6 +125,7 @@ public class MainPageFragment extends Fragment
     private SharedPreferences mPreference;
     private Category mSelectedCategory;
     private ProgressDialog mDialog;
+    private StoreActivity mActivity;
 
     public MainPageFragment()
     {
@@ -138,6 +145,13 @@ public class MainPageFragment extends Fragment
         return parentView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        mActivity = (StoreActivity) getActivity();
+    }
+
     private void hideAllCategories()
     {
         for (String category : mFirstLevelCategories)
@@ -150,12 +164,7 @@ public class MainPageFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof StoreActivity)
-        {
-            ((StoreActivity) activity).setToolBarTitle(getString(R.string.app_name));
-
-        }
+        mActivity.setToolBarTitle(getString(R.string.app_name));
     }
 
     @Subscribe
@@ -184,7 +193,9 @@ public class MainPageFragment extends Fragment
 
     private void updateUi()
     {
-        mRootRef.child(AVAILABLE_FIRST_LEVEL_CATEGORIES).addValueEventListener(new ValueEventListener()
+        DatabaseReference ref = mRootRef.child(AVAILABLE_FIRST_LEVEL_CATEGORIES);
+        Log.d("updateUi", "ref : " + ref);
+        ref.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -192,6 +203,7 @@ public class MainPageFragment extends Fragment
                 try
                 {
                     hideAllCategories();
+                    Log.d("updateUi", "DataSnapshot : " + dataSnapshot);
                     Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
                     for (DataSnapshot snapshot : snapshots)
                     {
@@ -201,7 +213,7 @@ public class MainPageFragment extends Fragment
                 }
                 catch (Exception e)
                 {
-                    if(mDialog != null)
+                    if (mDialog != null)
                     {
                         mDialog.dismiss();
                     }
@@ -222,33 +234,33 @@ public class MainPageFragment extends Fragment
         initializeRecyclerView(mWomensWearRecyclerView, getCategoryRef(AVAILABLE_WOMENS_WEAR));
     }
 
-    private void unHideCategory(String categoryName, String category)
+    private void unHideCategory(String category, String categoryName)
     {
-        switch (categoryName)
+        switch (category)
         {
-            case "mensWear":
+            case MENS_WEAR:
                 mMensWear.setVisibility(View.VISIBLE);
-                mMensWearTextView.setText(category);
+                mMensWearTextView.setText(categoryName);
                 break;
 
-            case "womensWear":
+            case WOMENS_WEAR:
                 mWomensWear.setVisibility(View.VISIBLE);
-                mWomensWearTextView.setText(category);
+                mWomensWearTextView.setText(categoryName);
                 break;
 
-            case "kidsWear":
+            case KIDS_WEAR:
                 mKidsWear.setVisibility(View.VISIBLE);
-                mKidsWearTextView.setText(category);
+                mKidsWearTextView.setText(categoryName);
                 break;
 
-            case "fashionAccessories":
+            case FASHION_ACCESSORIES:
                 mFashionAccessories.setVisibility(View.VISIBLE);
-                mFashionAccessoriesTextView.setText(category);
+                mFashionAccessoriesTextView.setText(categoryName);
                 break;
 
-            case "homeFurnishing":
+            case HOME_FURNISHING:
                 mHomeFurnishing.setVisibility(View.VISIBLE);
-                mHomeFurnishingTextView.setText(category);
+                mHomeFurnishingTextView.setText(categoryName);
                 break;
         }
     }
@@ -257,32 +269,27 @@ public class MainPageFragment extends Fragment
     {
         switch (categoryName)
         {
-            case "mensWear":
+            case MENS_WEAR:
                 mMensWear.setVisibility(View.GONE);
                 break;
-
-            case "womensWear":
+            case WOMENS_WEAR:
                 mWomensWear.setVisibility(View.GONE);
                 break;
-
-            case "kidsWear":
+            case KIDS_WEAR:
                 mKidsWear.setVisibility(View.GONE);
                 break;
-
-            case "fashionAccessories":
+            case FASHION_ACCESSORIES:
                 mFashionAccessories.setVisibility(View.GONE);
                 break;
-
-            case "homeFurnishing":
+            case HOME_FURNISHING:
                 mHomeFurnishing.setVisibility(View.GONE);
                 break;
-
         }
     }
 
     private void initializeRecyclerView(RecyclerView recyclerView, Query dbRef)
     {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
         FirebaseRecyclerAdapter<Category, MainCategoryViewHolder> adapter = new FirebaseRecyclerAdapter<Category, MainCategoryViewHolder>(
                 Category.class,
                 R.layout.main_categories_row,
@@ -304,23 +311,31 @@ public class MainPageFragment extends Fragment
                     {
                         if (mPreference.getBoolean(Accounts.IS_OWNER, false))
                         {
-                            getImageFromGallery(model);
+                            mSelectedCategory = model;
+                            if (mActivity.isSdcardPermissionAvailable())
+                            {
+                                getImages();
+                            }
+                            else
+                            {
+                                mActivity.requestSdCardPermission();
+                            }
                         }
                         else
                         {
-                            ((StoreActivity) getActivity()).addFragment(AVAILABLE_ + model.getCategory());
+                            mActivity.addFragment(AVAILABLE_ + model.getCategory());
                         }
                     }
                 });
                 GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(viewHolder.mBackgroundImageView);
-                Glide.with(getActivity()).load(model.getCategoryImage()).crossFade().into(imageViewTarget);
+                Glide.with(mActivity).load(model.getCategoryImage()).crossFade().into(imageViewTarget);
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
-                        ((StoreActivity) getActivity()).addFragment(AVAILABLE_ + model.getCategory());
+                        mActivity.addFragment(AVAILABLE_ + model.getCategory());
                     }
                 });
             }
@@ -330,13 +345,21 @@ public class MainPageFragment extends Fragment
         setupProgress(adapter);
     }
 
-    private void getImageFromGallery(Category model)
+    private void getImages()
     {
-        mSelectedCategory = model;
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_CATEGORY_IMAGE);
+    }
+
+    @Subscribe
+    public void getImages(String action)
+    {
+        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT))
+        {
+            getImages();
+        }
     }
 
     private void setupProgress(final RecyclerView.Adapter adapter)
@@ -358,7 +381,7 @@ public class MainPageFragment extends Fragment
                     }
                     catch (IllegalStateException e)
                     {
-                        if(mDialog != null)
+                        if (mDialog != null)
                         {
                             mDialog.dismiss();
                         }
@@ -380,30 +403,37 @@ public class MainPageFragment extends Fragment
         super.onActivityResult(requestCode, resultCode, data);
         try
         {
-            if (requestCode == PICK_CATEGORY_IMAGE && resultCode == RESULT_OK && null != data)
+            switch (requestCode)
             {
-                Uri uri = null;
-                if (data.getData() != null)
-                {
-                    uri = data.getData();
-                }
-                if (ConnectivityUtil.isConnected() && uri != null)
-                {
-                    changeTheCategoryImage(uri);
-                }
-                else
-                {
-                    toast(R.string.noInternet);
-                }
-            }
-            else
-            {
-                toast(R.string.youHaventPickedAnImage);
+                case PICK_CATEGORY_IMAGE:
+                    if (resultCode == RESULT_OK && null != data)
+                    {
+                        Uri uri = null;
+                        if (data.getData() != null)
+                        {
+                            uri = data.getData();
+                        }
+                        if (ConnectivityUtil.isConnected() && uri != null)
+                        {
+                            changeTheCategoryImage(uri);
+                        }
+                        else
+                        {
+                            toast(R.string.noInternet);
+                        }
+                    }
+                    else
+                    {
+                        toast(R.string.youHaventPickedAnImage);
+                    }
+                    break;
+                case REQUEST_CODE_SDCARD_PERMISSION:
+
             }
         }
         catch (Exception e)
         {
-            if(mDialog != null)
+            if (mDialog != null)
             {
                 mDialog.dismiss();
             }
@@ -414,7 +444,7 @@ public class MainPageFragment extends Fragment
 
     private void changeTheCategoryImage(Uri imageUri)
     {
-        mDialog = new ProgressDialog(getActivity());
+        mDialog = new ProgressDialog(mActivity);
         mDialog.setMessage(getString(R.string.changing));
         mDialog.show();
         Log.d("ChangeCategoryImg", mSelectedCategory.toString());
@@ -422,7 +452,7 @@ public class MainPageFragment extends Fragment
         StorageReference storageReference = FirebaseStorage.getInstance()
                 .getReference().child(APP_IMAGES).child(mSelectedCategory.getParentCategory());
 
-        Log.d("ChangeCategoryImg", "StorageReference :"+ storageReference.toString());
+        Log.d("ChangeCategoryImg", "StorageReference :" + storageReference.toString());
         storageReference.putFile(Uri.fromFile(destFile))
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
                 {

@@ -61,6 +61,7 @@
     <dimen name="categoryContainerBottomPadding">10dp</dimen>
     <dimen name="categoryRecyclerViewStartPadding">10dp</dimen>
     <dimen name="negativeMargin">-10dp</dimen>
+    <dimen name="noOfProductSize">35dp</dimen>
 
     <item name="totalWeight" format="float" type="dimen">11</item>
     <item name="imageWeight" format="float" type="dimen">8.5</item>

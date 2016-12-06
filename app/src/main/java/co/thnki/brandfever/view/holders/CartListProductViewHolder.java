@@ -3,6 +3,7 @@ package co.thnki.brandfever.view.holders;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -16,6 +17,12 @@ public class CartListProductViewHolder extends RecyclerView.ViewHolder
 
     @Bind(R.id.productBrand)
     public TextView mBrand;
+
+    @Bind(R.id.noOfProduct)
+    public TextView mNoOfProductsTextView;
+
+    @Bind(R.id.noOfProductSpinner)
+    public Spinner mNoOfProductsSpinner;
 
     @Bind(R.id.productPriceAfter)
     public TextView mPriceAfter;

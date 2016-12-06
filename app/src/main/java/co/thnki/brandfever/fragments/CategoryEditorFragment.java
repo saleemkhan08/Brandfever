@@ -16,6 +16,9 @@ import android.widget.CheckedTextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -47,6 +50,7 @@ public class CategoryEditorFragment extends Fragment
     private DatabaseReference mCategoriesRef;
     private DrawerItemClickListener mItemClickListener;
     private boolean mIsFirstLevelCategory = false;
+    private RecyclerView.Adapter mAdapter;
 
     public static CategoryEditorFragment getInstance(String category, DrawerItemClickListener itemClickListener)
     {
@@ -87,7 +91,45 @@ public class CategoryEditorFragment extends Fragment
                 mIsFirstLevelCategory = true;
             }
             mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            mCategoriesRecyclerView.setAdapter(getAdapter());
+            mAdapter = getAdapter();
+            mCategoriesRecyclerView.setAdapter(mAdapter);
+            mAvailableCategoriesRef.addChildEventListener(new ChildEventListener()
+            {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "Editor : onChildAdded : "+dataSnapshot);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "Editor : onChildChanged");
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot)
+                {
+                    Log.d("OwnerUserSwitch", "Editor : onChildRemoved : "+dataSnapshot);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "Editor : onChildMoved : " + s);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+                    Log.d("OwnerUserSwitch", "Editor : onCancelled");
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
         }
         return layout;
     }

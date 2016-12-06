@@ -1,6 +1,9 @@
 package co.thnki.brandfever;
 
+import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,8 +12,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.TransitionInflater;
 import android.util.Log;
@@ -274,6 +279,27 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
 
     public void logout(View view)
     {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.areYouSureYouWantToLogout);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                logout();
+            }
+        }).show();
+    }
+
+    public void logout()
+    {
         if (ConnectivityUtil.isConnected())
         {
             mProgressDialog = new ProgressDialog(this);
@@ -312,10 +338,10 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                             CartUtil.clearInstance();
                             revokeAccess();
                             signOut();
-
                             FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(StoreActivity.this, LoginActivity.class));
                             mProgressDialog.dismiss();
+                            clearApplicationData();
+                            startActivity(new Intent(StoreActivity.this, LoginActivity.class));
                             finish();
                         }
 
@@ -325,11 +351,12 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                             FirebaseAuth.getInstance().signOut();
                             startActivity(new Intent(StoreActivity.this, LoginActivity.class));
                             mProgressDialog.dismiss();
+                            clearApplicationData();
                             finish();
                         }
                     });
                 }
-            }, 250);
+            }, 1000);
         }
         else
         {
@@ -614,5 +641,52 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                 toast(R.string.please_try_again);
             }
         }
+    }
+
+    public void clearApplicationData()
+    {
+        try
+        {
+            if (!((ActivityManager) getSystemService(ACTIVITY_SERVICE))
+                    .clearApplicationUserData())
+            {
+                clearAppData();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearAppData()
+    {
+        try
+        {
+            // clearing app data
+            Runtime runtime = Runtime.getRuntime();
+            runtime.exec("pm clear " + getPackageName());
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void requestSdCardPermission()
+    {
+        String[] permissionTemp = {
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+        };
+        ActivityCompat.requestPermissions(this, permissionTemp, REQUEST_CODE_SDCARD_PERMISSION);
+    }
+
+    public boolean isSdcardPermissionAvailable()
+    {
+        return (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 }

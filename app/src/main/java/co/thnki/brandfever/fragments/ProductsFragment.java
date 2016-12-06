@@ -1,22 +1,16 @@
 package co.thnki.brandfever.fragments;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -89,6 +83,7 @@ public class ProductsFragment extends Fragment
     private ProgressDialog mProgressDialog;
     private StorageReference mCategoryStorageRef;
     private FirebaseRecyclerAdapter mAdapter;
+    private StoreActivity mActivity;
 
     public ProductsFragment()
     {
@@ -113,9 +108,10 @@ public class ProductsFragment extends Fragment
                 mStorageRef = FirebaseStorage.getInstance().getReference().child(mCurrentCategory);
             }
             ButterKnife.bind(this, parentView);
-            mProgressDialog = new ProgressDialog(getActivity());
+            mActivity = (StoreActivity) getActivity();
+            mProgressDialog = new ProgressDialog(mActivity);
             mAdapter = getAdapter();
-            mProductRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            mProductRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, 2));
             mProductRecyclerView.setAdapter(mAdapter);
             mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
             {
@@ -176,11 +172,7 @@ public class ProductsFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof StoreActivity)
-        {
-            ((StoreActivity) activity).setToolBarTitle(getCategoryName());
-        }
+        mActivity.setToolBarTitle(getCategoryName());
         if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
         {
             mUploadButton.setVisibility(View.VISIBLE);
@@ -192,27 +184,19 @@ public class ProductsFragment extends Fragment
     {
         if (ConnectivityUtil.isConnected())
         {
-            if (isSdcardPermissionAvailable())
+            if (mActivity.isSdcardPermissionAvailable())
             {
                 getImages();
             }
             else
             {
-                requestSdCardPermission();
+                mActivity.requestSdCardPermission();
             }
         }
         else
         {
             toast(R.string.noInternet);
         }
-    }
-
-    private boolean isSdcardPermissionAvailable()
-    {
-        Context mContext = Brandfever.getAppContext();
-        return (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) &&
-                (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 
     @Subscribe
@@ -233,14 +217,6 @@ public class ProductsFragment extends Fragment
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
     }
 
-    private void requestSdCardPermission()
-    {
-        String[] permissionTemp = {
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        };
-        ActivityCompat.requestPermissions(getActivity(), permissionTemp, REQUEST_CODE_SDCARD_PERMISSION);
-    }
 
     /**
      * Uploading
@@ -461,7 +437,7 @@ public class ProductsFragment extends Fragment
                  * get the zeroth item to display in the list.
                  */
                 String imageUrl = model.getPhotoUrlList().get(0);
-                Glide.with(getActivity()).load(imageUrl)
+                Glide.with(mActivity).load(imageUrl)
                         .asBitmap().placeholder(R.mipmap.price_tag)
                         .centerCrop().into(viewHolder.mImageView);
 
@@ -483,7 +459,7 @@ public class ProductsFragment extends Fragment
                     {
                         if (ConnectivityUtil.isConnected())
                         {
-                            Intent intent = new Intent(getActivity(), ProductActivity.class);
+                            Intent intent = new Intent(mActivity, ProductActivity.class);
                             intent.putExtra(Products.PRODUCT_ID, model.getProductId());
                             intent.putExtra(Products.CATEGORY_ID, model.getCategoryId());
                             if (Build.VERSION.SDK_INT >= 21)
@@ -492,7 +468,7 @@ public class ProductsFragment extends Fragment
                                 viewHolder.mImageView.setTransitionName(transitionName);
 
                                 ActivityOptionsCompat optionsCompat = ActivityOptionsCompat
-                                        .makeSceneTransitionAnimation(getActivity(), viewHolder.mImageView,
+                                        .makeSceneTransitionAnimation(mActivity, viewHolder.mImageView,
                                                 transitionName);
                                 startActivity(intent, optionsCompat.toBundle());
                             }

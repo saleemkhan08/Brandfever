@@ -66,7 +66,9 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
-        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size) + " " + model.getSelectedSize());
+        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size) + " "
+                + model.getSelectedSize()
+                + " x " + model.getNoOfProducts());
         String discountText = model.getPriceBefore();
         if (discountText != null && !discountText.isEmpty())
         {
@@ -84,7 +86,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
         }
         catch (Exception e)
         {
-            status = Brandfever.getResString(R.string.status) + " : "+model.getOrderStatus();
+            status = Brandfever.getResString(R.string.status) + " : " + model.getOrderStatus();
         }
 
         viewHolder.mOrderStatus.setText(status);

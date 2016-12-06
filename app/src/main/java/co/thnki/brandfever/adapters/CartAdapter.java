@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -54,7 +57,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
-        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size)+" "+model.getSelectedSize());
+        viewHolder.mProductSize.setText(Brandfever.getResString(R.string.size) + " " + model.getSelectedSize());
         String discountText = model.getPriceBefore();
         if (discountText != null && !discountText.isEmpty())
         {
@@ -63,6 +66,37 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
                     | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
+        Integer[] items = new Integer[model.getAvailableNoOfProducts()];
+        for (int i = 0; i < model.getAvailableNoOfProducts(); i++)
+        {
+            items[i] = i + 1;
+        }
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(mActivity, R.layout.simple_spinner_item, R.id.text1, items);
+        viewHolder.mNoOfProductsSpinner.setAdapter(adapter);
+        viewHolder.mNoOfProductsTextView.setText(model.getNoOfProducts() + "");
+        viewHolder.mNoOfProductsSpinner.setSelection(model.getNoOfProducts() - 1);
+        viewHolder.mNoOfProductsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                Log.d("onItemSelected", "onItemSelected : " + i);
+                viewHolder.mNoOfProductsTextView.setText("" + (i + 1));
+                model.setNoOfProducts(i + 1);
+                CartUtil.getsInstance().addToCart(model);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+                Log.d("onItemSelected", "onNothingSelected");
+                viewHolder.mNoOfProductsTextView.setText("" + 1);
+                model.setNoOfProducts(1);
+                CartUtil.getsInstance().addToCart(model);
+            }
+        });
+
+        //
         viewHolder.itemView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -74,7 +108,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
                     intent.putExtra(Products.PRODUCT_ID, model.getProductId());
                     intent.putExtra(Products.CATEGORY_ID, model.getCategoryId());
 
-                    if(Build.VERSION.SDK_INT >= 21)
+                    if (Build.VERSION.SDK_INT >= 21)
                     {
                         String transitionName = getResString(R.string.productTransitionImage);
                         viewHolder.mImageView.setTransitionName(transitionName);

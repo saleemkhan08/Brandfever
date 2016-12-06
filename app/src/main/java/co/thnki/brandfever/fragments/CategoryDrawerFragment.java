@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -99,13 +100,13 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     private DrawerItemClickListener mItemClickListener;
 
     private Resources mResources;
+    private RecyclerView.Adapter mAdapter;
 
     public static CategoryDrawerFragment getInstance(String categoryChild, DrawerItemClickListener listener)
     {
         CategoryDrawerFragment fragment = new CategoryDrawerFragment();
         fragment.mItemClickListener = listener;
         fragment.setArguments(categoryChild);
-
         return fragment;
     }
 
@@ -130,7 +131,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         }
         else
         {
-            Log.d(TAG, "categoryChild : "+categoryChild );
+            Log.d(TAG, "categoryChild : " + categoryChild);
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             mAvailableCategoriesRef = rootRef.child(categoryChild);
             mCurrentCategory = categoryChild;
@@ -142,7 +143,45 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
             mResources = getResources();
             String parentCategory = getParentCategory(mCurrentCategory.replace(AVAILABLE_, ""));
             mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            mCategoriesRecyclerView.setAdapter(getAdapter());
+            mAdapter = getAdapter();
+            mAvailableCategoriesRef.addChildEventListener(new ChildEventListener()
+            {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "onChildAdded : " + dataSnapshot);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "onChildChanged");
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot)
+                {
+                    Log.d("OwnerUserSwitch", "onChildRemoved : " + dataSnapshot);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                {
+                    Log.d("OwnerUserSwitch", "onChildMoved : " + s);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+                    Log.d("OwnerUserSwitch", "onCancelled");
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+            mCategoriesRecyclerView.setAdapter(mAdapter);
             mFirstLevelArray = getFirstLevelArray();
             if (parentCategory != null)
             {
@@ -254,6 +293,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
                 DrawerCategoryViewHolder.class,
                 mAvailableCategoriesRef.orderByChild(CATEGORY_ID))
         {
+
             @Override
             protected void populateViewHolder(final DrawerCategoryViewHolder viewHolder, final Category model, int position)
             {
@@ -382,6 +422,4 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     {
 
     }
-
-
 }

@@ -263,4 +263,6 @@
     <string name="permissionRequiredToUploadPhotos">Permission Required To Upload Photos!</string>
     <string name="changing">Changing...</string>
     <string name="youHaventPickedAnImage">You haven\'t picked Image</string>
+    <string name="areYouSureYouWantToLogout">Are You Sure You Want To Logout?</string>
+    <string name="xProducts">x</string>
 </resources>

@@ -33,7 +33,6 @@ import co.thnki.brandfever.firebase.database.models.Accounts;
 import co.thnki.brandfever.firebase.database.models.Addresses;
 import co.thnki.brandfever.firebase.database.models.NotificationModel;
 import co.thnki.brandfever.firebase.database.models.Order;
-import co.thnki.brandfever.firebase.database.models.Products;
 import co.thnki.brandfever.interfaces.ResultListener;
 import co.thnki.brandfever.utils.CartUtil;
 import co.thnki.brandfever.utils.ConnectivityUtil;
@@ -143,9 +142,9 @@ public class CartFragment extends Fragment
                         Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
                         for (DataSnapshot snapshot : snapshots)
                         {
-                            Products product = snapshot.getValue(Products.class);
-                            totalPriceAfter += product.getActualPriceAfter();
-                            totalPriceBefore += product.getActualPriceBefore();
+                            Order product = snapshot.getValue(Order.class);
+                            totalPriceAfter += product.getActualPriceAfter() * product.getNoOfProducts();
+                            totalPriceBefore += product.getActualPriceBefore() * product.getNoOfProducts();
                         }
                         String total = getString(R.string.total) + " " + '\u20B9' + totalPriceAfter;
                         String saved = getString(R.string.youSave) + " " + '\u20B9' + (totalPriceBefore - totalPriceAfter);

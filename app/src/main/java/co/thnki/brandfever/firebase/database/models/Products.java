@@ -203,4 +203,9 @@ public class Products
     {
         this.timeStamp = timeStamp;
     }
+
+    public int getAvailableNoOfProducts(String selectedSize)
+    {
+        return sizesMap.get(selectedSize);
+    }
 }
