@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
@@ -17,24 +16,24 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.thnki.brandfever.R;
 import co.thnki.brandfever.singletons.Otto;
+import co.thnki.brandfever.view.SquareImageView;
 
-public class ImagePagerFragment extends Fragment
+public class SquareImagePagerFragment extends Fragment
 {
     public static final String IMAGE_LOADED = "imageLoaded";
-    @Bind(R.id.galleryImage)
-    ImageView mGalleryImage;
+    @Bind(R.id.productImage)
+    SquareImageView mProductImage;
 
     String mUrl;
 
-    public ImagePagerFragment()
+    public SquareImagePagerFragment()
     {
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View parentView = inflater.inflate(R.layout.fragment_image_pager, container, false);
+        View parentView = inflater.inflate(R.layout.fragment_square_image_pager, container, false);
         ButterKnife.bind(this, parentView);
         Glide.with(this).load(mUrl)
                 .asBitmap().placeholder(R.mipmap.price_tag)
@@ -53,13 +52,13 @@ public class ImagePagerFragment extends Fragment
                         return false;
                     }
                 })
-                .centerCrop().into(mGalleryImage);
+                .centerCrop().into(mProductImage);
         return parentView;
     }
 
-    public static ImagePagerFragment getInstance(String url)
+    public static SquareImagePagerFragment getInstance(String url)
     {
-        ImagePagerFragment fragment = new ImagePagerFragment();
+        SquareImagePagerFragment fragment = new SquareImagePagerFragment();
         fragment.mUrl = url;
         return fragment;
     }

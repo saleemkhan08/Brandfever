@@ -114,7 +114,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     @Subscribe
     public void showViewPager(String action)
     {
-        if (action.equals(ImagePagerFragment.IMAGE_LOADED))
+        if (action.equals(SquareImagePagerFragment.IMAGE_LOADED))
         {
             mProductImagePager.setVisibility(View.VISIBLE);
         }

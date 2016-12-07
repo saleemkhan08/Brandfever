@@ -4,9 +4,9 @@
              android:layout_height="match_parent"
              tools:context="co.thnki.brandfever.fragments.SquareImagePagerFragment">
 
-   <ImageView
+   <co.thnki.brandfever.view.SquareImageView
        android:layout_width="match_parent"
        android:background="#ddd"
        android:layout_height="match_parent"
-       android:id="@+id/galleryImage"/>
+       android:id="@+id/productImage"/>
 </FrameLayout>

@@ -1,4 +1,4 @@
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,14 +11,25 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!--<RelativeLayout
+                android:id="@+id/galleryContainer"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:src="@drawable/gallery_bottom_shadow"/>-->
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@+id/mensWear"
-                android:clipToPadding="false"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -26,31 +37,31 @@
                     android:background="@drawable/category_bg"/>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:textColor="@color/grey"
-                    android:text="Men's Wear"
                     android:id="@+id/mensWearTextView"
-                    android:textSize="@dimen/categoryTitleSize"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/categoryTitleTopMargin"
-                    android:layout_height="wrap_content"/>
+                    android:gravity="center"
+                    android:text="Men's Wear"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
-                    android:layout_below="@+id/mensWearTextView"
                     android:id="@+id/mensWearRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/mensWearTextView"
                     android:clipToPadding="false"
                     android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
                     android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@+id/womensWear"
-                android:layout_marginTop="@dimen/negativeMargin"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/negativeMargin">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -58,62 +69,63 @@
                     android:background="@drawable/category_bg"/>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:textColor="@color/grey"
-                    android:text="Women's Wear"
                     android:id="@+id/womensWearTextView"
-                    android:textSize="@dimen/categoryTitleSize"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/categoryTitleTopMargin"
-                    android:layout_height="wrap_content"/>
+                    android:gravity="center"
+                    android:text="Women's Wear"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/womensWearRecyclerView"
-                    android:layout_below="@+id/womensWearTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/womensWearTextView"
                     android:clipToPadding="false"
                     android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
                     android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@+id/kidsWear"
-                android:layout_marginTop="@dimen/negativeMargin"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/negativeMargin">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/categoryTitleBgHeight"
                     android:background="@drawable/category_bg"/>
+
                 <TextView
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:textColor="@color/grey"
-                    android:text="Kid's Wear"
                     android:id="@+id/kidsWearTextView"
-                    android:textSize="@dimen/categoryTitleSize"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/categoryTitleTopMargin"
-                    android:layout_height="wrap_content"/>
+                    android:gravity="center"
+                    android:text="Kid's Wear"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/kidsWearRecyclerView"
-                    android:layout_below="@+id/kidsWearTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/kidsWearTextView"
                     android:clipToPadding="false"
                     android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
                     android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/negativeMargin"
                 android:id="@+id/fashionAccessories"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/negativeMargin">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -121,31 +133,31 @@
                     android:background="@drawable/category_bg"/>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:textColor="@color/grey"
                     android:id="@+id/fashionAccessoriesTextView"
-                    android:text="Fashion Accessories"
-                    android:textSize="@dimen/categoryTitleSize"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/categoryTitleTopMargin"
-                    android:layout_height="wrap_content"/>
+                    android:gravity="center"
+                    android:text="Fashion Accessories"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
-                    android:layout_below="@+id/fashionAccessoriesTextView"
                     android:id="@+id/fashionAccessoriesRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/fashionAccessoriesTextView"
                     android:clipToPadding="false"
                     android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
                     android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@+id/homeFurnishing"
-                android:layout_marginTop="@dimen/negativeMargin"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/negativeMargin">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -153,21 +165,21 @@
                     android:background="@drawable/category_bg"/>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:textColor="@color/grey"
-                    android:text="Home Furnishing"
                     android:id="@+id/homeFurnishingTextView"
-                    android:textSize="@dimen/categoryTitleSize"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/categoryTitleTopMargin"
-                    android:layout_height="wrap_content"/>
+                    android:gravity="center"
+                    android:text="Home Furnishing"
+                    android:textColor="@color/grey"
+                    android:textSize="@dimen/categoryTitleSize"
+                    android:textStyle="bold"/>
 
                 <android.support.v7.widget.RecyclerView
-                    android:layout_below="@+id/homeFurnishingTextView"
                     android:id="@+id/homeFurnishingRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/homeFurnishingTextView"
                     android:clipToPadding="false"
                     android:paddingEnd="@dimen/categoryRecyclerViewEndPadding"
                     android:paddingStart="@dimen/categoryRecyclerViewStartPadding"/>
@@ -177,10 +189,10 @@
     </ScrollView>
 
     <ProgressBar
-        android:background="@color/transparent_black"
         android:id="@+id/mainCategoryProgress"
         android:layout_width="match_parent"
-        android:padding="160dp"
         android:layout_height="match_parent"
+        android:background="@color/transparent_black"
+        android:padding="160dp"
         />
-</FrameLayout>
+</RelativeLayout>

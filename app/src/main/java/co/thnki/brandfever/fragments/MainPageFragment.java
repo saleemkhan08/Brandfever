@@ -70,6 +70,7 @@ public class MainPageFragment extends Fragment
 {
     public static final String TAG = "MainPageFragment";
     private static final int PICK_CATEGORY_IMAGE = 199;
+    private static final String SHOP_GALLERY = "shopGallery";
 
     @Bind(R.id.mensWearRecyclerView)
     RecyclerView mMensWearRecyclerView;
@@ -142,7 +143,17 @@ public class MainPageFragment extends Fragment
         mFirstLevelCategories = Brandfever.getResStringArray(R.array.firstLevelCategoriesId);
         mRootRef = FirebaseDatabase.getInstance().getReference();
         InitialSetupUtil.updateUi();
+        //setupGallery();
         return parentView;
+    }
+
+    private void setupGallery()
+    {
+        /*GalleryFragment fragment = new GalleryFragment();
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.galleryContainer, fragment, SHOP_GALLERY)
+                .commit();*/
     }
 
     @Override

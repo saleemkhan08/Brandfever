@@ -5,7 +5,6 @@
     <color name="colorPrimaryLight">#2a3b52</color>
     <color name="colorPrimaryDark">#101720</color>
     <color name="colorAccent">#d75a4a</color>
-
     <color name="colorAccentPressed">#d7877c</color>
     <color name="divider">#aaaaaa</color>
     <color name="travel_mode">#F57C00</color>

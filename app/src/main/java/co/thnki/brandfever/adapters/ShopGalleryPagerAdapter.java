@@ -7,14 +7,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import co.thnki.brandfever.fragments.SquareImagePagerFragment;
+import co.thnki.brandfever.fragments.ImagePagerFragment;
 
-public class SectionsPagerAdapter extends FragmentStatePagerAdapter
+public class ShopGalleryPagerAdapter extends FragmentStatePagerAdapter
 {
     private ArrayList<String> mPhotoUrls;
 
     public boolean mIsDataSetUpdated;
-    public SectionsPagerAdapter(FragmentManager fragmentManager)
+    public ShopGalleryPagerAdapter(FragmentManager fragmentManager)
     {
         super(fragmentManager);
     }
@@ -30,7 +30,7 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter
     {
         String url = mPhotoUrls.get(position);
         Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
-        return SquareImagePagerFragment.getInstance(url);
+        return ImagePagerFragment.getInstance(url);
     }
 
     @Override
